@@ -6,7 +6,6 @@ use serde_json::from_str;
 use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
-
 use crate::error::LicheszterError;
 
 /// LicheszterResult type
