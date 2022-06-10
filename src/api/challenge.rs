@@ -30,4 +30,13 @@ impl Licheszter {
         assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
         Ok(())
     }
+
+    /// Cancel a challenge
+    pub async fn challenge_cancel(&self, challenge_id: &str) -> LicheszterResult<()> {
+        let addr = format!("{}/api/challenge/{}/cancel", self.base, challenge_id);
+        let builder = self.client.post(&addr);
+        let ok_json = self.to_model_full::<Value>(builder);
+        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+        Ok(())
+    }
 }
