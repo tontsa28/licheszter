@@ -11,4 +11,13 @@ impl Licheszter {
         assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
         Ok(())
     }
+
+    /// Write to game chat as a bot
+    pub async fn write_to_chat(&self, game_id: &str, room: &str, text: &str) -> LicheszterResult<()> {
+        let addr = format!("{}/api/bot/game/{}/chat", self.base, game_id);
+        let builder = self.client.post(&addr).form(&[("room", room), ("text", text)]);
+        let ok_json = self.to_model_full::<Value>(builder);
+        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+        Ok(())
+    }
 }
