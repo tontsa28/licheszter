@@ -29,4 +29,13 @@ impl Licheszter {
         assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
         Ok(())
     }
+
+    /// Resign a bot game
+    pub async fn resign_game(&self, game_id: &str) -> LicheszterResult<()> {
+        let addr = format!("{}/api/bot/game/{}/resign", self.base, game_id);
+        let builder = self.client.post(&addr);
+        let ok_json = self.to_model_full::<Value>(builder);
+        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+        Ok(())
+    }
 }
