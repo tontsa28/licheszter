@@ -39,4 +39,17 @@ impl Licheszter {
         assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
         Ok(())
     }
+
+    /// Challenge Stockfish
+    pub async fn challenge_stockfish(&self, level: u8, form_params: Option<&[(&str, &str)]>) -> LicheszterResult<ChallengeGame> {
+        let addr = format!("{}/api/challenge/ai", self.base);
+        let mut form = vec![("level", level.to_string())];
+        if let Some(params) = form_params {
+            for (key, val) in params.iter() {
+                form.push((key, val.to_string()));
+            }
+        }
+        let builder = self.client.post(&addr).form(&form);
+        self.to_model_full(builder).await
+    }
 }
