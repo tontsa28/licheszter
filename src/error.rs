@@ -2,6 +2,7 @@ use reqwest::{header, Response, StatusCode};
 use serde::Deserialize;
 use thiserror::Error;
 
+/// LicheszterError enum
 #[derive(Debug, Error)]
 pub enum LicheszterError {
     RateLimit(Option<usize>),
@@ -12,6 +13,7 @@ pub enum LicheszterError {
     IO(#[from] std::io::Error)
 }
 
+// Implement necessary functions for the enum
 impl LicheszterError {
     pub(crate) async fn from_response(response: Response) -> Self {
         match response.status() {
@@ -31,6 +33,7 @@ impl LicheszterError {
     }
 }
 
+// Implement StatusCode for LicheszterError
 impl From<StatusCode> for LicheszterError {
     fn from(c: StatusCode) -> Self {
         Self::StatusCode(
@@ -40,17 +43,20 @@ impl From<StatusCode> for LicheszterError {
     }
 }
 
+/// APIError struct
 #[derive(Debug, Error, Deserialize)]
 pub struct APIError {
     error: String
 }
 
+// Implement Display trait for APIError
 impl std::fmt::Display for APIError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self)
     }
 }
 
+// Implement Display trait for LicheszterError
 impl std::fmt::Display for LicheszterError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self)
