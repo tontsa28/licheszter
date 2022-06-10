@@ -1,8 +1,16 @@
+use futures_util::Stream;
 use serde_json::{from_value, Value};
 use crate::client::{Licheszter, LicheszterResult};
 
 // Implement bot functions for Licheszter
 impl Licheszter {
+    /// Stream bot game state
+    pub async fn stream_game_state(&self, game_id: &str) -> LicheszterResult<impl Stream<Item = LicheszterResult<BoardState>>> {
+        let addr = format!("{}/api/bot/game/stream/{}", self.base, game_id);
+        let builder = self.client.get(&addr);
+        self.to_model_stream(builder).await
+    }
+
     /// Make a move in a bot game
     pub async fn make_move(&self, game_id: &str, uci_move: &str, draw_offer: bool) -> LicheszterResult<()> {
         let addr = format!("{}/api/bot/game/{}/move/{}", self.base, game_id, uci_move);
