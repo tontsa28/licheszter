@@ -7,7 +7,7 @@ pub struct PlayerAnalysis {
     pub inaccuracy: u16,
     pub mistake: u16,
     pub blunder: u16,
-    pub acpl: u16,
+    pub acpl: u16
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -18,34 +18,34 @@ pub struct Entity {
     pub rating: u16,
     pub rating_diff: Option<i16>,
     pub provisional: Option<bool>,
-    pub analysis: Option<PlayerAnalysis>,
+    pub analysis: Option<PlayerAnalysis>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct StockFish {
     #[serde(rename = "aiLevel")]
     pub ai_level: u8,
-    pub analysis: Option<PlayerAnalysis>,
+    pub analysis: Option<PlayerAnalysis>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Player {
     Entity(Entity),
-    StockFish(StockFish),
+    StockFish(StockFish)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Players {
     pub white: Player,
-    pub black: Player,
+    pub black: Player
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Opening {
     pub eco: String,
     pub name: String,
-    pub ply: u16,
+    pub ply: u16
 }
 
 /// All possible fields of information attached to 'clock' in response
@@ -58,13 +58,13 @@ pub struct Clock {
     pub limit: Option<u16>,
     pub days_per_turn: Option<u8>,
     pub show: Option<String>,
-    pub r#type: Option<String>,
+    pub r#type: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Judgement {
     pub name: String,
-    pub comment: String,
+    pub comment: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -73,7 +73,7 @@ pub struct MoveAnalysis {
     pub eval: Option<i16>, // in the JSON export the eval values are 100*(engine eval)
     pub best: Option<String>,
     pub variation: Option<String>,
-    pub judgment: Option<Judgement>,
+    pub judgment: Option<Judgement>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -98,14 +98,14 @@ pub struct Game {
     pub days_per_turn: Option<u8>,
     pub analysis: Option<Vec<MoveAnalysis>>,
     pub tournament: Option<String>,
-    pub clock: Option<Clock>,
+    pub clock: Option<Clock>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Variant {
     pub key: String,
     pub short: Option<String>,
-    pub name: String,
+    pub name: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -113,7 +113,7 @@ pub struct Perf {
     pub icon: Option<String>,
     pub key: Option<String>,
     pub name: String,
-    pub position: Option<u8>,
+    pub position: Option<u8>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -131,7 +131,7 @@ pub struct UserGame {
     pub rated: bool,
     pub opponent: LightUser,
     pub is_my_turn: bool,
-    pub seconds_left: u32,
+    pub seconds_left: u32
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -139,7 +139,7 @@ pub struct Channel {
     pub user: LightUser,
     pub rating: u16,
     #[serde(rename = "gameId")]
-    pub game_id: String,
+    pub game_id: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -164,13 +164,13 @@ pub struct TVChannels {
     #[serde(rename = "King of the Hill")]
     pub king_of_the_hill: Channel,
     #[serde(rename = "Top Rated")]
-    pub top_rated: Channel,
+    pub top_rated: Channel
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PV {
     pub moves: String,
-    pub cp: i16,
+    pub cp: i16
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -178,5 +178,5 @@ pub struct Eval {
     pub fen: String,
     pub knodes: u16,
     pub depth: u8,
-    pub pvs: Vec<PV>,
+    pub pvs: Vec<PV>
 }

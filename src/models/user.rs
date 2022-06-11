@@ -19,8 +19,7 @@ pub enum PerfType {
     RacingKings,
     ThreeCheck,
     Puzzle,
-    Correspondence,
-    // Standard,
+    Correspondence
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -30,7 +29,7 @@ pub struct UserPerf {
     pub rd: Option<u16>,
     #[serde(alias = "progress")]
     pub prog: i32,
-    pub prov: Option<bool>,
+    pub prov: Option<bool>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -44,13 +43,13 @@ pub struct UserProfile {
     pub fide_rating: Option<u16>,
     pub uscf_rating: Option<u16>,
     pub ecf_rating: Option<u16>,
-    pub links: Option<String>,
+    pub links: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UserPlaytime {
     pub total: u64,
-    pub tv: u64,
+    pub tv: u64
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -68,7 +67,7 @@ pub struct UserCount {
     pub bookmark: u32,
     pub playing: u32,
     pub import: u32,
-    pub me: u32,
+    pub me: u32
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -101,7 +100,7 @@ pub struct User {
     pub followable: Option<bool>,
     pub following: Option<bool>,
     pub blocking: Option<bool>,
-    pub follows_you: Option<bool>,
+    pub follows_you: Option<bool>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -141,7 +140,7 @@ pub struct UserPreferences {
     pub keyboard_move: u8,
     pub zen: u8,
     pub move_event: u8,
-    pub rook_castle: u8,
+    pub rook_castle: u8
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -160,7 +159,7 @@ pub struct LightUser {
     pub provisional: Option<bool>,
     pub lag: Option<u16>,
     #[serde(rename = "gameId")]
-    pub game_id: Option<String>, // for simuls
+    pub game_id: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -171,14 +170,14 @@ pub struct PuzzleActivity {
     pub date: DateTime<Utc>,
     pub rating: u16,
     pub rating_diff: i16,
-    pub puzzle_rating: u16,
+    pub puzzle_rating: u16
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Matchup {
     pub users: HashMap<String, f32>,
     #[serde(rename = "nbGames")]
-    pub nb_games: u32,
+    pub nb_games: u32
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -186,5 +185,5 @@ pub struct Crosstable {
     pub users: HashMap<String, f32>,
     #[serde(rename = "nbGames")]
     pub nb_games: u32,
-    pub matchup: Option<Matchup>,
+    pub matchup: Option<Matchup>
 }

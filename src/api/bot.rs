@@ -1,6 +1,7 @@
 use futures_util::Stream;
 use serde_json::{from_value, Value};
 use crate::client::{Licheszter, LicheszterResult};
+use crate::models::board::BoardState;
 
 // Implement bot functions for Licheszter
 impl Licheszter {

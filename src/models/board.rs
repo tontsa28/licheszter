@@ -4,12 +4,6 @@ use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct GameID {
-    pub id: String
-}
-
-/// Information about pairing (potential) two users
-#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Challenge {
     pub id: String,
@@ -25,7 +19,7 @@ pub struct Challenge {
     pub perf: Perf,
     pub rated: bool,
     pub speed: String,
-    pub status: String,
+    pub status: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -35,7 +29,7 @@ pub struct EntityChallenge {
     pub game: Option<ChallengeGame>,
     pub socket_version: Option<u8>,
     pub url_white: Option<String>,
-    pub url_black: Option<String>,
+    pub url_black: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -55,14 +49,14 @@ pub struct ChallengeGame {
     pub status: Status,
     #[serde(deserialize_with = "ts_milliseconds::deserialize")]
     pub created_at: DateTime<Utc>,
-    pub url: Option<String>,
+    pub url: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Status {
     pub id: u8,
-    pub name: String,
+    pub name: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -77,13 +71,13 @@ pub struct GameState {
     pub bdraw: bool,
     pub status: String,
     pub winner: Option<String>,
-    pub rematch: Option<String>,
+    pub rematch: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum Challengee {
     LightUser(LightUser),
-    StockFish(StockFish),
+    StockFish(StockFish)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -101,25 +95,21 @@ pub struct GameFull {
     pub black: Challengee,
     pub initial_fen: String,
     pub state: GameState,
-    pub tournament_id: Option<String>,
+    pub tournament_id: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ChatLine {
     pub username: String,
     pub text: String,
-    pub room: String,
+    pub room: String
 }
 
-/// State of the ongoing game played through board API
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum BoardState {
-    /// Full information about the game
     GameFull(GameFull),
-    /// State of the game when a move is played, a draw is offered, or when the game ends
     GameState(GameState),
-    /// Chat messages in either the game room or the spectator room
-    ChatLine(ChatLine),
+    ChatLine(ChatLine)
 }
