@@ -12,6 +12,7 @@ use crate::error::LicheszterError;
 pub type LicheszterResult<T> = Result<T, LicheszterError>;
 
 /// Licheszter struct object
+#[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
     pub(crate) base: String

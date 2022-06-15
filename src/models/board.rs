@@ -4,6 +4,11 @@ use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GameID {
+    pub id: String
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Challenge {
     pub id: String,
@@ -57,6 +62,22 @@ pub struct ChallengeGame {
 pub struct Status {
     pub id: u8,
     pub name: String
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "type")]
+pub enum Event {
+    /// A new game is starting
+    GameStart { game: GameID },
+    /// An ongoing game is finished
+    GameFinish { game: GameID },
+    /// Seek a new enemy
+    Challenge { challenge: Challenge },
+    /// Challenger withdrew
+    ChallengeCanceled { challenge: Challenge },
+    /// Challenge withdrew
+    ChallengeDeclined { challenge: Challenge }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
