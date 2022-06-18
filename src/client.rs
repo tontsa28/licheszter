@@ -11,7 +11,7 @@ use crate::error::LicheszterError;
 /// LicheszterResult type
 pub type LicheszterResult<T> = Result<T, LicheszterError>;
 
-/// Licheszter struct object
+/// Licheszter struct
 #[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
@@ -51,18 +51,19 @@ impl Licheszter {
 
         if response.status().is_success() {
             Ok(response)
-        }
-        else {
+        } else {
             Err(LicheszterError::from_response(response).await)
         }
     }
 
     /// Convert API response into a raw string
+    #[allow(dead_code)]
     pub(crate) async fn to_raw_str(&self, builder: RequestBuilder) -> LicheszterResult<String> {
         self.api_call(builder).await?.text().await.map_err(Into::into)
     }
 
     /// Convert API response into raw bytes
+    #[allow(dead_code)]
     pub(crate) async fn to_raw_bytes(&self, builder: RequestBuilder) -> LicheszterResult<impl Stream<Item = LicheszterResult<bytes::Bytes>>> {
         Ok(self.api_call(builder).await?.bytes_stream().map_err(Into::into))
     }
@@ -81,8 +82,7 @@ impl Licheszter {
                 let line = line.ok()?;
                 if !line.is_empty() {
                     Some(from_str(&line).map_err(Into::into))
-                }
-                else {
+                } else {
                     None
                 }
             })

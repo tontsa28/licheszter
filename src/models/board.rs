@@ -58,7 +58,6 @@ pub struct ChallengeGame {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct Status {
     pub id: u8,
     pub name: String
@@ -68,15 +67,10 @@ pub struct Status {
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum Event {
-    /// A new game is starting
     GameStart { game: GameID },
-    /// An ongoing game is finished
     GameFinish { game: GameID },
-    /// Seek a new enemy
     Challenge { challenge: Challenge },
-    /// Challenger withdrew
     ChallengeCanceled { challenge: Challenge },
-    /// Challenge withdrew
     ChallengeDeclined { challenge: Challenge }
 }
 

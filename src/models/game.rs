@@ -48,7 +48,6 @@ pub struct Opening {
     pub ply: u16
 }
 
-/// All possible fields of information attached to 'clock' in response
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Clock {
@@ -70,7 +69,7 @@ pub struct Judgement {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MoveAnalysis {
     pub mate: Option<u8>,
-    pub eval: Option<i16>, // in the JSON export the eval values are 100*(engine eval)
+    pub eval: Option<i16>,
     pub best: Option<String>,
     pub variation: Option<String>,
     pub judgment: Option<Judgement>
@@ -91,7 +90,7 @@ pub struct Game {
     pub status: String,
     pub players: Players,
     pub initial_fen: Option<String>,
-    pub winner: Option<String>, // white or black
+    pub winner: Option<String>,
     pub opening: Option<Opening>,
     pub moves: Option<String>,
     pub pgn: Option<String>,
@@ -114,69 +113,4 @@ pub struct Perf {
     pub key: Option<String>,
     pub name: String,
     pub position: Option<u8>
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct UserGame {
-    pub full_id: String,
-    pub game_id: String,
-    pub fen: String,
-    pub color: String,
-    pub has_moved: bool,
-    pub last_move: String,
-    pub variant: Variant,
-    pub speed: String,
-    pub perf: PerfType,
-    pub rated: bool,
-    pub opponent: LightUser,
-    pub is_my_turn: bool,
-    pub seconds_left: u32
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Channel {
-    pub user: LightUser,
-    pub rating: u16,
-    #[serde(rename = "gameId")]
-    pub game_id: String
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct TVChannels {
-    pub bot: Channel,
-    pub blitz: Channel,
-    #[serde(rename = "Racing Kings")]
-    pub racing_kings: Channel,
-    pub ultra_bullet: Channel,
-    pub bullet: Channel,
-    pub classical: Channel,
-    #[serde(rename = "Three-check")]
-    pub three_check: Channel,
-    pub antichess: Channel,
-    pub computer: Channel,
-    pub horde: Channel,
-    pub rapid: Channel,
-    pub atomic: Channel,
-    pub crazyhouse: Channel,
-    pub chess960: Channel,
-    #[serde(rename = "King of the Hill")]
-    pub king_of_the_hill: Channel,
-    #[serde(rename = "Top Rated")]
-    pub top_rated: Channel
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct PV {
-    pub moves: String,
-    pub cp: i16
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Eval {
-    pub fen: String,
-    pub knodes: u16,
-    pub depth: u8,
-    pub pvs: Vec<PV>
 }
