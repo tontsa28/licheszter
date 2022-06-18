@@ -5,11 +5,17 @@ use thiserror::Error;
 /// LicheszterError enum
 #[derive(Debug, Error)]
 pub enum LicheszterError {
+    #[error("Exceeded request limit")]
     RateLimit(Option<usize>),
+    #[error("Request error: {}", 0)]
     Request(#[from] reqwest::Error),
+    #[error("Status code {}: {}", 0, 1)]
     StatusCode(u16, String),
+    #[error("API error: {}", 0)]
     API(#[from] APIError),
+    #[error("JSON parse error: {}", 0)]
     ParseJSON(#[from] serde_json::Error),
+    #[error("IO error: {}", 0)]
     IO(#[from] std::io::Error)
 }
 
@@ -45,20 +51,7 @@ impl From<StatusCode> for LicheszterError {
 
 /// APIError struct
 #[derive(Debug, Error, Deserialize)]
+#[error("Error: {}", error)]
 pub struct APIError {
     error: String
-}
-
-// Implement Display trait for APIError
-impl std::fmt::Display for APIError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self)
-    }
-}
-
-// Implement Display trait for LicheszterError
-impl std::fmt::Display for LicheszterError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self)
-    }
 }
