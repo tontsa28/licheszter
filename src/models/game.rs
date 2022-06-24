@@ -114,3 +114,21 @@ pub struct Perf {
     pub name: String,
     pub position: Option<u8>
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserGame {
+    pub full_id: String,
+    pub game_id: String,
+    pub fen: String,
+    pub color: String,
+    pub has_moved: bool,
+    pub last_move: String,
+    pub variant: Variant,
+    pub speed: String,
+    pub perf: PerfType,
+    pub rated: bool,
+    pub opponent: LightUser,
+    pub is_my_turn: bool,
+    pub seconds_left: u32,
+}
