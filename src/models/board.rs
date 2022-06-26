@@ -2,13 +2,17 @@ use crate::models::game::{Clock, Perf, StockFish, Variant};
 use crate::models::user::LightUser;
 use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct GameID {
     pub id: String
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct Challenge {
     pub id: String,
@@ -27,7 +31,9 @@ pub struct Challenge {
     pub status: String
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct EntityChallenge {
     pub challenge: Option<Challenge>,
@@ -38,6 +44,7 @@ pub struct EntityChallenge {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct ChallengeGame {
     pub id: String,
@@ -58,12 +65,14 @@ pub struct ChallengeGame {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Status {
     pub id: u8,
     pub name: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum Event {
@@ -74,7 +83,9 @@ pub enum Event {
     ChallengeDeclined { challenge: Challenge }
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct GameState {
     pub r#type: Option<String>,
     pub moves: String,
@@ -90,12 +101,14 @@ pub struct GameState {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum Challengee {
+#[serde(untagged)]
+pub enum Challenger {
     LightUser(LightUser),
     StockFish(StockFish)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct GameFull {
     pub id: String,
@@ -106,14 +119,15 @@ pub struct GameFull {
     pub perf: Perf,
     #[serde(deserialize_with = "ts_milliseconds::deserialize")]
     pub created_at: DateTime<Utc>,
-    pub white: Challengee,
-    pub black: Challengee,
+    pub white: Challenger,
+    pub black: Challenger,
     pub initial_fen: String,
     pub state: GameState,
     pub tournament_id: Option<String>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ChatLine {
     pub username: String,
     pub text: String,
@@ -121,6 +135,7 @@ pub struct ChatLine {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum BoardState {

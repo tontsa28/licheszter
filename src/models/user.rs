@@ -1,5 +1,6 @@
-use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
+use serde_with::skip_serializing_none;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Hash)]
 #[serde(rename_all = "camelCase")]
@@ -21,7 +22,9 @@ pub enum PerfType {
     Correspondence
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct UserPerf {
     pub games: Option<u32>,
     pub rating: u16,
@@ -31,7 +34,9 @@ pub struct UserPerf {
     pub prov: Option<bool>
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct LightUser {
     pub id: Option<String>,
     #[serde(alias = "name")]

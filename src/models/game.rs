@@ -1,8 +1,10 @@
 use crate::models::user::{LightUser, PerfType};
 use chrono::{serde::{ts_milliseconds, ts_milliseconds_option}, DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PlayerAnalysis {
     pub inaccuracy: u16,
     pub mistake: u16,
@@ -10,7 +12,9 @@ pub struct PlayerAnalysis {
     pub acpl: u16
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct Entity {
     pub user: Option<LightUser>,
@@ -21,7 +25,9 @@ pub struct Entity {
     pub analysis: Option<PlayerAnalysis>
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct StockFish {
     #[serde(rename = "aiLevel")]
     pub ai_level: u8,
@@ -36,19 +42,23 @@ pub enum Player {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Players {
     pub white: Player,
     pub black: Player
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Opening {
     pub eco: String,
     pub name: String,
     pub ply: u16
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct Clock {
     pub initial: Option<u32>,
@@ -61,12 +71,15 @@ pub struct Clock {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Judgement {
     pub name: String,
     pub comment: String
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MoveAnalysis {
     pub mate: Option<u8>,
     pub eval: Option<i16>,
@@ -75,7 +88,9 @@ pub struct MoveAnalysis {
     pub judgment: Option<Judgement>
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
     pub id: String,
@@ -100,14 +115,18 @@ pub struct Game {
     pub clock: Option<Clock>
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Variant {
     pub key: String,
     pub short: Option<String>,
     pub name: String
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Perf {
     pub icon: Option<String>,
     pub key: Option<String>,
@@ -116,6 +135,7 @@ pub struct Perf {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct UserGame {
     pub full_id: String,
