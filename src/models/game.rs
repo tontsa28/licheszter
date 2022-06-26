@@ -9,7 +9,7 @@ pub struct PlayerAnalysis {
     pub inaccuracy: u16,
     pub mistake: u16,
     pub blunder: u16,
-    pub acpl: u16
+    pub acpl: u16,
 }
 
 #[skip_serializing_none]
@@ -22,7 +22,7 @@ pub struct Entity {
     pub rating: u16,
     pub rating_diff: Option<i16>,
     pub provisional: Option<bool>,
-    pub analysis: Option<PlayerAnalysis>
+    pub analysis: Option<PlayerAnalysis>,
 }
 
 #[skip_serializing_none]
@@ -31,21 +31,21 @@ pub struct Entity {
 pub struct StockFish {
     #[serde(rename = "aiLevel")]
     pub ai_level: u8,
-    pub analysis: Option<PlayerAnalysis>
+    pub analysis: Option<PlayerAnalysis>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Player {
     Entity(Entity),
-    StockFish(StockFish)
+    StockFish(StockFish),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Players {
     pub white: Player,
-    pub black: Player
+    pub black: Player,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -53,7 +53,7 @@ pub struct Players {
 pub struct Opening {
     pub eco: String,
     pub name: String,
-    pub ply: u16
+    pub ply: u16,
 }
 
 #[skip_serializing_none]
@@ -67,14 +67,14 @@ pub struct Clock {
     pub limit: Option<u16>,
     pub days_per_turn: Option<u8>,
     pub show: Option<String>,
-    pub r#type: Option<String>
+    pub r#type: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Judgement {
     pub name: String,
-    pub comment: String
+    pub comment: String,
 }
 
 #[skip_serializing_none]
@@ -85,7 +85,7 @@ pub struct MoveAnalysis {
     pub eval: Option<i16>,
     pub best: Option<String>,
     pub variation: Option<String>,
-    pub judgment: Option<Judgement>
+    pub judgment: Option<Judgement>,
 }
 
 #[skip_serializing_none]
@@ -112,7 +112,7 @@ pub struct Game {
     pub days_per_turn: Option<u8>,
     pub analysis: Option<Vec<MoveAnalysis>>,
     pub tournament: Option<String>,
-    pub clock: Option<Clock>
+    pub clock: Option<Clock>,
 }
 
 #[skip_serializing_none]
@@ -121,7 +121,7 @@ pub struct Game {
 pub struct Variant {
     pub key: String,
     pub short: Option<String>,
-    pub name: String
+    pub name: String,
 }
 
 #[skip_serializing_none]
@@ -131,7 +131,7 @@ pub struct Perf {
     pub icon: Option<String>,
     pub key: Option<String>,
     pub name: String,
-    pub position: Option<u8>
+    pub position: Option<u8>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -142,12 +142,13 @@ pub struct UserGame {
     pub game_id: String,
     pub fen: String,
     pub color: String,
-    pub has_moved: bool,
     pub last_move: String,
+    pub source: String,
     pub variant: Variant,
     pub speed: String,
     pub perf: PerfType,
     pub rated: bool,
+    pub has_moved: bool,
     pub opponent: LightUser,
     pub is_my_turn: bool,
     pub seconds_left: u32,

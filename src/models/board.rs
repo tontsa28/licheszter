@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct GameID {
-    pub id: String
+    pub id: String,
 }
 
 #[skip_serializing_none]
@@ -17,6 +17,7 @@ pub struct GameID {
 pub struct Challenge {
     pub id: String,
     pub url: String,
+    pub final_color: String,
     pub color: String,
     pub direction: Option<String>,
     pub time_control: Clock,
@@ -28,7 +29,7 @@ pub struct Challenge {
     pub perf: Perf,
     pub rated: bool,
     pub speed: String,
-    pub status: String
+    pub status: String,
 }
 
 #[skip_serializing_none]
@@ -40,9 +41,10 @@ pub struct EntityChallenge {
     pub game: Option<ChallengeGame>,
     pub socket_version: Option<u8>,
     pub url_white: Option<String>,
-    pub url_black: Option<String>
+    pub url_black: Option<String>,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
@@ -61,14 +63,14 @@ pub struct ChallengeGame {
     pub status: Status,
     #[serde(deserialize_with = "ts_milliseconds::deserialize")]
     pub created_at: DateTime<Utc>,
-    pub url: Option<String>
+    pub url: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Status {
     pub id: u8,
-    pub name: String
+    pub name: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -80,7 +82,7 @@ pub enum Event {
     GameFinish { game: GameID },
     Challenge { challenge: Challenge },
     ChallengeCanceled { challenge: Challenge },
-    ChallengeDeclined { challenge: Challenge }
+    ChallengeDeclined { challenge: Challenge },
 }
 
 #[skip_serializing_none]
@@ -93,20 +95,19 @@ pub struct GameState {
     pub btime: u32,
     pub winc: u16,
     pub binc: u16,
-    pub wdraw: bool,
-    pub bdraw: bool,
     pub status: String,
     pub winner: Option<String>,
-    pub rematch: Option<String>
+    pub rematch: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Challenger {
     LightUser(LightUser),
-    StockFish(StockFish)
+    StockFish(StockFish),
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
@@ -123,7 +124,7 @@ pub struct GameFull {
     pub black: Challenger,
     pub initial_fen: String,
     pub state: GameState,
-    pub tournament_id: Option<String>
+    pub tournament_id: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -131,7 +132,7 @@ pub struct GameFull {
 pub struct ChatLine {
     pub username: String,
     pub text: String,
-    pub room: String
+    pub room: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -141,5 +142,5 @@ pub struct ChatLine {
 pub enum BoardState {
     GameFull(GameFull),
     GameState(GameState),
-    ChatLine(ChatLine)
+    ChatLine(ChatLine),
 }

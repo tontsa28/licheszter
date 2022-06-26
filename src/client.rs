@@ -15,7 +15,7 @@ pub type LicheszterResult<T> = Result<T, LicheszterError>;
 #[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
-    pub(crate) base: String
+    pub(crate) base: String,
 }
 
 // Implement necessary functions for the struct
@@ -24,7 +24,7 @@ impl Licheszter {
     pub fn default() -> Licheszter {
         Licheszter {
             client: Client::new(),
-            base: String::from("https://lichess.org")
+            base: String::from("https://lichess.org"),
         }
     }
 
@@ -41,7 +41,7 @@ impl Licheszter {
                 .default_headers(header_map)
                 .build()
                 .unwrap(),
-            base: String::from("https://lichess.org")
+            base: String::from("https://lichess.org"),
         }
     }
 

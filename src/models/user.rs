@@ -19,7 +19,7 @@ pub enum PerfType {
     RacingKings,
     ThreeCheck,
     Puzzle,
-    Correspondence
+    Correspondence,
 }
 
 #[skip_serializing_none]
@@ -31,7 +31,7 @@ pub struct UserPerf {
     pub rd: Option<u16>,
     #[serde(alias = "progress")]
     pub prog: i32,
-    pub prov: Option<bool>
+    pub prov: Option<bool>,
 }
 
 #[skip_serializing_none]
@@ -52,5 +52,5 @@ pub struct LightUser {
     pub provisional: Option<bool>,
     pub lag: Option<u16>,
     #[serde(rename = "gameId")]
-    pub game_id: Option<String>
+    pub game_id: Option<String>,
 }
