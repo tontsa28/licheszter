@@ -17,6 +17,7 @@ pub struct GameID {
 pub struct Challenge {
     pub id: String,
     pub url: String,
+    pub compat: Option<Compat>,
     pub final_color: String,
     pub color: String,
     pub direction: Option<String>,
@@ -143,4 +144,11 @@ pub enum BoardState {
     GameFull(GameFull),
     GameState(GameState),
     ChatLine(ChatLine),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Compat {
+    pub bot: bool,
+    pub board: bool,
 }
