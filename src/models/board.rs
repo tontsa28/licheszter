@@ -17,7 +17,6 @@ pub struct GameID {
 pub struct Challenge {
     pub id: String,
     pub url: String,
-    pub compat: Option<Compat>,
     pub final_color: String,
     pub color: String,
     pub direction: Option<String>,
@@ -81,7 +80,7 @@ pub struct Status {
 pub enum Event {
     GameStart { game: GameID },
     GameFinish { game: GameID },
-    Challenge { challenge: Challenge },
+    Challenge { challenge: Challenge, compat: Option<Compat> },
     ChallengeCanceled { challenge: Challenge },
     ChallengeDeclined { challenge: Challenge },
 }
@@ -96,6 +95,8 @@ pub struct GameState {
     pub btime: u32,
     pub winc: u16,
     pub binc: u16,
+    pub wdraw: Option<bool>,
+    pub bdraw: Option<bool>,
     pub status: String,
     pub winner: Option<String>,
     pub rematch: Option<String>,

@@ -10,6 +10,8 @@ impl Licheszter {
         let builder = self.client.get(&addr);
         self.to_model_stream(builder).await
     }
+
+    /// Get ongoing games of the current user
     pub async fn get_ongoing_games(&self, nb_games: u8) -> LicheszterResult<Vec<UserGame>> {
         let addr = format!("{}/api/account/playing", self.base);
         let builder = self.client.get(&addr).query(&[("nb", nb_games)]);

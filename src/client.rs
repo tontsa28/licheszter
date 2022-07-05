@@ -23,7 +23,9 @@ impl Licheszter {
     /// Create an unauthenticated instance of Licheszter
     pub fn default() -> Licheszter {
         Licheszter {
-            client: Client::new(),
+            client: Client::builder()
+                .pool_max_idle_per_host(0)
+                .build().unwrap(),
             base: String::from("https://lichess.org"),
         }
     }
