@@ -41,6 +41,7 @@ impl Licheszter {
         Licheszter {
             client: Client::builder()
                 .default_headers(header_map)
+                .pool_max_idle_per_host(0)
                 .build()
                 .unwrap(),
             base: String::from("https://lichess.org"),

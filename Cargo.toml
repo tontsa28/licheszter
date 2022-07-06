@@ -4,7 +4,9 @@ version = "0.1.0"
 authors = ["tontsa28 <tontsadev@gmail.com>"]
 license = "AGPL v3.0"
 description = "API wrapper for Lichess bot API"
+homepage = "https://github.com/tontsa28/licheszter"
 repository = "https://github.com/tontsa28/licheszter"
+documentation = "https://docs.rs/licheszter"
 keywords = ["lichess", "bot", "api", "wrapper", "chess", "licheszter", "cheszter"]
 categories = ["api-bindings", "asynchronous"]
 readme = "README.md"
@@ -13,14 +15,6 @@ edition = "2021"
 [lib]
 name = "licheszter"
 path = "src/lib.rs"
-
-[profile.release]
-opt-level = 3
-lto = true
-strip = true
-
-[profile.dev]
-opt-level = 0
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
