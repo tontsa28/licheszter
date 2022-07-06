@@ -4,7 +4,9 @@ version = "0.1.0"
 authors = ["tontsa28 <tontsadev@gmail.com>"]
 license = "AGPL v3.0"
 description = "API wrapper for Lichess bot API"
+homepage = "https://github.com/tontsa28/licheszter"
 repository = "https://github.com/tontsa28/licheszter"
+documentation = "https://docs.rs/licheszter"
 keywords = ["lichess", "bot", "api", "wrapper", "chess", "licheszter", "cheszter"]
 categories = ["api-bindings", "asynchronous"]
 readme = "README.md"
@@ -14,23 +16,16 @@ edition = "2021"
 name = "licheszter"
 path = "src/lib.rs"
 
-[profile.release]
-opt-level = 3
-lto = true
-strip = true
-
-[profile.dev]
-opt-level = 0
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1.19.0", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1.19.2", features = ["rt-multi-thread", "macros"] }
 tokio-stream = { version = "0.1.9", features = ["io-util"] }
 tokio-util = { version = "0.7.3", features = ["io"] }
-reqwest = { version = "0.11.10", features = ["json", "stream"] }
-serde = { version = "1.0.137", features = ["derive"] }
-serde_json = "1.0.81"
+reqwest = { version = "0.11.11", features = ["json", "stream"] }
+chrono = { version = "0.4.19", features = ["serde"] }
+serde = { version = "1.0.138", features = ["derive"] }
+serde_json = "1.0.82"
 serde_with = "1.14.0"
 thiserror = "1.0.31"
 futures-util = "0.3.21"
