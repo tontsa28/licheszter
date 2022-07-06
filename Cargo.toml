@@ -2,7 +2,7 @@
 name = "licheszter"
 version = "0.1.0"
 authors = ["tontsa28 <tontsadev@gmail.com>"]
-license = "AGPL v3.0"
+license-file = "LICENSE"
 description = "API wrapper for Lichess bot API"
 homepage = "https://github.com/tontsa28/licheszter"
 repository = "https://github.com/tontsa28/licheszter"
