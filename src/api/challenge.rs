@@ -3,7 +3,7 @@ use crate::client::{Licheszter, LicheszterResult};
 use crate::models::board::{ChallengeGame, EntityChallenge};
 
 impl Licheszter {
-    /// Create a challenge
+    /// Create a challenge.
     pub async fn challenge_create(&self, username: &str, form_params: Option<&[(&str, &str)]>) -> LicheszterResult<EntityChallenge> {
         let addr = format!("{}/api/challenge/{}", self.base, username);
         let mut builder = self.client.post(&addr);
@@ -13,7 +13,7 @@ impl Licheszter {
         self.to_model_full(builder).await
     }
 
-    /// Accept a challenge
+    /// Accept a challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> LicheszterResult<()> {
         let addr = format!("{}/api/challenge/{}/accept", self.base, challenge_id);
         let builder = self.client.post(&addr);
@@ -22,7 +22,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Decline a challenge
+    /// Decline a challenge.
     pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> LicheszterResult<()> {
         let addr = format!("{}/api/challenge/{}/decline", self.base, challenge_id);
         let form = vec![("reason", reason.map_or("generic".to_string(), String::from))];
@@ -32,7 +32,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Cancel a challenge
+    /// Cancel a challenge.
     pub async fn challenge_cancel(&self, challenge_id: &str) -> LicheszterResult<()> {
         let addr = format!("{}/api/challenge/{}/cancel", self.base, challenge_id);
         let builder = self.client.post(&addr);
@@ -41,7 +41,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Challenge Stockfish
+    /// Challenge Stockfish.
     pub async fn challenge_stockfish(&self, level: u8, form_params: Option<&[(&str, &str)]>) -> LicheszterResult<ChallengeGame> {
         let addr = format!("{}/api/challenge/ai", self.base);
         let mut form = vec![("level", level.to_string())];

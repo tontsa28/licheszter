@@ -19,7 +19,6 @@ pub enum LicheszterError {
     IO(#[from] std::io::Error)
 }
 
-// Implement necessary functions for the enum
 impl LicheszterError {
     pub(crate) async fn from_response(response: Response) -> Self {
         match response.status() {
@@ -39,7 +38,6 @@ impl LicheszterError {
     }
 }
 
-// Implement StatusCode for LicheszterError
 impl From<StatusCode> for LicheszterError {
     fn from(c: StatusCode) -> Self {
         Self::StatusCode(

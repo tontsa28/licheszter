@@ -18,19 +18,19 @@ pub struct Licheszter {
     pub(crate) base: String,
 }
 
-// Implement necessary functions for the struct
 impl Licheszter {
-    /// Create an unauthenticated instance of Licheszter
+    /// Create an unauthenticated instance of Licheszter.
     pub fn default() -> Licheszter {
         Licheszter {
             client: Client::builder()
                 .pool_max_idle_per_host(0)
+                .use_rustls_tls()
                 .build().unwrap(),
             base: String::from("https://lichess.org"),
         }
     }
 
-    /// Create an authenticated instance of Licheszter
+    /// Create an authenticated instance of Licheszter.
     pub fn new(pat: String) -> Licheszter {
         let mut header_map = header::HeaderMap::new();
         let mut auth_header = header::HeaderValue::from_str(&format!("Bearer {}", pat)).unwrap();
@@ -42,13 +42,14 @@ impl Licheszter {
             client: Client::builder()
                 .default_headers(header_map)
                 .pool_max_idle_per_host(0)
+                .use_rustls_tls()
                 .build()
                 .unwrap(),
             base: String::from("https://lichess.org"),
         }
     }
 
-    /// Create a request to the Lichess API
+    /// Create a request to the Lichess API.
     async fn api_call(&self, builder: RequestBuilder) -> LicheszterResult<Response> {
         let response = builder.send().await.map_err(LicheszterError::from)?;
 
@@ -59,24 +60,12 @@ impl Licheszter {
         }
     }
 
-    /// Convert API response into a raw string
-    #[allow(dead_code)]
-    pub(crate) async fn to_raw_str(&self, builder: RequestBuilder) -> LicheszterResult<String> {
-        self.api_call(builder).await?.text().await.map_err(Into::into)
-    }
-
-    /// Convert API response into raw bytes
-    #[allow(dead_code)]
-    pub(crate) async fn to_raw_bytes(&self, builder: RequestBuilder) -> LicheszterResult<impl Stream<Item = LicheszterResult<bytes::Bytes>>> {
-        Ok(self.api_call(builder).await?.bytes_stream().map_err(Into::into))
-    }
-
-    /// Convert API response into a full model
+    /// Convert API response into a full model.
     pub(crate) async fn to_model_full<T: DeserializeOwned>(&self, builder: RequestBuilder) -> LicheszterResult<T> {
         from_str(&self.api_call(builder).await?.text().await?).map_err(Into::into)
     }
 
-    /// Convert API response into a stream model
+    /// Convert API response into a stream model.
     pub(crate) async fn to_model_stream<T: DeserializeOwned>(&self, builder: RequestBuilder) -> LicheszterResult<impl Stream<Item = LicheszterResult<T>>> {
         let stream = self.api_call(builder).await?.bytes_stream().map_err(|err| Error::new(ErrorKind::Other, err));
 

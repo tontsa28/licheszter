@@ -3,16 +3,15 @@ use serde_json::{from_value, Value};
 use crate::client::{Licheszter, LicheszterResult};
 use crate::models::board::BoardState;
 
-// Implement bot functions for Licheszter
 impl Licheszter {
-    /// Stream bot game state
+    /// Stream bot game state.
     pub async fn stream_game_state(&self, game_id: &str) -> LicheszterResult<impl Stream<Item = LicheszterResult<BoardState>>> {
         let addr = format!("{}/api/bot/game/stream/{}", self.base, game_id);
         let builder = self.client.get(&addr);
         self.to_model_stream(builder).await
     }
 
-    /// Make a move in a bot game
+    /// Make a move in a bot game.
     pub async fn make_move(&self, game_id: &str, uci_move: &str, draw_offer: bool) -> LicheszterResult<()> {
         let addr = format!("{}/api/bot/game/{}/move/{}", self.base, game_id, uci_move);
         let builder = self.client.post(&addr).query(&[("offeringDraw", draw_offer)]);
@@ -21,7 +20,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Write to game chat as a bot
+    /// Write to game chat as a bot.
     pub async fn write_to_chat(&self, game_id: &str, room: &str, text: &str) -> LicheszterResult<()> {
         let addr = format!("{}/api/bot/game/{}/chat", self.base, game_id);
         let builder = self.client.post(&addr).form(&[("room", room), ("text", text)]);
@@ -30,7 +29,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Abort a bot game
+    /// Abort a bot game.
     pub async fn abort_game(&self, game_id: &str) -> LicheszterResult<()> {
         let addr = format!("{}/api/bot/game/{}/abort", self.base, game_id);
         let builder = self.client.post(&addr);
@@ -39,7 +38,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Resign a bot game
+    /// Resign a bot game.
     pub async fn resign_game(&self, game_id: &str) -> LicheszterResult<()> {
         let addr = format!("{}/api/bot/game/{}/resign", self.base, game_id);
         let builder = self.client.post(&addr);
