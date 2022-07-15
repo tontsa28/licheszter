@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use chrono::{DateTime, Utc};
 use serde::{Serialize, Deserialize};
 use serde_with::skip_serializing_none;
 
@@ -53,4 +54,67 @@ pub struct LightUser {
     pub lag: Option<u16>,
     #[serde(rename = "gameId")]
     pub game_id: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct BotUser {
+    pub id: String,
+    pub username: String,
+    pub perfs: BotPerfs,
+    pub created_at: DateTime<Utc>,
+    pub disabled: Option<bool>,
+    pub tos_violation: Option<bool>,
+    pub profile: Option<BotProfile>,
+    pub seen_at: DateTime<Utc>,
+    pub patron: Option<bool>,
+    pub verified: Option<bool>,
+    pub play_time: BotPlayTime,
+    pub title: String,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BotPerfs {
+    pub bullet: Option<UserPerf>,
+    pub blitz: Option<UserPerf>,
+    pub rapid: Option<UserPerf>,
+    pub classical: Option<UserPerf>,
+    pub correspondence: Option<UserPerf>,
+    pub chess960: Option<UserPerf>,
+    pub antichess: Option<UserPerf>,
+    pub atomic: Option<UserPerf>,
+    pub king_of_the_hill: Option<UserPerf>,
+    pub crazyhouse: Option<UserPerf>,
+    pub three_check: Option<UserPerf>,
+    pub racing_kings: Option<UserPerf>,
+    pub horde: Option<UserPerf>,
+    pub puzzle: Option<UserPerf>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BotProfile {
+    pub country: Option<String>,
+    pub location: Option<String>,
+    pub bio: Option<String>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub links: Option<String>,
+    pub fide_rating: Option<u16>,
+    pub uscf_rating: Option<u16>,
+    pub efc_rating: Option<u16>,
+    pub rcf_rating: Option<u16>,
+    pub cfc_rating: Option<u16>,
+    pub dsb_rating: Option<u16>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct BotPlayTime {
+    pub total: u32,
+    pub tv: u32,
 }
