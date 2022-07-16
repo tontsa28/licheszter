@@ -77,6 +77,7 @@ pub struct BotUser {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct BotPerfs {
     pub bullet: Option<UserPerf>,
@@ -97,6 +98,7 @@ pub struct BotPerfs {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct BotProfile {
     pub country: Option<String>,
@@ -114,7 +116,15 @@ pub struct BotProfile {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BotPlayTime {
     pub total: u32,
     pub tv: u32,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub enum BotAccount {
+    BotUser(BotUser),
 }
