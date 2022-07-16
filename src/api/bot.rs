@@ -1,7 +1,7 @@
 use futures_util::Stream;
 use serde_json::{from_value, Value};
 use crate::client::{Licheszter, LicheszterResult};
-use crate::models::{board::BoardState, user::BotUser};
+use crate::models::{board::BoardState, user::BotAccount};
 
 impl Licheszter {
     /// Stream bot game state.
@@ -48,7 +48,7 @@ impl Licheszter {
     }
 
     /// Get online bots.
-    pub async fn get_online_bots(&self, nb_bots: u8) -> LicheszterResult<impl Stream<Item = LicheszterResult<BotUser>>> {
+    pub async fn get_online_bots(&self, nb_bots: u8) -> LicheszterResult<impl Stream<Item = LicheszterResult<BotAccount>>> {
         let addr = format!("{}/api/bot/online", self.base);
         let builder = self.client.get(&addr).form(&nb_bots);
         self.to_model_stream(builder).await
