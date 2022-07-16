@@ -48,12 +48,9 @@ impl Licheszter {
     }
 
     /// Get online bots.
-    pub async fn get_online_bots(&self, nb_bots: Option<u8>) -> LicheszterResult<impl Stream<Item = LicheszterResult<BotUser>>> {
+    pub async fn get_online_bots(&self, nb_bots: u8) -> LicheszterResult<impl Stream<Item = LicheszterResult<BotUser>>> {
         let addr = format!("{}/api/bot/online", self.base);
-        let mut builder = self.client.get(&addr);
-        if let Some(nb) = nb_bots {
-            builder = builder.form(&nb);
-        }
+        let builder = self.client.get(&addr).form(&nb_bots);
         self.to_model_stream(builder).await
     }
 }
