@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use chrono::{DateTime, Utc};
+use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Serialize, Deserialize};
 use serde_with::skip_serializing_none;
 
@@ -64,10 +64,12 @@ pub struct BotUser {
     pub id: String,
     pub username: String,
     pub perfs: BotPerfs,
+    #[serde(deserialize_with = "ts_milliseconds::deserialize")]
     pub created_at: DateTime<Utc>,
     pub disabled: Option<bool>,
     pub tos_violation: Option<bool>,
     pub profile: Option<BotProfile>,
+    #[serde(deserialize_with = "ts_milliseconds::deserialize")]
     pub seen_at: DateTime<Utc>,
     pub patron: Option<bool>,
     pub verified: Option<bool>,
@@ -109,7 +111,7 @@ pub struct BotProfile {
     pub links: Option<String>,
     pub fide_rating: Option<u16>,
     pub uscf_rating: Option<u16>,
-    pub efc_rating: Option<u16>,
+    pub ecf_rating: Option<u16>,
     pub rcf_rating: Option<u16>,
     pub cfc_rating: Option<u16>,
     pub dsb_rating: Option<u16>,
@@ -120,11 +122,4 @@ pub struct BotProfile {
 pub struct BotPlayTime {
     pub total: u32,
     pub tv: u32,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[serde(rename_all = "camelCase")]
-pub enum BotAccount {
-    BotUser(BotUser),
 }
