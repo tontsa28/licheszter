@@ -83,6 +83,7 @@ pub enum Event {
     Challenge { challenge: Challenge, compat: Option<Compat> },
     ChallengeCanceled { challenge: Challenge },
     ChallengeDeclined { challenge: Challenge },
+    Ping,
 }
 
 #[skip_serializing_none]
@@ -145,6 +146,7 @@ pub enum BoardState {
     GameFull(GameFull),
     GameState(GameState),
     ChatLine(ChatLine),
+    Ping,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

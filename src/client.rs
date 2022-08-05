@@ -75,7 +75,8 @@ impl Licheszter {
                 if !line.is_empty() {
                     Some(from_str(&line).map_err(Into::into))
                 } else {
-                    None
+                    let ping = format!("{{\"type\":\"ping\"}}");
+                    Some(from_str(&ping).map_err(Into::into))
                 }
             })
         ))
