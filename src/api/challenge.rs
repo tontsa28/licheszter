@@ -1,6 +1,6 @@
 use serde_json::{from_value, Value};
 use crate::client::{Licheszter, LicheszterResult};
-use crate::models::board::{ChallengeGame, EntityChallenge};
+use crate::models::board::{ChallengeGame, EntityChallenge, Challenges};
 
 impl Licheszter {
     /// Create a challenge.
@@ -51,6 +51,13 @@ impl Licheszter {
             }
         }
         let builder = self.client.post(&addr).form(&form);
+        self.to_model_full(builder).await
+    }
+
+    /// Get challenges of the current user.
+    pub async fn get_challenges(&self) -> LicheszterResult<Challenges> {
+        let addr = format!("{}/api/challenge", self.base);
+        let builder = self.client.get(&addr);
         self.to_model_full(builder).await
     }
 }

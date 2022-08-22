@@ -35,6 +35,14 @@ pub struct Challenge {
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct Challenges {
+    pub r#in: Vec<Challenge>,
+    pub out: Vec<Challenge>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct EntityChallenge {
     pub challenge: Option<Challenge>,
