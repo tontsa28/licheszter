@@ -19,10 +19,38 @@ pub struct Opening {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
+pub struct PlayerOpening {
+    pub white: u32,
+    pub black: u32,
+    pub draws: u32,
+    pub moves: Option<Vec<PlayerOpeningMove>>,
+    pub recent_games: Option<Vec<HistoricOpening>>,
+    pub opening: Option<OpeningDetails>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct OpeningMove {
     pub uci: String,
     pub san: String,
     pub average_rating: u16,
+    pub white: u32,
+    pub black: u32,
+    pub draws: u32,
+    pub game: Option<HistoricOpening>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub struct PlayerOpeningMove {
+    pub uci: String,
+    pub san: String,
+    pub average_opponent_rating: u16,
+    pub performance: u16,
     pub white: u32,
     pub black: u32,
     pub draws: u32,

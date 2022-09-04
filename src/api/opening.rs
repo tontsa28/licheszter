@@ -1,9 +1,23 @@
-use crate::{client::{Licheszter, LicheszterResult}, models::opening::Opening};
+use crate::{client::{Licheszter, LicheszterResult}, models::opening::{Opening, PlayerOpening}};
 
 impl Licheszter {
-    /// Search Lichess masters database
+    /// Search Masters database
     pub async fn opening_masters(&self, query_params: &[(&str, &str)]) -> LicheszterResult<Opening> {
         let addr = format!("https://explorer.lichess.ovh/masters");
+        let builder = self.client.get(&addr).query(&query_params);
+        self.to_model_full(builder).await
+    }
+
+    /// Search Lichess database
+    pub async fn opening_lichess(&self, query_params: &[(&str, &str)]) -> LicheszterResult<Opening> {
+        let addr = format!("https://explorer.lichess.ovh/lichess");
+        let builder = self.client.get(&addr).query(&query_params);
+        self.to_model_full(builder).await
+    }
+
+    /// Search Player database
+    pub async fn opening_player(&self, query_params: &[(&str, &str)]) -> LicheszterResult<PlayerOpening> {
+        let addr = format!("https://explorer.lichess.ovh/player");
         let builder = self.client.get(&addr).query(&query_params);
         self.to_model_full(builder).await
     }
