@@ -1,5 +1,4 @@
-use crate::models::game::{Clock, Perf, StockFish, Variant};
-use crate::models::user::LightUser;
+use super::{game::{Clock, Perf, Computer, Variant}, user::LightUser};
 use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -115,7 +114,7 @@ pub struct GameState {
 #[serde(untagged)]
 pub enum Challenger {
     LightUser(LightUser),
-    StockFish(StockFish),
+    Computer(Computer),
 }
 
 #[skip_serializing_none]

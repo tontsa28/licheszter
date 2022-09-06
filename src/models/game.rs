@@ -28,7 +28,7 @@ pub struct Entity {
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct StockFish {
+pub struct Computer {
     #[serde(rename = "aiLevel")]
     pub ai_level: u8,
     pub analysis: Option<PlayerAnalysis>,
@@ -38,7 +38,7 @@ pub struct StockFish {
 #[serde(untagged)]
 pub enum Player {
     Entity(Entity),
-    StockFish(StockFish),
+    Computer(Computer),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

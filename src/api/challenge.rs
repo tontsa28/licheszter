@@ -1,6 +1,5 @@
 use serde_json::{from_value, Value};
-use crate::client::{Licheszter, LicheszterResult};
-use crate::models::board::{ChallengeGame, EntityChallenge, Challenges};
+use crate::{client::{Licheszter, LicheszterResult}, models::board::{ChallengeGame, EntityChallenge, Challenges}};
 
 impl Licheszter {
     /// Create a challenge.

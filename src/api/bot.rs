@@ -1,7 +1,6 @@
 use futures_util::Stream;
 use serde_json::{from_value, Value};
-use crate::client::{Licheszter, LicheszterResult};
-use crate::models::{board::BoardState, user::BotUser};
+use crate::{client::{Licheszter, LicheszterResult}, models::{board::BoardState, user::BotUser}};
 
 impl Licheszter {
     /// Stream bot game state.
