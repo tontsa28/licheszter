@@ -32,4 +32,5 @@ futures-util = "0.3.24"
 bytes = "1.2.1"
 
 [features]
-opening = []
+explorer = []
+tablebase = []

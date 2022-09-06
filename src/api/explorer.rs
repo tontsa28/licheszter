@@ -1,4 +1,4 @@
-use crate::{client::{Licheszter, LicheszterResult}, models::opening::{Opening, PlayerOpening}};
+use crate::{client::{Licheszter, LicheszterResult}, models::explorer::{Opening, PlayerOpening}};
 
 impl Licheszter {
     /// Search Masters database
