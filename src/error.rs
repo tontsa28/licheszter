@@ -7,15 +7,15 @@ use thiserror::Error;
 pub enum LicheszterError {
     #[error("Exceeded request limit")]
     RateLimit(Option<usize>),
-    #[error("Request error: {}", 0)]
+    #[error(transparent)]
     Request(#[from] reqwest::Error),
-    #[error("Status code {}: {}", 0, 1)]
+    #[error("Status code {0}: {1}")]
     StatusCode(u16, String),
-    #[error("API error: {}", 0)]
+    #[error(transparent)]
     API(#[from] APIError),
-    #[error("JSON parse error: {}", 0)]
+    #[error(transparent)]
     ParseJSON(#[from] serde_json::Error),
-    #[error("IO error: {}", 0)]
+    #[error(transparent)]
     IO(#[from] std::io::Error)
 }
 
@@ -49,7 +49,7 @@ impl From<StatusCode> for LicheszterError {
 
 /// APIError struct
 #[derive(Debug, Error, Deserialize)]
-#[error("Error: {}", error)]
+#[error("{error}")]
 pub struct APIError {
     error: String
 }
