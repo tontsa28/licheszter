@@ -6,23 +6,21 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum LicheszterError {
     #[error("Exceeded request limit")]
-    RateLimit(Option<usize>),
+    RateLimitError(Option<usize>),
     #[error(transparent)]
-    Request(#[from] reqwest::Error),
+    ReqwestError(#[from] reqwest::Error),
     #[error("Status code {0}: {1}")]
-    StatusCode(u16, String),
+    StatusCodeError(u16, String),
     #[error(transparent)]
-    API(#[from] APIError),
+    APIError(#[from] APIError),
     #[error(transparent)]
-    ParseJSON(#[from] serde_json::Error),
-    #[error(transparent)]
-    IO(#[from] std::io::Error)
+    JSONError(#[from] serde_json::Error),
 }
 
 impl LicheszterError {
     pub(crate) async fn from_response(response: Response) -> Self {
         match response.status() {
-            StatusCode::TOO_MANY_REQUESTS => Self::RateLimit(
+            StatusCode::TOO_MANY_REQUESTS => Self::RateLimitError(
                 response
                     .headers()
                     .get(header::RETRY_AFTER)
@@ -40,7 +38,7 @@ impl LicheszterError {
 
 impl From<StatusCode> for LicheszterError {
     fn from(c: StatusCode) -> Self {
-        Self::StatusCode(
+        Self::StatusCodeError(
             c.as_u16(),
             c.canonical_reason().unwrap_or("Unknown").to_string()
         )
