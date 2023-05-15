@@ -1,12 +1,12 @@
-use std::io::{Error, ErrorKind};
+use crate::error::LicheszterError;
 use futures_util::{Stream, StreamExt, TryStreamExt};
 use reqwest::{header, Client, RequestBuilder, Response};
 use serde::de::DeserializeOwned;
 use serde_json::from_str;
+use std::io::{Error, ErrorKind};
 use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
-use crate::error::LicheszterError;
 
 /// LicheszterResult type
 pub type LicheszterResult<T> = Result<T, LicheszterError>;
@@ -18,18 +18,21 @@ pub struct Licheszter {
     pub(crate) base: String,
 }
 
-impl Licheszter {
+impl Default for Licheszter {
     /// Create an unauthenticated instance of Licheszter.
-    pub fn default() -> Licheszter {
+    fn default() -> Licheszter {
         Licheszter {
             client: Client::builder()
                 .pool_max_idle_per_host(0)
                 .use_rustls_tls()
-                .build().unwrap(),
+                .build()
+                .unwrap(),
             base: String::from("https://lichess.org"),
         }
     }
+}
 
+impl Licheszter {
     /// Create an authenticated instance of Licheszter.
     pub fn new(pat: String) -> Licheszter {
         let mut header_map = header::HeaderMap::new();
@@ -61,13 +64,23 @@ impl Licheszter {
     }
 
     /// Convert API response into a full model.
-    pub(crate) async fn to_model_full<T: DeserializeOwned>(&self, builder: RequestBuilder) -> LicheszterResult<T> {
+    pub(crate) async fn to_model_full<T: DeserializeOwned>(
+        &self,
+        builder: RequestBuilder,
+    ) -> LicheszterResult<T> {
         from_str(&self.api_call(builder).await?.text().await?).map_err(Into::into)
     }
 
     /// Convert API response into a stream model.
-    pub(crate) async fn to_model_stream<T: DeserializeOwned>(&self, builder: RequestBuilder) -> LicheszterResult<impl Stream<Item = LicheszterResult<T>>> {
-        let stream = self.api_call(builder).await?.bytes_stream().map_err(|err| Error::new(ErrorKind::Other, err));
+    pub(crate) async fn to_model_stream<T: DeserializeOwned>(
+        &self,
+        builder: RequestBuilder,
+    ) -> LicheszterResult<impl Stream<Item = LicheszterResult<T>>> {
+        let stream = self
+            .api_call(builder)
+            .await?
+            .bytes_stream()
+            .map_err(|err| Error::new(ErrorKind::Other, err));
 
         Ok(Box::pin(
             LinesStream::new(StreamReader::new(stream).lines()).filter_map(|line| async move {
@@ -75,10 +88,10 @@ impl Licheszter {
                 if !line.is_empty() {
                     Some(from_str(&line).map_err(Into::into))
                 } else {
-                    let ping = format!("{{\"type\":\"ping\"}}");
+                    let ping = "{{\"type\":\"ping\"}}".to_string();
                     Some(from_str(&ping).map_err(Into::into))
                 }
-            })
+            }),
         ))
     }
 }

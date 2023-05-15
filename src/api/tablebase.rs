@@ -1,4 +1,7 @@
-use crate::{client::{Licheszter, LicheszterResult}, models::tablebase::Endgame};
+use crate::{
+    client::{Licheszter, LicheszterResult},
+    models::tablebase::Endgame,
+};
 
 impl Licheszter {
     /// Search standard tablebase

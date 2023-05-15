@@ -25,13 +25,13 @@ impl LicheszterError {
                     .headers()
                     .get(header::RETRY_AFTER)
                     .and_then(|header| header.to_str().ok())
-                    .and_then(|duration| duration.parse().ok())
+                    .and_then(|duration| duration.parse().ok()),
             ),
             status => response
                 .json::<APIError>()
                 .await
                 .map(Into::into)
-                .unwrap_or_else(|_| status.into())
+                .unwrap_or_else(|_| status.into()),
         }
     }
 }
@@ -40,7 +40,7 @@ impl From<StatusCode> for LicheszterError {
     fn from(c: StatusCode) -> Self {
         Self::StatusCodeError(
             c.as_u16(),
-            c.canonical_reason().unwrap_or("Unknown").to_string()
+            c.canonical_reason().unwrap_or("Unknown").to_string(),
         )
     }
 }
@@ -49,5 +49,5 @@ impl From<StatusCode> for LicheszterError {
 #[derive(Debug, Error, Deserialize)]
 #[error("{error}")]
 pub struct APIError {
-    error: String
+    error: String,
 }

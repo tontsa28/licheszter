@@ -1,5 +1,8 @@
 use crate::models::user::{LightUser, PerfType};
-use chrono::{serde::{ts_milliseconds, ts_milliseconds_option}, DateTime, Utc};
+use chrono::{
+    serde::{ts_milliseconds, ts_milliseconds_option},
+    DateTime, Utc,
+};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 

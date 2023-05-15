@@ -1,4 +1,7 @@
-use super::{game::{Clock, Perf, Computer, Variant}, user::LightUser};
+use super::{
+    game::{Clock, Computer, Perf, Variant},
+    user::LightUser,
+};
 use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -85,11 +88,22 @@ pub struct Status {
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum Event {
-    GameStart { game: GameID },
-    GameFinish { game: GameID },
-    Challenge { challenge: Challenge, compat: Option<Compat> },
-    ChallengeCanceled { challenge: Challenge },
-    ChallengeDeclined { challenge: Challenge },
+    GameStart {
+        game: GameID,
+    },
+    GameFinish {
+        game: GameID,
+    },
+    Challenge {
+        challenge: Challenge,
+        compat: Option<Compat>,
+    },
+    ChallengeCanceled {
+        challenge: Challenge,
+    },
+    ChallengeDeclined {
+        challenge: Challenge,
+    },
     Ping,
 }
 
