@@ -1,10 +1,7 @@
 use crate::models::user::{LightUser, PerfType};
-use chrono::{
-    serde::{ts_milliseconds, ts_milliseconds_option},
-    DateTime, Utc,
-};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use time::PrimitiveDateTime;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -101,10 +98,8 @@ pub struct Game {
     pub variant: String,
     pub speed: String,
     pub perf: PerfType,
-    #[serde(deserialize_with = "ts_milliseconds::deserialize")]
-    pub created_at: DateTime<Utc>,
-    #[serde(default, deserialize_with = "ts_milliseconds_option::deserialize")]
-    pub last_move_at: Option<DateTime<Utc>>,
+    pub created_at: PrimitiveDateTime,
+    pub last_move_at: Option<PrimitiveDateTime>,
     pub status: String,
     pub players: Players,
     pub initial_fen: Option<String>,

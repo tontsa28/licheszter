@@ -1,7 +1,7 @@
-use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::collections::HashMap;
+use time::PrimitiveDateTime;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Hash)]
 #[serde(rename_all = "camelCase")]
@@ -64,13 +64,11 @@ pub struct BotUser {
     pub id: String,
     pub username: String,
     pub perfs: BotPerfs,
-    #[serde(deserialize_with = "ts_milliseconds::deserialize")]
-    pub created_at: DateTime<Utc>,
+    pub created_at: PrimitiveDateTime,
     pub disabled: Option<bool>,
     pub tos_violation: Option<bool>,
     pub profile: Option<BotProfile>,
-    #[serde(deserialize_with = "ts_milliseconds::deserialize")]
-    pub seen_at: DateTime<Utc>,
+    pub seen_at: PrimitiveDateTime,
     pub patron: Option<bool>,
     pub verified: Option<bool>,
     pub play_time: BotPlayTime,

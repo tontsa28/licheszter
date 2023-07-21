@@ -2,9 +2,9 @@ use super::{
     game::{Clock, Computer, Perf, Variant},
     user::LightUser,
 };
-use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use time::PrimitiveDateTime;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -71,8 +71,7 @@ pub struct ChallengeGame {
     pub started_at_turn: u8,
     pub source: String,
     pub status: Status,
-    #[serde(deserialize_with = "ts_milliseconds::deserialize")]
-    pub created_at: DateTime<Utc>,
+    pub created_at: PrimitiveDateTime,
     pub url: Option<String>,
 }
 
@@ -142,8 +141,7 @@ pub struct GameFull {
     pub clock: Option<Clock>,
     pub speed: String,
     pub perf: Perf,
-    #[serde(deserialize_with = "ts_milliseconds::deserialize")]
-    pub created_at: DateTime<Utc>,
+    pub created_at: PrimitiveDateTime,
     pub white: Challenger,
     pub black: Challenger,
     pub initial_fen: String,
@@ -164,7 +162,7 @@ pub struct ChatLine {
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum BoardState {
-    GameFull(GameFull),
+    GameFull(Box<GameFull>),
     GameState(GameState),
     ChatLine(ChatLine),
     Ping,

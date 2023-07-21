@@ -23,8 +23,8 @@ tokio = { version = "1.29.1", features = ["rt-multi-thread", "macros"] }
 tokio-stream = { version = "0.1.14", features = ["io-util"] }
 tokio-util = { version = "0.7.8", features = ["io"] }
 reqwest = { version = "0.11.18", default-features = false, features = ["json", "stream", "rustls-tls"] }
-chrono = { version = "0.4.26", features = ["serde"] }
-serde = { version = "1.0.171", features = ["derive"] }
+time = { version = "0.3.23", features = ["serde"] }
+serde = { version = "1.0.174", features = ["derive"] }
 serde_json = "1.0.103"
 serde_with = "3.1.0"
 thiserror = "1.0.43"
