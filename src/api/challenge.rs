@@ -1,5 +1,6 @@
 use crate::{
-    client::{Licheszter, LicheszterResult},
+    client::Licheszter,
+    error::Result,
     models::board::{ChallengeGame, Challenges, EntityChallenge},
 };
 use serde_json::{from_value, Value};
@@ -10,7 +11,7 @@ impl Licheszter {
         &self,
         username: &str,
         form_params: Option<&[(&str, &str)]>,
-    ) -> LicheszterResult<EntityChallenge> {
+    ) -> Result<EntityChallenge> {
         let addr = format!("{}/api/challenge/{}", self.base, username);
         let mut builder = self.client.post(&addr);
         if let Some(params) = form_params {
@@ -20,7 +21,7 @@ impl Licheszter {
     }
 
     /// Accept a challenge.
-    pub async fn challenge_accept(&self, challenge_id: &str) -> LicheszterResult<()> {
+    pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
         let addr = format!("{}/api/challenge/{}/accept", self.base, challenge_id);
         let builder = self.client.post(&addr);
         let ok_json = self.to_model_full::<Value>(builder);
@@ -29,11 +30,7 @@ impl Licheszter {
     }
 
     /// Decline a challenge.
-    pub async fn challenge_decline(
-        &self,
-        challenge_id: &str,
-        reason: Option<&str>,
-    ) -> LicheszterResult<()> {
+    pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> Result<()> {
         let addr = format!("{}/api/challenge/{}/decline", self.base, challenge_id);
         let form = vec![("reason", reason.map_or("generic".to_string(), String::from))];
         let builder = self.client.post(&addr).form(&form);
@@ -43,7 +40,7 @@ impl Licheszter {
     }
 
     /// Cancel a challenge.
-    pub async fn challenge_cancel(&self, challenge_id: &str) -> LicheszterResult<()> {
+    pub async fn challenge_cancel(&self, challenge_id: &str) -> Result<()> {
         let addr = format!("{}/api/challenge/{}/cancel", self.base, challenge_id);
         let builder = self.client.post(&addr);
         let ok_json = self.to_model_full::<Value>(builder);
@@ -56,7 +53,7 @@ impl Licheszter {
         &self,
         level: u8,
         form_params: Option<&[(&str, &str)]>,
-    ) -> LicheszterResult<ChallengeGame> {
+    ) -> Result<ChallengeGame> {
         let addr = format!("{}/api/challenge/ai", self.base);
         let mut form = vec![("level", level.to_string())];
         if let Some(params) = form_params {
@@ -69,7 +66,7 @@ impl Licheszter {
     }
 
     /// Get challenges of the current user.
-    pub async fn get_challenges(&self) -> LicheszterResult<Challenges> {
+    pub async fn get_challenges(&self) -> Result<Challenges> {
         let addr = format!("{}/api/challenge", self.base);
         let builder = self.client.get(&addr);
         self.to_model_full(builder).await

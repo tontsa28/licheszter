@@ -1,53 +1,82 @@
-use reqwest::{header, Response, StatusCode};
 use serde::Deserialize;
-use thiserror::Error;
+use std::{error::Error as StdError, fmt::Display, result::Result as StdResult};
 
-/// LicheszterError enum
-#[derive(Debug, Error)]
-pub enum LicheszterError {
-    #[error("Exceeded request limit")]
-    RateLimitError(Option<usize>),
-    #[error(transparent)]
-    ReqwestError(#[from] reqwest::Error),
-    #[error("Status code {0}: {1}")]
-    StatusCodeError(u16, String),
-    #[error(transparent)]
-    APIError(#[from] APIError),
-    #[error(transparent)]
-    JSONError(#[from] serde_json::Error),
+/// This type is used to simplify a lot of the function return types in this library.
+pub type Result<T> = StdResult<T, Error>;
+
+#[derive(Debug)]
+pub struct Error {
+    kind: Kind,
+    msg: String,
 }
 
-impl LicheszterError {
-    pub(crate) async fn from_response(response: Response) -> Self {
-        match response.status() {
-            StatusCode::TOO_MANY_REQUESTS => Self::RateLimitError(
-                response
-                    .headers()
-                    .get(header::RETRY_AFTER)
-                    .and_then(|header| header.to_str().ok())
-                    .and_then(|duration| duration.parse().ok()),
-            ),
-            status => response
-                .json::<APIError>()
-                .await
-                .map(Into::into)
-                .unwrap_or_else(|_| status.into()),
+impl Error {
+    fn new(kind: Kind, msg: String) -> Self {
+        Error { kind, msg }
+    }
+}
+
+impl StdError for Error {
+    fn description(&self) -> &str {
+        &self.msg
+    }
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}: {}", self.kind, self.msg)
+    }
+}
+
+impl From<LichessAPIError> for Error {
+    fn from(value: LichessAPIError) -> Self {
+        Error::new(Kind::LichessAPI, value.error)
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(value: reqwest::Error) -> Self {
+        Error::new(Kind::Reqwest, value.to_string())
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(value: serde_json::Error) -> Self {
+        Error::new(Kind::Json, value.to_string())
+    }
+}
+
+#[derive(Debug)]
+pub(crate) enum Kind {
+    LichessAPI,
+    Reqwest,
+    Json,
+}
+
+impl Display for Kind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Json => write!(f, "JSON error"),
+            Self::LichessAPI => write!(f, "Lichess API error"),
+            Self::Reqwest => write!(f, "reqwest error"),
         }
     }
 }
 
-impl From<StatusCode> for LicheszterError {
-    fn from(c: StatusCode) -> Self {
-        Self::StatusCodeError(
-            c.as_u16(),
-            c.canonical_reason().unwrap_or("Unknown").to_string(),
-        )
+/// APIError struct
+#[derive(Debug, Deserialize)]
+pub struct LichessAPIError {
+    error: String,
+}
+
+impl StdError for LichessAPIError {
+    fn description(&self) -> &str {
+        &self.error
     }
 }
 
-/// APIError struct
-#[derive(Debug, Error, Deserialize)]
-#[error("{error}")]
-pub struct APIError {
-    error: String,
+impl Display for LichessAPIError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.error)
+    }
 }

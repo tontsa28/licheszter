@@ -1,5 +1,6 @@
 use crate::{
-    client::{Licheszter, LicheszterResult},
+    client::Licheszter,
+    error::Result,
     models::{board::BoardState, user::BotUser},
 };
 use futures_util::Stream;
@@ -10,19 +11,14 @@ impl Licheszter {
     pub async fn stream_game_state(
         &self,
         game_id: &str,
-    ) -> LicheszterResult<impl Stream<Item = LicheszterResult<BoardState>>> {
+    ) -> Result<impl Stream<Item = Result<BoardState>>> {
         let addr = format!("{}/api/bot/game/stream/{}", self.base, game_id);
         let builder = self.client.get(&addr);
         self.to_model_stream(builder).await
     }
 
     /// Make a move in a bot game.
-    pub async fn make_move(
-        &self,
-        game_id: &str,
-        uci_move: &str,
-        draw_offer: bool,
-    ) -> LicheszterResult<()> {
+    pub async fn make_move(&self, game_id: &str, uci_move: &str, draw_offer: bool) -> Result<()> {
         let addr = format!("{}/api/bot/game/{}/move/{}", self.base, game_id, uci_move);
         let builder = self
             .client
@@ -34,12 +30,7 @@ impl Licheszter {
     }
 
     /// Write to game chat as a bot.
-    pub async fn write_to_chat(
-        &self,
-        game_id: &str,
-        room: &str,
-        text: &str,
-    ) -> LicheszterResult<()> {
+    pub async fn write_to_chat(&self, game_id: &str, room: &str, text: &str) -> Result<()> {
         let addr = format!("{}/api/bot/game/{}/chat", self.base, game_id);
         let builder = self
             .client
@@ -51,7 +42,7 @@ impl Licheszter {
     }
 
     /// Abort a bot game.
-    pub async fn abort_game(&self, game_id: &str) -> LicheszterResult<()> {
+    pub async fn abort_game(&self, game_id: &str) -> Result<()> {
         let addr = format!("{}/api/bot/game/{}/abort", self.base, game_id);
         let builder = self.client.post(&addr);
         let ok_json = self.to_model_full::<Value>(builder);
@@ -60,7 +51,7 @@ impl Licheszter {
     }
 
     /// Resign a bot game.
-    pub async fn resign_game(&self, game_id: &str) -> LicheszterResult<()> {
+    pub async fn resign_game(&self, game_id: &str) -> Result<()> {
         let addr = format!("{}/api/bot/game/{}/resign", self.base, game_id);
         let builder = self.client.post(&addr);
         let ok_json = self.to_model_full::<Value>(builder);
@@ -72,7 +63,7 @@ impl Licheszter {
     pub async fn get_online_bots(
         &self,
         nb_bots: u8,
-    ) -> LicheszterResult<impl Stream<Item = LicheszterResult<BotUser>>> {
+    ) -> Result<impl Stream<Item = Result<BotUser>>> {
         let addr = format!("{}/api/bot/online", self.base);
         let builder = self.client.get(&addr).query(&[("nb", nb_bots)]);
         self.to_model_stream(builder).await
