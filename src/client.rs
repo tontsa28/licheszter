@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::error::{LichessAPIError, Result};
 use futures_util::{Stream, StreamExt, TryStreamExt};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
@@ -51,9 +51,16 @@ impl Licheszter {
         }
     }
 
-    /// Create a request to the Lichess API.
+    /// Call the Lichess API.
     async fn api_call(&self, builder: RequestBuilder) -> Result<Response> {
-        Ok(builder.send().await?)
+        let request = builder.send().await?;
+
+        // Check if the request succeeded
+        if request.status().is_success() {
+            Ok(request)
+        } else {
+            Err(LichessAPIError::new(request.status(), request.text().await?).into())
+        }
     }
 
     /// Convert API response into a full model.
