@@ -12,38 +12,38 @@ impl Licheszter {
         username: &str,
         form_params: Option<&[(&str, &str)]>,
     ) -> Result<EntityChallenge> {
-        let addr = format!("{}/api/challenge/{}", self.base, username);
-        let mut builder = self.client.post(&addr);
+        let url = format!("{}/api/challenge/{}", self.base, username);
+        let mut builder = self.client.post(&url);
         if let Some(params) = form_params {
             builder = builder.form(&params);
         }
-        self.to_model_full(builder).await
+        self.to_model(builder).await
     }
 
     /// Accept a challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
-        let addr = format!("{}/api/challenge/{}/accept", self.base, challenge_id);
-        let builder = self.client.post(&addr);
-        let ok_json = self.to_model_full::<Value>(builder);
+        let url = format!("{}/api/challenge/{}/accept", self.base, challenge_id);
+        let builder = self.client.post(&url);
+        let ok_json = self.to_model::<Value>(builder);
         assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
         Ok(())
     }
 
     /// Decline a challenge.
     pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> Result<()> {
-        let addr = format!("{}/api/challenge/{}/decline", self.base, challenge_id);
+        let url = format!("{}/api/challenge/{}/decline", self.base, challenge_id);
         let form = vec![("reason", reason.map_or("generic".to_string(), String::from))];
-        let builder = self.client.post(&addr).form(&form);
-        let ok_json = self.to_model_full::<Value>(builder);
+        let builder = self.client.post(&url).form(&form);
+        let ok_json = self.to_model::<Value>(builder);
         assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
         Ok(())
     }
 
     /// Cancel a challenge.
     pub async fn challenge_cancel(&self, challenge_id: &str) -> Result<()> {
-        let addr = format!("{}/api/challenge/{}/cancel", self.base, challenge_id);
-        let builder = self.client.post(&addr);
-        let ok_json = self.to_model_full::<Value>(builder);
+        let url = format!("{}/api/challenge/{}/cancel", self.base, challenge_id);
+        let builder = self.client.post(&url);
+        let ok_json = self.to_model::<Value>(builder);
         assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
         Ok(())
     }
@@ -54,21 +54,21 @@ impl Licheszter {
         level: u8,
         form_params: Option<&[(&str, &str)]>,
     ) -> Result<ChallengeGame> {
-        let addr = format!("{}/api/challenge/ai", self.base);
+        let url = format!("{}/api/challenge/ai", self.base);
         let mut form = vec![("level", level.to_string())];
         if let Some(params) = form_params {
             for (key, val) in params.iter() {
                 form.push((key, val.to_string()));
             }
         }
-        let builder = self.client.post(&addr).form(&form);
-        self.to_model_full(builder).await
+        let builder = self.client.post(&url).form(&form);
+        self.to_model(builder).await
     }
 
     /// Get challenges of the current user.
     pub async fn get_challenges(&self) -> Result<Challenges> {
-        let addr = format!("{}/api/challenge", self.base);
-        let builder = self.client.get(&addr);
-        self.to_model_full(builder).await
+        let url = format!("{}/api/challenge", self.base);
+        let builder = self.client.get(&url);
+        self.to_model(builder).await
     }
 }

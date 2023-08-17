@@ -7,13 +7,13 @@ pub type Result<T> = StdResult<T, Error>;
 /// A general, library-wide error type that will be returned in case of any error.
 #[derive(Debug)]
 pub struct Error {
-    kind: Kind,
+    kind: ErrorKind,
     source: Box<dyn StdError>,
 }
 
 impl Error {
     // Creates a new instance of `Error`.
-    pub(crate) fn new<E>(kind: Kind, source: E) -> Self
+    pub(crate) fn new<E>(kind: ErrorKind, source: E) -> Self
     where
         E: Into<Box<dyn StdError>>,
     {
@@ -38,30 +38,30 @@ impl Display for Error {
 
 impl From<LichessAPIError> for Error {
     fn from(value: LichessAPIError) -> Self {
-        Error::new(Kind::LichessAPI, value)
+        Error::new(ErrorKind::LichessAPI, value)
     }
 }
 
 impl From<reqwest::Error> for Error {
     fn from(value: reqwest::Error) -> Self {
-        Error::new(Kind::Reqwest, value)
+        Error::new(ErrorKind::Reqwest, value)
     }
 }
 
 impl From<serde_json::Error> for Error {
     fn from(value: serde_json::Error) -> Self {
-        Error::new(Kind::Json, value)
+        Error::new(ErrorKind::Json, value)
     }
 }
 
 #[derive(Debug)]
-pub(crate) enum Kind {
+pub(crate) enum ErrorKind {
     LichessAPI,
     Reqwest,
     Json,
 }
 
-impl Display for Kind {
+impl Display for ErrorKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Json => write!(f, "JSON error"),

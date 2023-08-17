@@ -2,10 +2,9 @@ use crate::error::{LichessAPIError, Result};
 use futures_util::{Stream, StreamExt, TryStreamExt};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
-    Client, RequestBuilder, Response,
+    Client, RequestBuilder,
 };
 use serde::de::DeserializeOwned;
-use serde_json::from_str;
 use std::io::{Error as StdIoError, ErrorKind as StdIoErrorKind};
 use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
@@ -20,12 +19,9 @@ pub struct Licheszter {
 
 impl Default for Licheszter {
     /// Create an unauthenticated instance of Licheszter.
-    /// To access the parts of the API that require authentication, create an authenticated instance.
+    /// To access the parts of the API that require authentication, create an [`authenticated instance`](fn@Licheszter::new).
     fn default() -> Licheszter {
-        Licheszter {
-            client: Client::builder().use_rustls_tls().build().unwrap(),
-            base: String::from("https://lichess.org"),
-        }
+        Licheszter::new_unauthenticated()
     }
 }
 
@@ -51,46 +47,59 @@ impl Licheszter {
         }
     }
 
-    /// Call the Lichess API.
-    async fn api_call(&self, builder: RequestBuilder) -> Result<Response> {
-        let request = builder.send().await?;
-
-        // Check if the request succeeded
-        if request.status().is_success() {
-            Ok(request)
-        } else {
-            Err(LichessAPIError::new(request.status(), request.text().await?).into())
+    /// Create an unauthenticated instance of Licheszter.
+    /// To access the parts of the API that require authentication, create an [`authenticated instance`](fn@Licheszter::new).
+    pub fn new_unauthenticated() -> Licheszter {
+        Licheszter {
+            client: Client::builder().use_rustls_tls().build().unwrap(),
+            base: String::from("https://lichess.org"),
         }
     }
 
-    /// Convert API response into a full model.
-    pub(crate) async fn to_model_full<T: DeserializeOwned>(
-        &self,
-        builder: RequestBuilder,
-    ) -> Result<T> {
-        from_str(&self.api_call(builder).await?.text().await?).map_err(Into::into)
+    // Convert the API response into a deserialized model
+    pub(crate) async fn to_model<T>(&self, builder: RequestBuilder) -> Result<T>
+    where
+        T: DeserializeOwned,
+    {
+        let request = builder.send().await?;
+
+        // Return an error if the request failed
+        if !request.status().is_success() {
+            return Err(LichessAPIError::new(request.status(), request.text().await?).into());
+        }
+
+        serde_json::from_slice(&request.bytes().await?).map_err(Into::into)
     }
 
-    /// Convert API response into a stream model.
-    pub(crate) async fn to_model_stream<T: DeserializeOwned>(
+    // Convert API response into a deserialized stream model
+    pub(crate) async fn to_model_stream<T>(
         &self,
         builder: RequestBuilder,
-    ) -> Result<impl Stream<Item = Result<T>>> {
-        let stream = self
-            .api_call(builder)
-            .await?
+    ) -> Result<impl Stream<Item = Result<T>>>
+    where
+        T: DeserializeOwned,
+    {
+        let request = builder.send().await?;
+
+        // Return an error if the request failed
+        if !request.status().is_success() {
+            return Err(LichessAPIError::new(request.status(), request.text().await?).into());
+        }
+
+        let stream = request
             .bytes_stream()
             .map_err(|err| StdIoError::new(StdIoErrorKind::Other, err));
 
         Ok(Box::pin(
             LinesStream::new(StreamReader::new(stream).lines()).filter_map(|line| async move {
                 let line = line.ok()?;
-                if !line.is_empty() {
-                    Some(from_str(&line).map_err(Into::into))
-                } else {
+
+                if line.is_empty() {
                     let ping = "{{\"type\":\"ping\"}}".to_string();
-                    Some(from_str(&ping).map_err(Into::into))
+                    return Some(serde_json::from_str(&ping).map_err(Into::into));
                 }
+
+                Some(serde_json::from_str(&line).map_err(Into::into))
             }),
         ))
     }
