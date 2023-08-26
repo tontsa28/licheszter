@@ -2,8 +2,8 @@
 name = "licheszter"
 version = "0.1.0"
 authors = ["tontsa28 <miika@tontsa.fi>"]
-license-file = "LICENSE"
-description = "API wrapper for Lichess bot API"
+license = "MIT OR Apache-2.0"
+description = "An API wrapper for the Lichess API"
 homepage = "https://github.com/tontsa28/licheszter"
 repository = "https://github.com/tontsa28/licheszter"
 documentation = "https://docs.rs/licheszter"
