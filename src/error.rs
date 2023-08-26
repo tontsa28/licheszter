@@ -36,6 +36,12 @@ impl Display for Error {
     }
 }
 
+impl From<std::io::Error> for Error {
+    fn from(value: std::io::Error) -> Self {
+        Error::new(ErrorKind::IO, value)
+    }
+}
+
 impl From<LichessAPIError> for Error {
     fn from(value: LichessAPIError) -> Self {
         Error::new(ErrorKind::LichessAPI, value)
@@ -56,6 +62,7 @@ impl From<serde_json::Error> for Error {
 
 #[derive(Debug)]
 pub(crate) enum ErrorKind {
+    IO,
     LichessAPI,
     Reqwest,
     Json,
@@ -64,6 +71,7 @@ pub(crate) enum ErrorKind {
 impl Display for ErrorKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Self::IO => write!(f, "IO error"),
             Self::Json => write!(f, "JSON error"),
             Self::LichessAPI => write!(f, "Lichess API error"),
             Self::Reqwest => write!(f, "reqwest error"),

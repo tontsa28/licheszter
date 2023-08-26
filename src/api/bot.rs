@@ -4,7 +4,7 @@ use crate::{
     models::{board::BoardState, user::BotUser},
 };
 use futures_util::Stream;
-use serde_json::{from_value, Value};
+use serde_json::Value;
 
 impl Licheszter {
     /// Stream bot game state.
@@ -15,7 +15,7 @@ impl Licheszter {
         let url = format!("{}/api/bot/game/stream/{}", self.base, game_id);
         let builder = self.client.get(&url);
 
-        self.to_model_stream(builder).await
+        self.to_model_stream::<BoardState>(builder).await
     }
 
     /// Make a move in a bot game.
@@ -25,8 +25,8 @@ impl Licheszter {
             .client
             .post(&url)
             .query(&[("offeringDraw", draw_offer)]);
-        let ok_json = self.to_model::<Value>(builder);
-        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+
+        self.to_model::<Value>(builder).await?;
         Ok(())
     }
 
@@ -37,8 +37,8 @@ impl Licheszter {
             .client
             .post(&url)
             .form(&[("room", room), ("text", text)]);
-        let ok_json = self.to_model::<Value>(builder);
-        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+
+        self.to_model::<Value>(builder).await?;
         Ok(())
     }
 
@@ -46,8 +46,8 @@ impl Licheszter {
     pub async fn abort_game(&self, game_id: &str) -> Result<()> {
         let url = format!("{}/api/bot/game/{}/abort", self.base, game_id);
         let builder = self.client.post(&url);
-        let ok_json = self.to_model::<Value>(builder);
-        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+
+        self.to_model::<Value>(builder).await?;
         Ok(())
     }
 
@@ -55,8 +55,8 @@ impl Licheszter {
     pub async fn resign_game(&self, game_id: &str) -> Result<()> {
         let url = format!("{}/api/bot/game/{}/resign", self.base, game_id);
         let builder = self.client.post(&url);
-        let ok_json = self.to_model::<Value>(builder);
-        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+
+        self.to_model::<Value>(builder).await?;
         Ok(())
     }
 
@@ -67,6 +67,7 @@ impl Licheszter {
     ) -> Result<impl Stream<Item = Result<BotUser>>> {
         let url = format!("{}/api/bot/online", self.base);
         let builder = self.client.get(&url).query(&[("nb", nb_bots)]);
-        self.to_model_stream(builder).await
+
+        self.to_model_stream::<BotUser>(builder).await
     }
 }

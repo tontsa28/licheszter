@@ -5,24 +5,42 @@ use crate::{
 };
 
 impl Licheszter {
-    /// Search Masters database
-    pub async fn opening_masters(&self, query_params: &[(&str, &str)]) -> Result<Opening> {
+    /// Search the Masters opening database.
+    pub async fn opening_masters(&self, query_params: Option<&[(&str, &str)]>) -> Result<Opening> {
         let url = format!("https://explorer.lichess.ovh/masters");
-        let builder = self.client.get(&url).query(&query_params);
-        self.to_model(builder).await
+        let mut builder = self.client.get(&url);
+
+        if let Some(params) = query_params {
+            builder = builder.query(&params);
+        }
+
+        self.to_model::<Opening>(builder).await
     }
 
-    /// Search Lichess database
-    pub async fn opening_lichess(&self, query_params: &[(&str, &str)]) -> Result<Opening> {
+    /// Search the Lichess opening database.
+    pub async fn opening_lichess(&self, query_params: Option<&[(&str, &str)]>) -> Result<Opening> {
         let url = format!("https://explorer.lichess.ovh/lichess");
-        let builder = self.client.get(&url).query(&query_params);
-        self.to_model(builder).await
+        let mut builder = self.client.get(&url);
+
+        if let Some(params) = query_params {
+            builder = builder.query(&params);
+        }
+
+        self.to_model::<Opening>(builder).await
     }
 
-    /// Search Player database
-    pub async fn opening_player(&self, query_params: &[(&str, &str)]) -> Result<PlayerOpening> {
+    /// Search the player opening database.
+    pub async fn opening_player(
+        &self,
+        query_params: Option<&[(&str, &str)]>,
+    ) -> Result<PlayerOpening> {
         let url = format!("https://explorer.lichess.ovh/player");
-        let builder = self.client.get(&url).query(&query_params);
-        self.to_model(builder).await
+        let mut builder = self.client.get(&url);
+
+        if let Some(params) = query_params {
+            builder = builder.query(&params);
+        }
+
+        self.to_model::<PlayerOpening>(builder).await
     }
 }

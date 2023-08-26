@@ -5,7 +5,10 @@ use reqwest::{
     Client, RequestBuilder,
 };
 use serde::de::DeserializeOwned;
-use std::io::{Error as StdIoError, ErrorKind as StdIoErrorKind};
+use std::{
+    fmt::Display,
+    io::{Error as StdIoError, ErrorKind as StdIoErrorKind},
+};
 use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
@@ -27,10 +30,13 @@ impl Default for Licheszter {
 
 impl Licheszter {
     /// Create an authenticated instance of Licheszter.
-    pub fn new(pat: String) -> Licheszter {
+    pub fn new<S>(token: S) -> Licheszter
+    where
+        S: AsRef<str> + Display,
+    {
         // Create a new header map & the authentication header
         let mut header_map = HeaderMap::new();
-        let token = format!("Bearer {pat}");
+        let token = format!("Bearer {token}");
         let mut auth_header = HeaderValue::from_str(&token).unwrap();
 
         // Insert the authentication header into the header map
@@ -61,6 +67,7 @@ impl Licheszter {
     where
         T: DeserializeOwned,
     {
+        // Send the request
         let request = builder.send().await?;
 
         // Return an error if the request failed
@@ -68,7 +75,8 @@ impl Licheszter {
             return Err(LichessAPIError::new(request.status(), request.text().await?).into());
         }
 
-        serde_json::from_slice(&request.bytes().await?).map_err(Into::into)
+        // Deserialize the response data into JSON
+        serde_json::from_slice::<T>(&request.bytes().await?).map_err(Into::into)
     }
 
     // Convert API response into a deserialized stream model
@@ -79,6 +87,7 @@ impl Licheszter {
     where
         T: DeserializeOwned,
     {
+        // Send the request
         let request = builder.send().await?;
 
         // Return an error if the request failed
@@ -86,6 +95,7 @@ impl Licheszter {
             return Err(LichessAPIError::new(request.status(), request.text().await?).into());
         }
 
+        // Get the byte stream returned by the response
         let stream = request
             .bytes_stream()
             .map_err(|err| StdIoError::new(StdIoErrorKind::Other, err));
@@ -94,12 +104,15 @@ impl Licheszter {
             LinesStream::new(StreamReader::new(stream).lines()).filter_map(|line| async move {
                 let line = line.ok()?;
 
+                // Suppose that the stream event is a ping if it's empty
                 if line.is_empty() {
                     let ping = "{{\"type\":\"ping\"}}".to_string();
-                    return Some(serde_json::from_str(&ping).map_err(Into::into));
+
+                    // Return the stream event as a ping
+                    return Some(serde_json::from_str::<T>(&ping).map_err(Into::into));
                 }
 
-                Some(serde_json::from_str(&line).map_err(Into::into))
+                Some(serde_json::from_str::<T>(&line).map_err(Into::into))
             }),
         ))
     }

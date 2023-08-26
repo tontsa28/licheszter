@@ -3,7 +3,7 @@ use crate::{
     error::Result,
     models::board::{ChallengeGame, Challenges, EntityChallenge},
 };
-use serde_json::{from_value, Value};
+use serde_json::Value;
 
 impl Licheszter {
     /// Create a challenge.
@@ -14,28 +14,32 @@ impl Licheszter {
     ) -> Result<EntityChallenge> {
         let url = format!("{}/api/challenge/{}", self.base, username);
         let mut builder = self.client.post(&url);
+
         if let Some(params) = form_params {
             builder = builder.form(&params);
         }
-        self.to_model(builder).await
+
+        self.to_model::<EntityChallenge>(builder).await
     }
 
     /// Accept a challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
         let url = format!("{}/api/challenge/{}/accept", self.base, challenge_id);
         let builder = self.client.post(&url);
-        let ok_json = self.to_model::<Value>(builder);
-        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+
+        self.to_model::<Value>(builder).await?;
         Ok(())
     }
 
     /// Decline a challenge.
     pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> Result<()> {
         let url = format!("{}/api/challenge/{}/decline", self.base, challenge_id);
-        let form = vec![("reason", reason.map_or("generic".to_string(), String::from))];
-        let builder = self.client.post(&url).form(&form);
-        let ok_json = self.to_model::<Value>(builder);
-        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+        let builder = self
+            .client
+            .post(&url)
+            .form(&[("reason", reason.unwrap_or("generic"))]);
+
+        self.to_model::<Value>(builder).await?;
         Ok(())
     }
 
@@ -43,8 +47,8 @@ impl Licheszter {
     pub async fn challenge_cancel(&self, challenge_id: &str) -> Result<()> {
         let url = format!("{}/api/challenge/{}/cancel", self.base, challenge_id);
         let builder = self.client.post(&url);
-        let ok_json = self.to_model::<Value>(builder);
-        assert!(from_value::<bool>(ok_json.await?["ok"].take())?);
+
+        self.to_model::<Value>(builder).await?;
         Ok(())
     }
 
@@ -55,20 +59,23 @@ impl Licheszter {
         form_params: Option<&[(&str, &str)]>,
     ) -> Result<ChallengeGame> {
         let url = format!("{}/api/challenge/ai", self.base);
-        let mut form = vec![("level", level.to_string())];
+        let mut builder = self.client.post(&url);
+
+        let level = level.to_string();
+        let mut form = vec![("level", level.as_str())];
         if let Some(params) = form_params {
-            for (key, val) in params.iter() {
-                form.push((key, val.to_string()));
-            }
+            form.extend(params);
+            builder = builder.form(&form);
         }
-        let builder = self.client.post(&url).form(&form);
-        self.to_model(builder).await
+
+        self.to_model::<ChallengeGame>(builder).await
     }
 
-    /// Get challenges of the current user.
+    /// Get the challenges of the current user.
     pub async fn get_challenges(&self) -> Result<Challenges> {
         let url = format!("{}/api/challenge", self.base);
         let builder = self.client.get(&url);
-        self.to_model(builder).await
+
+        self.to_model::<Challenges>(builder).await
     }
 }
