@@ -1,7 +1,9 @@
 # licheszter
-Licheszter is a Rust library that wraps the Lichess bot API. This library does not aim to cover the entire Lichess API, but rather only the parts required for creating a Lichess bot. If more of the API is covered in the future, they will be available through features that must be explicitly enabled.
+Licheszter is a Rust library that aims to wrap the entire Lichess API. Currently, the library is under active development and more features are being added. The goal is to eventually be the most complete and overall #1 Lichess API wrapper written in Rust. Whether you're looking for your first open source Rust project to contribute to or you're just generally interested in the project, check the [Contributions](#contributions) section for more information.
 
-**DISCLAIMER**: The code of this library was heavily influenced by the [licoricedev](https://crates.io/crates/licoricedev) crate. To respect the author(s) of `licoricedev`, this project comes with the same license (GNU AGPL v3.0).
+### WARNING: **The project is unstable to use in production until the version 1.0.0 since no guarantees about breaking changes can be made. Use at your own risk and prepare to face breaking changes more or less often.**
 
-### Contributions
-Any contributions are greatly appreciated. Please follow [semantic commit message](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) guidelines in your commits.
+## Contributions
+All contributions are greatly appreciated, no matter if they provide improvements to code, documentation or anything else related to the project. Please follow [semantic commit message](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) guidelines in your commits.
+
+Willing to contribute but unsure where to start? Check the repository issues to see where your help is needed the most. If no issues are currently open, feel free to email me at miika@tontsa.fi.
