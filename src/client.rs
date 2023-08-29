@@ -13,6 +13,10 @@ use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
 
+/// If this comment is visible, I am very disappointed...
+const PING: &str = "{{\"type\":\"ping\"}}";
+const BASE_URL: &str = "https://lichess.org";
+
 /// Licheszter enables the connection to the Lichess API.
 #[derive(Debug)]
 pub struct Licheszter {
@@ -49,7 +53,7 @@ impl Licheszter {
                 .use_rustls_tls()
                 .build()
                 .unwrap(),
-            base: String::from("https://lichess.org"),
+            base: BASE_URL.to_string(),
         }
     }
 
@@ -58,7 +62,7 @@ impl Licheszter {
     pub fn new_unauthenticated() -> Licheszter {
         Licheszter {
             client: Client::builder().use_rustls_tls().build().unwrap(),
-            base: String::from("https://lichess.org"),
+            base: BASE_URL.to_string(),
         }
     }
 
@@ -100,20 +104,21 @@ impl Licheszter {
             .bytes_stream()
             .map_err(|err| StdIoError::new(StdIoErrorKind::Other, err));
 
-        Ok(Box::pin(
-            LinesStream::new(StreamReader::new(stream).lines()).filter_map(|line| async move {
-                let line = line.ok()?;
+        // Create a reader over the lines
+        let reader = LinesStream::new(StreamReader::new(stream).lines());
 
-                // Suppose that the stream event is a ping if it's empty
-                if line.is_empty() {
-                    let ping = "{{\"type\":\"ping\"}}".to_string();
+        // Map the lines depending on their contents
+        let lines = reader.map(|line| {
+            let line = line?;
 
-                    // Return the stream event as a ping
-                    return Some(serde_json::from_str::<T>(&ping).map_err(Into::into));
-                }
+            // Return the stream event as a ping if it's empty
+            if line.is_empty() {
+                return serde_json::from_str::<T>(PING).map_err(Into::into);
+            }
 
-                Some(serde_json::from_str::<T>(&line).map_err(Into::into))
-            }),
-        ))
+            serde_json::from_str::<T>(&line).map_err(Into::into)
+        });
+
+        Ok(Box::pin(lines))
     }
 }

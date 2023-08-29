@@ -10,7 +10,7 @@
 //! **The project is unstable to use in production until the version 1.0.0
 //! since no guarantees about breaking changes can be made.
 //! Use at your own risk and prepare to face breaking changes more or less often.**
-//! 
+//!
 //! For additional information, check the [GitHub repository](https://github.com/tontsa28/licheszter).
 
 pub mod api;

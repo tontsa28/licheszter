@@ -1,4 +1,4 @@
-name: licheszter CI
+name: licheszter test CI
 
 on:
   push:
