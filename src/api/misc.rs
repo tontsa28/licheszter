@@ -1,7 +1,7 @@
 use crate::{
     client::Licheszter,
     error::Result,
-    models::{board::Event, game::UserGame},
+    models::{board::Event, game::{UserGame, UserGames}},
 };
 use futures_util::Stream;
 
@@ -19,6 +19,6 @@ impl Licheszter {
         let url = format!("{}/api/account/playing", self.base);
         let builder = self.client.get(&url).query(&[("nb", nb_games)]);
 
-        self.to_model::<Vec<UserGame>>(builder).await
+        Ok(self.to_model::<UserGames>(builder).await?.now_playing)
     }
 }

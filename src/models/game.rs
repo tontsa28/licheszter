@@ -134,6 +134,13 @@ pub struct Perf {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct UserGames {
+    #[serde(rename = "nowPlaying")]
+    pub now_playing: Vec<UserGame>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
 pub struct UserGame {
     pub full_id: String,
