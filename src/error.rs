@@ -1,4 +1,5 @@
-use reqwest::StatusCode;
+use reqwest::{Response, StatusCode};
+use serde::Deserialize;
 use std::{error::Error as StdError, fmt::Display, result::Result as StdResult};
 
 /// Used to simplify a lot of the function return types in this library.
@@ -22,6 +23,26 @@ impl Error {
             source: source.into(),
         }
     }
+
+    /// Returns true if the error is an [`IO` error](struct@std::io::Error).
+    pub fn is_io(&self) -> bool {
+        matches!(self.kind, ErrorKind::IO)
+    }
+
+    /// Returns true if the error is produced by the Lichess API.
+    pub fn is_lichess(&self) -> bool {
+        matches!(self.kind, ErrorKind::LichessAPI)
+    }
+
+    /// Returns true if the error is a [`reqwest` error](struct@reqwest::Error).
+    pub fn is_reqwest(&self) -> bool {
+        matches!(self.kind, ErrorKind::Reqwest)
+    }
+
+    /// Returns true if the error is a [`JSON` error](struct@serde_json::Error).
+    pub fn is_json(&self) -> bool {
+        matches!(self.kind, ErrorKind::Json)
+    }
 }
 
 impl StdError for Error {
@@ -37,30 +58,30 @@ impl Display for Error {
 }
 
 impl From<std::io::Error> for Error {
-    fn from(value: std::io::Error) -> Self {
-        Error::new(ErrorKind::IO, value)
+    fn from(source: std::io::Error) -> Self {
+        Error::new(ErrorKind::IO, source)
     }
 }
 
 impl From<LichessAPIError> for Error {
-    fn from(value: LichessAPIError) -> Self {
-        Error::new(ErrorKind::LichessAPI, value)
+    fn from(source: LichessAPIError) -> Self {
+        Error::new(ErrorKind::LichessAPI, source)
     }
 }
 
 impl From<reqwest::Error> for Error {
-    fn from(value: reqwest::Error) -> Self {
-        Error::new(ErrorKind::Reqwest, value)
+    fn from(source: reqwest::Error) -> Self {
+        Error::new(ErrorKind::Reqwest, source)
     }
 }
 
 impl From<serde_json::Error> for Error {
-    fn from(value: serde_json::Error) -> Self {
-        Error::new(ErrorKind::Json, value)
+    fn from(source: serde_json::Error) -> Self {
+        Error::new(ErrorKind::Json, source)
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) enum ErrorKind {
     IO,
     LichessAPI,
@@ -79,16 +100,19 @@ impl Display for ErrorKind {
     }
 }
 
-/// APIError struct
+// An error produced by the Lichess API
 #[derive(Debug)]
 pub(crate) struct LichessAPIError {
-    code: StatusCode,
+    status: StatusCode,
     msg: String,
 }
 
 impl LichessAPIError {
-    pub(crate) fn new(code: StatusCode, msg: String) -> Self {
-        LichessAPIError { code, msg }
+    pub(crate) async fn from_response(response: Response) -> Result<Self> {
+        let status = response.status();
+        let msg =
+            serde_json::from_slice::<LichessAPIErrorMessage>(&response.bytes().await?)?.to_string();
+        Ok(LichessAPIError { status, msg })
     }
 }
 
@@ -96,6 +120,17 @@ impl StdError for LichessAPIError {}
 
 impl Display for LichessAPIError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "HTTP code {}: {}", self.code, self.msg)
+        write!(f, "HTTP code {}: {}", self.status, self.msg)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct LichessAPIErrorMessage {
+    error: String,
+}
+
+impl Display for LichessAPIErrorMessage {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.error)
     }
 }

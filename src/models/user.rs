@@ -44,7 +44,7 @@ pub struct LightUser {
     pub username: String,
     pub ai: Option<u8>,
     pub perfs: Option<HashMap<PerfType, UserPerf>>,
-    pub title: Option<String>,
+    pub title: Option<Title>,
     pub online: Option<bool>,
     pub playing: Option<bool>,
     pub streaming: Option<bool>,
@@ -72,7 +72,7 @@ pub struct BotUser {
     pub patron: Option<bool>,
     pub verified: Option<bool>,
     pub play_time: BotPlayTime,
-    pub title: String,
+    pub title: Title,
 }
 
 #[skip_serializing_none]
@@ -120,4 +120,20 @@ pub struct BotProfile {
 pub struct BotPlayTime {
     pub total: u32,
     pub tv: u32,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
+pub enum Title {
+    GM,
+    WGM,
+    IM,
+    WIM,
+    FM,
+    WFM,
+    NM,
+    CM,
+    WCM,
+    WNM,
+    LM,
+    BOT,
 }

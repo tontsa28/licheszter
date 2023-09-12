@@ -1,7 +1,10 @@
 use crate::{
     client::Licheszter,
     error::Result,
-    models::{board::Event, game::{UserGame, UserGames}},
+    models::{
+        board::Event,
+        game::{UserGame, UserGames},
+    },
 };
 use futures_util::Stream;
 

@@ -1,3 +1,5 @@
+use futures_util::Stream;
+
 use crate::{
     client::Licheszter,
     error::Result,
@@ -33,7 +35,7 @@ impl Licheszter {
     pub async fn opening_player(
         &self,
         query_params: Option<&[(&str, &str)]>,
-    ) -> Result<PlayerOpening> {
+    ) -> Result<impl Stream<Item = Result<PlayerOpening>>> {
         let url = format!("https://explorer.lichess.ovh/player");
         let mut builder = self.client.get(&url);
 
@@ -41,6 +43,6 @@ impl Licheszter {
             builder = builder.query(&params);
         }
 
-        self.to_model::<PlayerOpening>(builder).await
+        self.to_model_stream::<PlayerOpening>(builder).await
     }
 }

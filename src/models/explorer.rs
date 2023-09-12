@@ -9,9 +9,9 @@ pub struct Opening {
     pub white: u32,
     pub black: u32,
     pub draws: u32,
-    pub moves: Option<Vec<OpeningMove>>,
-    pub top_games: Option<Vec<HistoricOpening>>,
-    pub recent_games: Option<Vec<HistoricOpening>>,
+    pub moves: Vec<OpeningMove>,
+    pub top_games: Vec<HistoricOpening>,
+    pub recent_games: Vec<HistoricOpening>,
     pub opening: Option<OpeningDetails>,
 }
 
@@ -23,9 +23,10 @@ pub struct PlayerOpening {
     pub white: u32,
     pub black: u32,
     pub draws: u32,
-    pub moves: Option<Vec<PlayerOpeningMove>>,
-    pub recent_games: Option<Vec<HistoricOpening>>,
+    pub moves: Vec<PlayerOpeningMove>,
+    pub recent_games: Vec<HistoricOpening>,
     pub opening: Option<OpeningDetails>,
+    pub queue_position: u8,
 }
 
 #[skip_serializing_none]

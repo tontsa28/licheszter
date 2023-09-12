@@ -108,7 +108,7 @@ pub struct Game {
     pub moves: Option<String>,
     pub pgn: Option<String>,
     pub days_per_turn: Option<u8>,
-    pub analysis: Option<Vec<MoveAnalysis>>,
+    pub analysis: Vec<MoveAnalysis>,
     pub tournament: Option<String>,
     pub clock: Option<Clock>,
 }

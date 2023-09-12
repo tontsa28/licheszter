@@ -14,7 +14,7 @@ use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
 
 /// If this comment is visible, I am very disappointed...
-const PING: &str = "{{\"type\":\"ping\"}}";
+const PING: &str = "{\"type\":\"ping\"}";
 const BASE_URL: &str = "https://lichess.org";
 
 /// Licheszter enables the connection to the Lichess API.
@@ -71,16 +71,16 @@ impl Licheszter {
     where
         T: DeserializeOwned,
     {
-        // Send the request
-        let request = builder.send().await?;
+        // Send the request & get the response
+        let response = builder.send().await?;
 
         // Return an error if the request failed
-        if !request.status().is_success() {
-            return Err(LichessAPIError::new(request.status(), request.text().await?).into());
+        if !response.status().is_success() {
+            return Err(LichessAPIError::from_response(response).await?.into());
         }
 
         // Deserialize the response data into JSON
-        serde_json::from_slice::<T>(&request.bytes().await?).map_err(Into::into)
+        serde_json::from_slice::<T>(&response.bytes().await?).map_err(Into::into)
     }
 
     // Convert API response into a deserialized stream model
@@ -92,15 +92,15 @@ impl Licheszter {
         T: DeserializeOwned,
     {
         // Send the request
-        let request = builder.send().await?;
+        let response = builder.send().await?;
 
         // Return an error if the request failed
-        if !request.status().is_success() {
-            return Err(LichessAPIError::new(request.status(), request.text().await?).into());
+        if !response.status().is_success() {
+            return Err(LichessAPIError::from_response(response).await?.into());
         }
 
         // Get the byte stream returned by the response
-        let stream = request
+        let stream = response
             .bytes_stream()
             .map_err(|err| StdIoError::new(StdIoErrorKind::Other, err));
 
