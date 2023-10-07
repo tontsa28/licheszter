@@ -117,7 +117,7 @@ pub struct Game {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Variant {
-    pub key: String,
+    pub key: VariantMode,
     pub short: Option<String>,
     pub name: String,
 }
@@ -157,4 +157,19 @@ pub struct UserGame {
     pub opponent: LightUser,
     pub is_my_turn: bool,
     pub seconds_left: u32,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum VariantMode {
+    Standard,
+    Chess960,
+    Crazyhouse,
+    Antichess,
+    Atomic,
+    Horde,
+    KingOfTheHill,
+    RacingKings,
+    ThreeCheck,
+    FromPosition,
 }
