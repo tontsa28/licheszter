@@ -60,14 +60,32 @@ pub struct Opening {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "camelCase")]
-pub struct Clock {
-    pub initial: Option<u32>,
-    pub increment: Option<u16>,
-    pub total_time: Option<u16>,
-    pub limit: Option<u16>,
-    pub days_per_turn: Option<u8>,
-    pub show: Option<String>,
-    pub r#type: Option<String>,
+pub enum Clock {
+    Limited {
+        r#type: String,
+        limit: Option<u16>,
+        increment: Option<u16>,
+        show: Option<String>,
+    },
+    Correspondence {
+        r#type: String,
+        days_per_turn: Option<u8>,
+    },
+    Unlimited {
+        r#type: String,
+    },
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub enum Speed {
+    UltraBullet,
+    Bullet,
+    Blitz,
+    Rapid,
+    Classical,
+    Correspondence,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -118,7 +136,7 @@ pub struct Game {
 #[serde(deny_unknown_fields)]
 pub struct Variant {
     pub key: VariantMode,
-    pub short: Option<String>,
+    pub short: String,
     pub name: String,
 }
 

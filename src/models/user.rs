@@ -65,12 +65,17 @@ pub struct BotUser {
     pub username: String,
     pub perfs: BotPerfs,
     pub created_at: PrimitiveDateTime,
-    pub disabled: Option<bool>,
-    pub tos_violation: Option<bool>,
-    pub profile: Option<BotProfile>,
+    #[serde(default)]
+    pub disabled: bool,
+    #[serde(default)]
+    pub tos_violation: bool,
+    pub profile: BotProfile,
     pub seen_at: PrimitiveDateTime,
-    pub patron: Option<bool>,
-    pub verified: Option<bool>,
+    #[serde(default)]
+    pub patron: bool,
+    #[serde(default)]
+    pub verified: bool,
+    #[serde(default)]
     pub play_time: BotPlayTime,
     pub title: Title,
 }
@@ -115,8 +120,9 @@ pub struct BotProfile {
     pub dsb_rating: Option<u16>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
+#[serde(default)]
 pub struct BotPlayTime {
     pub total: u32,
     pub tv: u32,

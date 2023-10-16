@@ -1,5 +1,5 @@
 use super::{
-    game::{Clock, Computer, Perf, Variant},
+    game::{Clock, Computer, Perf, Speed, Variant},
     user::LightUser,
 };
 use serde::{Deserialize, Serialize};
@@ -30,8 +30,8 @@ pub struct Challenge {
     pub decline_reason: Option<String>,
     pub perf: Perf,
     pub rated: bool,
-    pub speed: String,
-    pub status: String,
+    pub speed: Speed,
+    pub status: ChallengeStatus,
 }
 
 #[skip_serializing_none]
@@ -61,7 +61,7 @@ pub struct EntityChallenge {
 pub struct ChallengeGame {
     pub id: String,
     pub variant: Variant,
-    pub speed: String,
+    pub speed: Speed,
     pub perf: String,
     pub rated: bool,
     pub initial_fen: String,
@@ -73,6 +73,17 @@ pub struct ChallengeGame {
     pub status: Status,
     pub created_at: PrimitiveDateTime,
     pub url: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
+pub enum ChallengeStatus {
+    Created,
+    Offline,
+    Canceled,
+    Declined,
+    Accepted,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -139,7 +150,7 @@ pub struct GameFull {
     pub rated: bool,
     pub variant: Variant,
     pub clock: Option<Clock>,
-    pub speed: String,
+    pub speed: Speed,
     pub perf: Perf,
     pub created_at: PrimitiveDateTime,
     pub white: Challenger,
