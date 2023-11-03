@@ -2,7 +2,7 @@ use crate::error::{LichessAPIError, Result};
 use futures_util::{Stream, StreamExt, TryStreamExt};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
-    Client, RequestBuilder,
+    Client, IntoUrl, RequestBuilder, Url,
 };
 use serde::de::DeserializeOwned;
 use std::{
@@ -13,57 +13,40 @@ use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
 
-/// If this comment is visible, I am very disappointed...
+// Data stream ping JSON & Lichess default URL constants
 const PING: &str = "{\"type\":\"ping\"}";
 const BASE_URL: &str = "https://lichess.org";
 
-/// Licheszter enables the connection to the Lichess API.
+/// [`Licheszter`] is used to connect to the Lichess API.
 #[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
-    pub(crate) base: String,
-}
-
-impl Default for Licheszter {
-    /// Create an unauthenticated instance of Licheszter.
-    /// To access the parts of the API that require authentication, create an [`authenticated instance`](fn@Licheszter::new).
-    fn default() -> Licheszter {
-        Licheszter::new_unauthenticated()
-    }
+    pub(crate) base_url: Url,
 }
 
 impl Licheszter {
-    /// Create an authenticated instance of Licheszter.
-    pub fn new<S>(token: S) -> Licheszter
-    where
-        S: AsRef<str> + Display,
-    {
-        // Create a new header map & the authentication header
-        let mut header_map = HeaderMap::new();
-        let token = format!("Bearer {token}");
-        let mut auth_header = HeaderValue::from_str(&token).unwrap();
-
-        // Insert the authentication header into the header map
-        auth_header.set_sensitive(true);
-        header_map.insert(header::AUTHORIZATION, auth_header);
-
-        Licheszter {
-            client: Client::builder()
-                .default_headers(header_map)
-                .use_rustls_tls()
-                .build()
-                .unwrap(),
-            base: BASE_URL.to_string(),
-        }
+    /// Constructs a new `Licheszter`.
+    ///
+    /// Use `Licheszter::builder()` instead if you want to configure the `Licheszter` instance.
+    pub fn new() -> Licheszter {
+        LicheszterBuilder::new().build()
     }
 
-    /// Create an unauthenticated instance of Licheszter.
-    /// To access the parts of the API that require authentication, create an [`authenticated instance`](fn@Licheszter::new).
-    pub fn new_unauthenticated() -> Licheszter {
-        Licheszter {
-            client: Client::builder().use_rustls_tls().build().unwrap(),
-            base: BASE_URL.to_string(),
-        }
+    /// Creates a [`LicheszterBuilder`](struct@LicheszterBuilder) to configure a [`Licheszter`].
+    ///
+    /// This is the same as [`LicheszterBuilder::new()`](fn@LicheszterBuilder::new()).
+    pub fn builder() -> LicheszterBuilder {
+        LicheszterBuilder::default()
+    }
+
+    /// Get the base URL used in this instance of `Licheszter`.
+    pub fn base_url(&self) -> Url {
+        self.base_url.to_owned()
+    }
+
+    /// Get the `reqwest` Client behind this instance of `Licheszter`.
+    pub fn client(&self) -> Client {
+        self.client.to_owned()
     }
 
     // Convert the API response into a deserialized model
@@ -120,5 +103,79 @@ impl Licheszter {
         });
 
         Ok(Box::pin(lines))
+    }
+}
+
+impl Default for Licheszter {
+    /// Create an unauthenticated instance of Licheszter.
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// A [`LicheszterBuilder`] can be used to create a new instance of [`Licheszter`] with custom configuration.
+#[derive(Debug)]
+pub struct LicheszterBuilder {
+    client: Client,
+    base_url: Url,
+}
+
+impl LicheszterBuilder {
+    /// Constructs a new `LicheszterBuilder`.
+    ///
+    /// This is the same as [`Licheszter::builder()`](fn@Licheszter::builder()).
+    pub fn new() -> LicheszterBuilder {
+        LicheszterBuilder::default()
+    }
+
+    /// Returns a [`Licheszter`](struct@Licheszter) that uses this [`LicheszterBuilder`] configuration.
+    pub fn build(self) -> Licheszter {
+        Licheszter {
+            client: self.client,
+            base_url: self.base_url,
+        }
+    }
+
+    /// Use authentication to gain full access to the Lichess API.
+    /// This is recommended for most use cases.
+    pub fn with_authentication<S>(mut self, token: S) -> LicheszterBuilder
+    where
+        S: AsRef<str> + Display,
+    {
+        // Create a new header map & the authentication header
+        let mut header_map = HeaderMap::new();
+        let token = format!("Bearer {token}");
+        let mut auth_header = HeaderValue::from_str(&token).unwrap();
+
+        // Insert the authentication header into the header map
+        auth_header.set_sensitive(true);
+        header_map.insert(header::AUTHORIZATION, auth_header);
+
+        self.client = Client::builder()
+            .default_headers(header_map)
+            .use_rustls_tls()
+            .build()
+            .unwrap();
+        self
+    }
+
+    /// Insert a valid base URL of a custom Lichess server.
+    /// This can be useful, for example, when hosting your own server for debugging purposes.
+    ///
+    /// # Errors:
+    /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
+    pub fn with_custom_server(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
+        self.base_url = url.into_url()?;
+        Ok(self)
+    }
+}
+
+impl Default for LicheszterBuilder {
+    /// Create an unauthenticated instance of Licheszter.
+    fn default() -> Self {
+        Self {
+            client: Client::builder().use_rustls_tls().build().unwrap(),
+            base_url: Url::parse(BASE_URL).unwrap(),
+        }
     }
 }

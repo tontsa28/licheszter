@@ -12,7 +12,7 @@ impl Licheszter {
         username: &str,
         form_params: Option<&[(&str, &str)]>,
     ) -> Result<EntityChallenge> {
-        let url = format!("{}/api/challenge/{}", self.base, username);
+        let url = format!("{}/api/challenge/{}", self.base_url, username);
         let mut builder = self.client.post(&url);
 
         if let Some(params) = form_params {
@@ -24,7 +24,7 @@ impl Licheszter {
 
     /// Accept a challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
-        let url = format!("{}/api/challenge/{}/accept", self.base, challenge_id);
+        let url = format!("{}/api/challenge/{}/accept", self.base_url, challenge_id);
         let builder = self.client.post(&url);
 
         self.to_model::<Value>(builder).await?;
@@ -33,7 +33,7 @@ impl Licheszter {
 
     /// Decline a challenge.
     pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> Result<()> {
-        let url = format!("{}/api/challenge/{}/decline", self.base, challenge_id);
+        let url = format!("{}/api/challenge/{}/decline", self.base_url, challenge_id);
         let builder = self
             .client
             .post(&url)
@@ -45,7 +45,7 @@ impl Licheszter {
 
     /// Cancel a challenge.
     pub async fn challenge_cancel(&self, challenge_id: &str) -> Result<()> {
-        let url = format!("{}/api/challenge/{}/cancel", self.base, challenge_id);
+        let url = format!("{}/api/challenge/{}/cancel", self.base_url, challenge_id);
         let builder = self.client.post(&url);
 
         self.to_model::<Value>(builder).await?;
@@ -58,7 +58,7 @@ impl Licheszter {
         level: u8,
         form_params: Option<&[(&str, &str)]>,
     ) -> Result<ChallengeGame> {
-        let url = format!("{}/api/challenge/ai", self.base);
+        let url = format!("{}/api/challenge/ai", self.base_url);
         let mut builder = self.client.post(&url);
 
         let level = level.to_string();
@@ -73,7 +73,7 @@ impl Licheszter {
 
     /// Get the challenges of the current user.
     pub async fn get_challenges(&self) -> Result<Challenges> {
-        let url = format!("{}/api/challenge", self.base);
+        let url = format!("{}/api/challenge", self.base_url);
         let builder = self.client.get(&url);
 
         self.to_model::<Challenges>(builder).await
