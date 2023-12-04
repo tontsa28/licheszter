@@ -114,7 +114,6 @@ pub enum Event {
     ChallengeDeclined {
         challenge: Challenge,
     },
-    Ping,
 }
 
 #[skip_serializing_none]
@@ -176,7 +175,6 @@ pub enum BoardState {
     GameFull(Box<GameFull>),
     GameState(GameState),
     ChatLine(ChatLine),
-    Ping,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

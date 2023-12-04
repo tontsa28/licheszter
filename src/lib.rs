@@ -1,3 +1,5 @@
+#![warn(clippy::pedantic)]
+
 //! # licheszter
 //! Licheszter is a Rust library that aims to wrap the entire Lichess API.
 //! Currently, the library is under active development and more features are being added.

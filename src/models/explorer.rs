@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use super::game::Speed;
+
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -11,8 +13,11 @@ pub struct Opening {
     pub draws: u32,
     pub moves: Vec<OpeningMove>,
     pub top_games: Vec<HistoricOpening>,
+    #[serde(default)]
     pub recent_games: Vec<HistoricOpening>,
     pub opening: Option<OpeningDetails>,
+    #[serde(default)]
+    pub history: Vec<HistoricMonth>
 }
 
 #[skip_serializing_none]
@@ -65,7 +70,7 @@ pub struct HistoricOpening {
     pub uci: Option<String>,
     pub id: String,
     pub winner: Option<String>,
-    pub speed: Option<String>,
+    pub speed: Option<Speed>,
     pub mode: Option<String>,
     pub white: PlayerDetails,
     pub black: PlayerDetails,
@@ -81,7 +86,17 @@ pub struct PlayerDetails {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct OpeningDetails {
     pub eco: String,
     pub name: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HistoricMonth {
+    pub month: String,
+    pub white: u32,
+    pub black: u32,
+    pub draws: u32,
 }

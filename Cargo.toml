@@ -31,6 +31,7 @@ futures-util = "0.3.28"
 
 [dev-dependencies]
 tokio = { version = "1.32.0", features = ["macros"] }
+wiremock = "0.5.21"
 
 [features]
 explorer = []

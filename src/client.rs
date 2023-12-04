@@ -1,5 +1,5 @@
 use crate::error::{LichessAPIError, Result};
-use futures_util::{Stream, StreamExt, TryStreamExt};
+use futures_util::{StreamExt, TryStreamExt, Stream};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
     Client, IntoUrl, RequestBuilder, Url,
@@ -14,14 +14,18 @@ use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
 
 // Data stream ping JSON & Lichess default URL constants
-const PING: &str = "{\"type\":\"ping\"}";
+//const PING: &str = "{\"type\":\"ping\"}";
 const BASE_URL: &str = "https://lichess.org";
+const EXPLORER_URL: &str = "https://explorer.lichess.ovh";
+const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
 
 /// [`Licheszter`] is used to connect to the Lichess API.
 #[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
     pub(crate) base_url: Url,
+    pub(crate) explorer_url: Url,
+    pub(crate) tablebase_url: Url,
 }
 
 impl Licheszter {
@@ -41,12 +45,22 @@ impl Licheszter {
 
     /// Get the base URL used in this instance of `Licheszter`.
     pub fn base_url(&self) -> Url {
-        self.base_url.to_owned()
+        self.base_url.clone()
     }
 
     /// Get the `reqwest` Client behind this instance of `Licheszter`.
     pub fn client(&self) -> Client {
         self.client.to_owned()
+    }
+
+    /// Get the opening explorer server URL used in this instance of `Licheszter`.
+    pub fn explorer_url(&self) -> Url {
+        self.explorer_url.clone()
+    }
+
+    /// Get the tablebase server URL used in this instance of `Licheszter`.
+    pub fn tablebase_url(&self) -> Url {
+        self.tablebase_url.clone()
     }
 
     // Convert the API response into a deserialized model
@@ -67,7 +81,7 @@ impl Licheszter {
     }
 
     // Convert API response into a deserialized stream model
-    pub(crate) async fn to_model_stream<T>(
+    pub(crate) async fn to_model_stream<'de, T>(
         &self,
         builder: RequestBuilder,
     ) -> Result<impl Stream<Item = Result<T>>>
@@ -91,15 +105,15 @@ impl Licheszter {
         let reader = LinesStream::new(StreamReader::new(stream).lines());
 
         // Map the lines depending on their contents
-        let lines = reader.map(|line| {
-            let line = line?;
+        let lines = reader.filter_map(|line| async {
+            let line = line.ok()?;
 
             // Return the stream event as a ping if it's empty
             if line.is_empty() {
-                return serde_json::from_str::<T>(PING).map_err(Into::into);
+                return None;
             }
 
-            serde_json::from_str::<T>(&line).map_err(Into::into)
+            Some(serde_json::from_str::<T>(&line).map_err(Into::into))
         });
 
         Ok(Box::pin(lines))
@@ -118,6 +132,8 @@ impl Default for Licheszter {
 pub struct LicheszterBuilder {
     client: Client,
     base_url: Url,
+    explorer_url: Url,
+    tablebase_url: Url,
 }
 
 impl LicheszterBuilder {
@@ -133,6 +149,8 @@ impl LicheszterBuilder {
         Licheszter {
             client: self.client,
             base_url: self.base_url,
+            explorer_url: self.explorer_url,
+            tablebase_url: self.tablebase_url,
         }
     }
 
@@ -164,8 +182,18 @@ impl LicheszterBuilder {
     ///
     /// # Errors:
     /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
-    pub fn with_custom_server(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
+    pub fn with_base_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.base_url = url.into_url()?;
+        Ok(self)
+    }
+
+    pub fn with_explorer_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
+        self.explorer_url = url.into_url()?;
+        Ok(self)
+    }
+
+    pub fn with_tablebase_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
+        self.tablebase_url = url.into_url()?;
         Ok(self)
     }
 }
@@ -176,6 +204,8 @@ impl Default for LicheszterBuilder {
         Self {
             client: Client::builder().use_rustls_tls().build().unwrap(),
             base_url: Url::parse(BASE_URL).unwrap(),
+            explorer_url: Url::parse(EXPLORER_URL).unwrap(),
+            tablebase_url: Url::parse(TABLEBASE_URL).unwrap(),
         }
     }
 }

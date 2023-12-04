@@ -1,0 +1,65 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'licheszter'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=licheszter"
+                ],
+                "filter": {
+                    "name": "licheszter",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'misc'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=misc",
+                    "--package=licheszter"
+                ],
+                "filter": {
+                    "name": "misc",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'explorer'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=explorer",
+                    "--package=licheszter"
+                ],
+                "filter": {
+                    "name": "explorer",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

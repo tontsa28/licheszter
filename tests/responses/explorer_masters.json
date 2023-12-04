@@ -1,0 +1,343 @@
+{
+    "white": 834333,
+    "draws": 1085272,
+    "black": 600303,
+    "moves": [
+        {
+            "uci": "e2e4",
+            "san": "e4",
+            "averageRating": 2399,
+            "white": 372266,
+            "draws": 486092,
+            "black": 280238,
+            "game": null
+        },
+        {
+            "uci": "d2d4",
+            "san": "d4",
+            "averageRating": 2414,
+            "white": 302160,
+            "draws": 397224,
+            "black": 209077,
+            "game": null
+        },
+        {
+            "uci": "g1f3",
+            "san": "Nf3",
+            "averageRating": 2422,
+            "white": 86085,
+            "draws": 111045,
+            "black": 58049,
+            "game": null
+        },
+        {
+            "uci": "c2c4",
+            "san": "c4",
+            "averageRating": 2420,
+            "white": 59454,
+            "draws": 74457,
+            "black": 40103,
+            "game": null
+        },
+        {
+            "uci": "g2g3",
+            "san": "g3",
+            "averageRating": 2407,
+            "white": 6859,
+            "draws": 7496,
+            "black": 4901,
+            "game": null
+        },
+        {
+            "uci": "b2b3",
+            "san": "b3",
+            "averageRating": 2397,
+            "white": 3297,
+            "draws": 3615,
+            "black": 2979,
+            "game": null
+        },
+        {
+            "uci": "f2f4",
+            "san": "f4",
+            "averageRating": 2348,
+            "white": 1792,
+            "draws": 2219,
+            "black": 2181,
+            "game": null
+        },
+        {
+            "uci": "b1c3",
+            "san": "Nc3",
+            "averageRating": 2352,
+            "white": 1037,
+            "draws": 1335,
+            "black": 1133,
+            "game": null
+        },
+        {
+            "uci": "b2b4",
+            "san": "b4",
+            "averageRating": 2331,
+            "white": 493,
+            "draws": 825,
+            "black": 617,
+            "game": null
+        },
+        {
+            "uci": "e2e3",
+            "san": "e3",
+            "averageRating": 2359,
+            "white": 251,
+            "draws": 229,
+            "black": 299,
+            "game": null
+        },
+        {
+            "uci": "d2d3",
+            "san": "d3",
+            "averageRating": 2333,
+            "white": 231,
+            "draws": 247,
+            "black": 259,
+            "game": null
+        },
+        {
+            "uci": "a2a3",
+            "san": "a3",
+            "averageRating": 2357,
+            "white": 204,
+            "draws": 266,
+            "black": 207,
+            "game": null
+        }
+    ],
+    "topGames": [
+        {
+            "uci": "d2d4",
+            "id": "QR5UbqUY",
+            "winner": null,
+            "black": {
+                "name": "Caruana, F.",
+                "rating": 2818
+            },
+            "white": {
+                "name": "Carlsen, M.",
+                "rating": 2882
+            },
+            "year": 2019,
+            "month": "2019-08"
+        },
+        {
+            "uci": "e2e4",
+            "id": "Sxov6E94",
+            "winner": "white",
+            "black": {
+                "name": "Carlsen, M.",
+                "rating": 2882
+            },
+            "white": {
+                "name": "Caruana, F.",
+                "rating": 2818
+            },
+            "year": 2019,
+            "month": "2019-08"
+        },
+        {
+            "uci": "e2e4",
+            "id": "jYSkjcuG",
+            "winner": null,
+            "black": {
+                "name": "Caruana, F.",
+                "rating": 2818
+            },
+            "white": {
+                "name": "Carlsen, M.",
+                "rating": 2882
+            },
+            "year": 2019,
+            "month": "2019-08"
+        },
+        {
+            "uci": "e2e4",
+            "id": "boLujJkB",
+            "winner": "white",
+            "black": {
+                "name": "Carlsen, M.",
+                "rating": 2882
+            },
+            "white": {
+                "name": "Caruana, F.",
+                "rating": 2818
+            },
+            "year": 2019,
+            "month": "2019-08"
+        },
+        {
+            "uci": "d2d4",
+            "id": "Kqjmvhec",
+            "winner": "white",
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "d2d4",
+            "id": "1izZGjZm",
+            "winner": "white",
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "d2d4",
+            "id": "3TYWndOb",
+            "winner": null,
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "c2c4",
+            "id": "hhaSI6SI",
+            "winner": "white",
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "d2d4",
+            "id": "XolcdVwH",
+            "winner": "white",
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-04"
+        },
+        {
+            "uci": "c2c4",
+            "id": "51EhMpIT",
+            "winner": null,
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "d2d4",
+            "id": "cOKsoa1P",
+            "winner": "black",
+            "black": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "white": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "d2d4",
+            "id": "x1LIXL4e",
+            "winner": "white",
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "g1f3",
+            "id": "IpY1ThET",
+            "winner": "white",
+            "black": {
+                "name": "Carlsen, M.",
+                "rating": 2872
+            },
+            "white": {
+                "name": "Aronian, L.",
+                "rating": 2826
+            },
+            "year": 2014,
+            "month": "2014-02"
+        },
+        {
+            "uci": "d2d4",
+            "id": "QNNsIg4q",
+            "winner": null,
+            "black": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "white": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "year": 2020,
+            "month": "2020-06"
+        },
+        {
+            "uci": "e2e4",
+            "id": "bbp4jgEb",
+            "winner": null,
+            "black": {
+                "name": "Caruana, Fabiano",
+                "rating": 2835
+            },
+            "white": {
+                "name": "Carlsen, Magnus",
+                "rating": 2863
+            },
+            "year": 2020,
+            "month": "2020-06"
+        }
+    ],
+    "opening": null
+}

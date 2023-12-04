@@ -1,83 +1,80 @@
-use futures_util::TryStreamExt;
 use licheszter::{client::Licheszter, error::Result};
 use wiremock::{
-    matchers::{method, path},
+    matchers::{method, path, query_param},
     Mock, MockServer, ResponseTemplate,
 };
 
 #[tokio::test]
-async fn opening_masters() -> Result<()> {
+async fn tablebase_standard() -> Result<()> {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/explorer_masters.json").await?;
+    let response = tokio::fs::read_to_string("tests/responses/tablebase_standard.json").await?;
 
     // Mount the mock response into the server
     Mock::given(method("GET"))
-        .and(path("masters"))
+        .and(path("standard"))
+        .and(query_param("fen", "4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1"))
         .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
         .mount(&mock_server)
         .await;
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_explorer_url(&mock_server.uri())?
+        .with_tablebase_url(&mock_server.uri())?
         .build();
 
     // Call the mock
-    client.opening_masters(None).await?;
+    client.endgame_standard("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1").await?;
 
     Ok(())
 }
 
 #[tokio::test]
-async fn opening_lichess() -> Result<()> {
+async fn tablebase_atomic() -> Result<()> {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/explorer_lichess.json").await?;
+    let response = tokio::fs::read_to_string("tests/responses/tablebase_atomic.json").await?;
 
     // Mount the mock response into the server
     Mock::given(method("GET"))
-        .and(path("lichess"))
+        .and(path("atomic"))
+        .and(query_param("fen", "4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1"))
         .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
         .mount(&mock_server)
         .await;
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_explorer_url(&mock_server.uri())?
+        .with_tablebase_url(&mock_server.uri())?
         .build();
 
     // Call the mock
-    client.opening_lichess(None).await?;
+    client.endgame_atomic("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1").await?;
 
     Ok(())
 }
 
 #[tokio::test]
-async fn opening_player() -> Result<()> {
+async fn tablebase_antichess() -> Result<()> {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/explorer_player.json").await?;
+    let response = tokio::fs::read_to_string("tests/responses/tablebase_antichess.json").await?;
 
     // Mount the mock response into the server
     Mock::given(method("GET"))
-        .and(path("player"))
-        .respond_with(
-            ResponseTemplate::new(200)
-                .set_body_raw(response, "application/x-ndjson")
-                .append_header("Transfer-Encoding", "chunked"),
-        )
+        .and(path("antichess"))
+        .and(query_param("fen", "4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
         .mount(&mock_server)
         .await;
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_explorer_url(&mock_server.uri())?
+        .with_tablebase_url(&mock_server.uri())?
         .build();
 
     // Call the mock
-    let mut stream = client.opening_player(None).await?;
-    while let Some(_) = stream.try_next().await? {}
+    client.endgame_antichess("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1").await?;
 
     Ok(())
 }
