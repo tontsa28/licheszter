@@ -1,9 +1,8 @@
 use crate::{
     client::Licheszter,
     error::Result,
-    models::board::{ChallengeGame, Challenges, EntityChallenge},
+    models::{board::{ChallengeGame, Challenges, EntityChallenge}, common::OkResponse},
 };
-use serde_json::Value;
 
 impl Licheszter {
     /// Create a challenge.
@@ -27,7 +26,7 @@ impl Licheszter {
         let url = format!("{}/api/challenge/{}/accept", self.base_url, challenge_id);
         let builder = self.client.post(&url);
 
-        self.to_model::<Value>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -39,7 +38,7 @@ impl Licheszter {
             .post(&url)
             .form(&[("reason", reason.unwrap_or("generic"))]);
 
-        self.to_model::<Value>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -48,7 +47,7 @@ impl Licheszter {
         let url = format!("{}/api/challenge/{}/cancel", self.base_url, challenge_id);
         let builder = self.client.post(&url);
 
-        self.to_model::<Value>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 

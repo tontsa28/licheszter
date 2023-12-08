@@ -5,7 +5,7 @@ use super::game::Speed;
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Opening {
     pub white: u32,
@@ -22,7 +22,7 @@ pub struct Opening {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerOpening {
     pub white: u32,
@@ -36,7 +36,7 @@ pub struct PlayerOpening {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct OpeningMove {
     pub uci: String,
@@ -50,7 +50,7 @@ pub struct OpeningMove {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerOpeningMove {
     pub uci: String,
@@ -65,7 +65,7 @@ pub struct PlayerOpeningMove {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct HistoricOpening {
     pub uci: Option<String>,
     pub id: String,
@@ -79,21 +79,21 @@ pub struct HistoricOpening {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct PlayerDetails {
     pub name: String,
     pub rating: u16,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct OpeningDetails {
     pub eco: String,
     pub name: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct HistoricMonth {
     pub month: String,
     pub white: u32,

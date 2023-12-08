@@ -4,7 +4,7 @@ use serde_with::skip_serializing_none;
 use time::PrimitiveDateTime;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct PlayerAnalysis {
     pub inaccuracy: u16,
     pub mistake: u16,
@@ -14,7 +14,7 @@ pub struct PlayerAnalysis {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Entity {
     pub user: Option<LightUser>,
@@ -27,7 +27,7 @@ pub struct Entity {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct Computer {
     #[serde(rename = "aiLevel")]
     pub ai_level: u8,
@@ -42,14 +42,14 @@ pub enum Player {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct Players {
     pub white: Player,
     pub black: Player,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct Opening {
     pub eco: String,
     pub name: String,
@@ -58,7 +58,7 @@ pub struct Opening {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub enum Clock {
     Limited {
@@ -77,7 +77,7 @@ pub enum Clock {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub enum Speed {
     UltraBullet,
@@ -89,7 +89,7 @@ pub enum Speed {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct Judgement {
     pub name: String,
     pub comment: String,
@@ -97,7 +97,7 @@ pub struct Judgement {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct MoveAnalysis {
     pub mate: Option<u8>,
     pub eval: Option<i16>,
@@ -108,7 +108,7 @@ pub struct MoveAnalysis {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
     pub id: String,
@@ -133,7 +133,7 @@ pub struct Game {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct Variant {
     pub key: VariantMode,
     pub short: String,
@@ -142,7 +142,7 @@ pub struct Variant {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct Perf {
     pub icon: Option<String>,
     pub key: Option<String>,
@@ -151,14 +151,14 @@ pub struct Perf {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct UserGames {
     #[serde(rename = "nowPlaying")]
     pub now_playing: Vec<UserGame>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct UserGame {
     pub full_id: String,

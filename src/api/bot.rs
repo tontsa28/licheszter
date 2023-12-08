@@ -1,10 +1,9 @@
 use crate::{
     client::Licheszter,
     error::Result,
-    models::{board::BoardState, user::BotUser},
+    models::{board::BoardState, user::BotUser, common::OkResponse},
 };
 use futures_util::Stream;
-use serde_json::Value;
 
 impl Licheszter {
     /// Stream bot game state.
@@ -34,7 +33,7 @@ impl Licheszter {
             .post(&url)
             .query(&[("offeringDraw", draw_offer)]);
 
-        self.to_model::<Value>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -46,7 +45,7 @@ impl Licheszter {
             .post(&url)
             .form(&[("room", room), ("text", text)]);
 
-        self.to_model::<Value>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -55,7 +54,7 @@ impl Licheszter {
         let url = format!("{}/api/bot/game/{}/abort", self.base_url, game_id);
         let builder = self.client.post(&url);
 
-        self.to_model::<Value>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -64,7 +63,7 @@ impl Licheszter {
         let url = format!("{}/api/bot/game/{}/resign", self.base_url, game_id);
         let builder = self.client.post(&url);
 
-        self.to_model::<Value>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
