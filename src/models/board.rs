@@ -14,7 +14,7 @@ pub struct GameID {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Challenge {
     pub id: String,
@@ -36,7 +36,7 @@ pub struct Challenge {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Challenges {
     pub r#in: Vec<Challenge>,
     pub out: Vec<Challenge>,
@@ -44,7 +44,7 @@ pub struct Challenges {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct EntityChallenge {
     pub challenge: Option<Challenge>,
@@ -56,7 +56,7 @@ pub struct EntityChallenge {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct ChallengeGame {
     pub id: String,
@@ -76,7 +76,7 @@ pub struct ChallengeGame {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub enum ChallengeStatus {
     Created,
@@ -87,14 +87,14 @@ pub enum ChallengeStatus {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Status {
     pub id: u8,
     pub name: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum Event {
@@ -118,7 +118,7 @@ pub enum Event {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct GameState {
     pub r#type: Option<String>,
     pub moves: String,
@@ -142,7 +142,7 @@ pub enum Challenger {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct GameFull {
     pub id: String,
@@ -160,7 +160,7 @@ pub struct GameFull {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct ChatLine {
     pub username: String,
     pub text: String,
@@ -168,7 +168,7 @@ pub struct ChatLine {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct OpponentGone {
     pub gone: bool,
     #[serde(rename = "claimWinInSeconds")]
@@ -176,7 +176,7 @@ pub struct OpponentGone {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum BoardState {
@@ -187,7 +187,7 @@ pub enum BoardState {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Compat {
     pub bot: bool,
     pub board: bool,

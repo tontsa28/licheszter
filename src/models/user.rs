@@ -25,7 +25,7 @@ pub enum PerfType {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct UserPerf {
     pub games: Option<u32>,
     pub rating: u16,
@@ -37,7 +37,7 @@ pub struct UserPerf {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct LightUser {
     pub id: Option<String>,
     #[serde(alias = "name")]
@@ -58,7 +58,7 @@ pub struct LightUser {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotUser {
     pub id: String,
@@ -82,7 +82,7 @@ pub struct BotUser {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotPerfs {
     pub bullet: Option<UserPerf>,
@@ -103,7 +103,7 @@ pub struct BotPerfs {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotProfile {
     pub country: Option<String>,
@@ -121,7 +121,7 @@ pub struct BotProfile {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
-#[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(default)]
 pub struct BotPlayTime {
     pub total: u32,
