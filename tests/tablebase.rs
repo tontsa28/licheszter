@@ -20,11 +20,13 @@ async fn tablebase_standard() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_tablebase_url(&mock_server.uri())?
+        .with_tablebase_url(mock_server.uri())?
         .build();
 
     // Call the mock
-    client.endgame_standard("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1").await?;
+    client
+        .endgame_standard("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1")
+        .await?;
 
     Ok(())
 }
@@ -45,11 +47,13 @@ async fn tablebase_atomic() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_tablebase_url(&mock_server.uri())?
+        .with_tablebase_url(mock_server.uri())?
         .build();
 
     // Call the mock
-    client.endgame_atomic("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1").await?;
+    client
+        .endgame_atomic("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1")
+        .await?;
 
     Ok(())
 }
@@ -70,11 +74,13 @@ async fn tablebase_antichess() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_tablebase_url(&mock_server.uri())?
+        .with_tablebase_url(mock_server.uri())?
         .build();
 
     // Call the mock
-    client.endgame_antichess("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1").await?;
+    client
+        .endgame_antichess("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1")
+        .await?;
 
     Ok(())
 }

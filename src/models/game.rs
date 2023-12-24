@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::PrimitiveDateTime;
 
+use super::board::Status;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct PlayerAnalysis {
@@ -56,24 +58,21 @@ pub struct Opening {
     pub ply: u16,
 }
 
-#[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub enum Clock {
-    Limited {
-        r#type: String,
-        limit: Option<u16>,
-        increment: Option<u16>,
-        show: Option<String>,
+#[serde(tag = "type")]
+pub enum TimeControl {
+    Clock {
+        limit: u16,
+        increment: u16,
+        show: String,
     },
     Correspondence {
-        r#type: String,
-        days_per_turn: Option<u8>,
+        #[serde(rename = "daysPerTurn")]
+        days_per_turn: u8,
     },
-    Unlimited {
-        r#type: String,
-    },
+    Unlimited,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -128,7 +127,7 @@ pub struct Game {
     pub days_per_turn: Option<u8>,
     pub analysis: Vec<MoveAnalysis>,
     pub tournament: Option<String>,
-    pub clock: Option<Clock>,
+    pub clock: Option<TimeControl>,
 }
 
 #[skip_serializing_none]
@@ -136,7 +135,7 @@ pub struct Game {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Variant {
     pub key: VariantMode,
-    pub short: String,
+    pub short: Option<String>,
     pub name: String,
 }
 
@@ -164,7 +163,7 @@ pub struct UserGame {
     pub full_id: String,
     pub game_id: String,
     pub fen: String,
-    pub color: String,
+    pub color: Color,
     pub last_move: String,
     pub source: String,
     pub variant: Variant,
@@ -175,6 +174,7 @@ pub struct UserGame {
     pub opponent: LightUser,
     pub is_my_turn: bool,
     pub seconds_left: u32,
+    pub status: Status,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -190,4 +190,19 @@ pub enum VariantMode {
     RacingKings,
     ThreeCheck,
     FromPosition,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Color {
+    Black,
+    Random,
+    White,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum FinalColor {
+    Black,
+    White,
 }

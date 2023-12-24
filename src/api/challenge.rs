@@ -1,7 +1,10 @@
 use crate::{
     client::Licheszter,
     error::Result,
-    models::{board::{ChallengeGame, Challenges, EntityChallenge}, common::OkResponse},
+    models::{
+        board::{ChallengeGame, Challenges, EntityChallenge},
+        common::OkResponse,
+    },
 };
 
 impl Licheszter {

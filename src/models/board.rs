@@ -1,6 +1,6 @@
 use super::{
-    game::{Clock, Computer, Perf, Speed, Variant},
-    user::LightUser,
+    game::{TimeControl, Computer, Perf, Speed, Variant, Color, FinalColor},
+    user::{LightUser, ChallengeUser},
 };
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -19,15 +19,16 @@ pub struct GameID {
 pub struct Challenge {
     pub id: String,
     pub url: String,
-    pub final_color: String,
-    pub color: String,
-    pub direction: Option<String>,
-    pub time_control: Clock,
+    pub final_color: FinalColor,
+    pub color: Color,
+    pub direction: Option<ChallengeDirection>,
+    pub time_control: TimeControl,
     pub variant: Variant,
-    pub challenger: Option<LightUser>,
-    pub dest_user: Option<LightUser>,
+    pub challenger: ChallengeUser,
+    pub dest_user: Option<ChallengeUser>,
     pub initial_fen: Option<String>,
     pub decline_reason: Option<String>,
+    pub decline_reason_key: Option<String>,
     pub perf: Perf,
     pub rated: bool,
     pub speed: Speed,
@@ -84,6 +85,14 @@ pub enum ChallengeStatus {
     Canceled,
     Declined,
     Accepted,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub enum ChallengeDirection {
+    In,
+    Out,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -148,7 +157,7 @@ pub struct GameFull {
     pub id: String,
     pub rated: bool,
     pub variant: Variant,
-    pub clock: Option<Clock>,
+    pub clock: Option<TimeControl>,
     pub speed: Speed,
     pub perf: Perf,
     pub created_at: PrimitiveDateTime,

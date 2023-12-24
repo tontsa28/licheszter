@@ -59,6 +59,24 @@ pub struct LightUser {
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ChallengeUser {
+    pub rating: Option<u16>,
+    #[serde(default)]
+    pub provisional: bool,
+    #[serde(default)]
+    pub online: bool,
+    pub id: String,
+    pub name: String,
+    pub title: Option<Title>,
+    #[serde(default)]
+    pub patron: bool,
+    pub flair: Option<String>,
+    pub lag: u16,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotUser {
     pub id: String,

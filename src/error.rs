@@ -25,21 +25,25 @@ impl Error {
     }
 
     /// Returns true if the error is an [`IO` error](struct@std::io::Error).
+    #[must_use]
     pub fn is_io(&self) -> bool {
         matches!(self.kind, ErrorKind::IO)
     }
 
     /// Returns true if the error is produced by the Lichess API.
+    #[must_use]
     pub fn is_lichess(&self) -> bool {
         matches!(self.kind, ErrorKind::LichessAPI)
     }
 
     /// Returns true if the error is a [`reqwest` error](struct@reqwest::Error).
+    #[must_use]
     pub fn is_reqwest(&self) -> bool {
         matches!(self.kind, ErrorKind::Reqwest)
     }
 
     /// Returns true if the error is a [`JSON` error](struct@serde_json::Error).
+    #[must_use]
     pub fn is_json(&self) -> bool {
         matches!(self.kind, ErrorKind::Json)
     }

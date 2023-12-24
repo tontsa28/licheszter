@@ -1,5 +1,5 @@
 use crate::error::{LichessAPIError, Result};
-use futures_util::{StreamExt, TryStreamExt, Stream};
+use futures_util::{Stream, StreamExt, TryStreamExt};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
     Client, IntoUrl, RequestBuilder, Url,
@@ -32,6 +32,7 @@ impl Licheszter {
     /// Constructs a new `Licheszter`.
     ///
     /// Use `Licheszter::builder()` instead if you want to configure the `Licheszter` instance.
+    #[must_use]
     pub fn new() -> Licheszter {
         LicheszterBuilder::new().build()
     }
@@ -39,26 +40,31 @@ impl Licheszter {
     /// Creates a [`LicheszterBuilder`](struct@LicheszterBuilder) to configure a [`Licheszter`].
     ///
     /// This is the same as [`LicheszterBuilder::new()`](fn@LicheszterBuilder::new()).
+    #[must_use]
     pub fn builder() -> LicheszterBuilder {
         LicheszterBuilder::default()
     }
 
     /// Get the base URL used in this instance of `Licheszter`.
+    #[must_use]
     pub fn base_url(&self) -> Url {
         self.base_url.clone()
     }
 
     /// Get the `reqwest` Client behind this instance of `Licheszter`.
+    #[must_use]
     pub fn client(&self) -> Client {
-        self.client.to_owned()
+        self.client.clone()
     }
 
     /// Get the opening explorer server URL used in this instance of `Licheszter`.
+    #[must_use]
     pub fn explorer_url(&self) -> Url {
         self.explorer_url.clone()
     }
 
     /// Get the tablebase server URL used in this instance of `Licheszter`.
+    #[must_use]
     pub fn tablebase_url(&self) -> Url {
         self.tablebase_url.clone()
     }
@@ -140,11 +146,13 @@ impl LicheszterBuilder {
     /// Constructs a new `LicheszterBuilder`.
     ///
     /// This is the same as [`Licheszter::builder()`](fn@Licheszter::builder()).
+    #[must_use]
     pub fn new() -> LicheszterBuilder {
         LicheszterBuilder::default()
     }
 
     /// Returns a [`Licheszter`](struct@Licheszter) that uses this [`LicheszterBuilder`] configuration.
+    #[must_use]
     pub fn build(self) -> Licheszter {
         Licheszter {
             client: self.client,

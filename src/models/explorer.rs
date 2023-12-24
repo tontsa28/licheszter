@@ -17,7 +17,7 @@ pub struct Opening {
     pub recent_games: Vec<HistoricOpening>,
     pub opening: Option<OpeningDetails>,
     #[serde(default)]
-    pub history: Vec<HistoricMonth>
+    pub history: Vec<HistoricMonth>,
 }
 
 #[skip_serializing_none]

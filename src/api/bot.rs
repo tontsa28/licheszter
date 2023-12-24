@@ -1,7 +1,7 @@
 use crate::{
     client::Licheszter,
     error::Result,
-    models::{board::BoardState, user::BotUser, common::OkResponse},
+    models::{board::BoardState, common::OkResponse, user::BotUser},
 };
 use futures_util::Stream;
 
