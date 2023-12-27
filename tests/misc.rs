@@ -1,6 +1,9 @@
 use futures_util::TryStreamExt;
 use licheszter::{client::Licheszter, error::Result};
-use wiremock::{MockServer, Mock, matchers::{method, path}, ResponseTemplate};
+use wiremock::{
+    matchers::{method, path},
+    Mock, MockServer, ResponseTemplate,
+};
 
 #[tokio::test]
 async fn stream_events() -> Result<()> {

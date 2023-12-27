@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::collections::HashMap;
 use time::PrimitiveDateTime;
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum PerfType {
     UltraBullet,
@@ -23,8 +22,30 @@ pub enum PerfType {
     Correspondence,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserPerfs {
+    pub bullet: Option<UserPerf>,
+    pub blitz: Option<UserPerf>,
+    pub rapid: Option<UserPerf>,
+    pub classical: Option<UserPerf>,
+    pub correspondence: Option<UserPerf>,
+    pub chess960: Option<UserPerf>,
+    pub antichess: Option<UserPerf>,
+    pub atomic: Option<UserPerf>,
+    pub king_of_the_hill: Option<UserPerf>,
+    pub crazyhouse: Option<UserPerf>,
+    pub three_check: Option<UserPerf>,
+    pub racing_kings: Option<UserPerf>,
+    pub horde: Option<UserPerf>,
+    pub puzzle: Option<UserPerf>,
+    pub storm: Option<UserPuzzleModePerf>,
+    pub racer: Option<UserPuzzleModePerf>,
+    pub streak: Option<UserPuzzleModePerf>,
+}
+
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct UserPerf {
     pub games: Option<u32>,
@@ -32,18 +53,27 @@ pub struct UserPerf {
     pub rd: Option<u16>,
     #[serde(alias = "progress")]
     pub prog: i32,
-    pub prov: Option<bool>,
+    #[serde(default)]
+    pub prov: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(default)]
+pub struct UserPuzzleModePerf {
+    pub runs: u32,
+    pub score: u32,
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct LightUser {
     pub id: Option<String>,
     #[serde(alias = "name")]
     pub username: String,
     pub ai: Option<u8>,
-    pub perfs: Option<HashMap<PerfType, UserPerf>>,
+    pub perfs: Option<UserPerfs>,
     pub title: Option<Title>,
     pub online: Option<bool>,
     pub playing: Option<bool>,
@@ -57,7 +87,7 @@ pub struct LightUser {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct ChallengeUser {
     pub rating: Option<u16>,
@@ -75,7 +105,7 @@ pub struct ChallengeUser {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotUser {
@@ -99,7 +129,7 @@ pub struct BotUser {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotPerfs {
@@ -120,7 +150,7 @@ pub struct BotPerfs {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotProfile {
@@ -138,7 +168,7 @@ pub struct BotProfile {
     pub dsb_rating: Option<u16>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(default)]
 pub struct BotPlayTime {
@@ -146,7 +176,7 @@ pub struct BotPlayTime {
     pub tv: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum Title {
     GM,
     WGM,

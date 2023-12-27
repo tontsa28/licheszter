@@ -164,6 +164,7 @@ impl LicheszterBuilder {
 
     /// Use authentication to gain full access to the Lichess API.
     /// This is recommended for most use cases.
+    #[must_use]
     pub fn with_authentication<S>(mut self, token: S) -> LicheszterBuilder
     where
         S: AsRef<str> + Display,

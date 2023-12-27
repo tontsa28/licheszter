@@ -14,8 +14,10 @@ impl Licheszter {
         username: &str,
         form_params: Option<&[(&str, &str)]>,
     ) -> Result<EntityChallenge> {
-        let url = format!("{}/api/challenge/{}", self.base_url, username);
-        let mut builder = self.client.post(&url);
+        let mut url = self.base_url();
+        let path = format!("api/challenge/{username}");
+        url.set_path(&path);
+        let mut builder = self.client.post(url);
 
         if let Some(params) = form_params {
             builder = builder.form(&params);
@@ -26,8 +28,10 @@ impl Licheszter {
 
     /// Accept a challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
-        let url = format!("{}/api/challenge/{}/accept", self.base_url, challenge_id);
-        let builder = self.client.post(&url);
+        let mut url = self.base_url();
+        let path = format!("api/challenge/{challenge_id}/accept");
+        url.set_path(&path);
+        let builder = self.client.post(url);
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())
@@ -35,10 +39,12 @@ impl Licheszter {
 
     /// Decline a challenge.
     pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> Result<()> {
-        let url = format!("{}/api/challenge/{}/decline", self.base_url, challenge_id);
+        let mut url = self.base_url();
+        let path = format!("api/challenge/{challenge_id}/decline");
+        url.set_path(&path);
         let builder = self
             .client
-            .post(&url)
+            .post(url)
             .form(&[("reason", reason.unwrap_or("generic"))]);
 
         self.to_model::<OkResponse>(builder).await?;
@@ -47,8 +53,10 @@ impl Licheszter {
 
     /// Cancel a challenge.
     pub async fn challenge_cancel(&self, challenge_id: &str) -> Result<()> {
-        let url = format!("{}/api/challenge/{}/cancel", self.base_url, challenge_id);
-        let builder = self.client.post(&url);
+        let mut url = self.base_url();
+        let path = format!("api/challenge/{challenge_id}/cancel");
+        url.set_path(&path);
+        let builder = self.client.post(url);
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())
@@ -60,8 +68,9 @@ impl Licheszter {
         level: u8,
         form_params: Option<&[(&str, &str)]>,
     ) -> Result<ChallengeGame> {
-        let url = format!("{}/api/challenge/ai", self.base_url);
-        let mut builder = self.client.post(&url);
+        let mut url = self.base_url();
+        url.set_path("api/challenge/ai");
+        let mut builder = self.client.post(url);
 
         let level = level.to_string();
         let mut form = vec![("level", level.as_str())];
@@ -75,8 +84,9 @@ impl Licheszter {
 
     /// Get the challenges of the current user.
     pub async fn get_challenges(&self) -> Result<Challenges> {
-        let url = format!("{}/api/challenge", self.base_url);
-        let builder = self.client.get(&url);
+        let mut url = self.base_url();
+        url.set_path("api/challenge");
+        let builder = self.client.get(url);
 
         self.to_model::<Challenges>(builder).await
     }
