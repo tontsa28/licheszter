@@ -20,7 +20,7 @@ async fn opening_masters() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_explorer_url(mock_server.uri())?
+        .with_explorer_url(&mock_server.uri())?
         .build();
 
     // Call the mock
@@ -44,7 +44,7 @@ async fn opening_lichess() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_explorer_url(mock_server.uri())?
+        .with_explorer_url(&mock_server.uri())?
         .build();
 
     // Call the mock
@@ -72,7 +72,7 @@ async fn opening_player() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_explorer_url(mock_server.uri())?
+        .with_explorer_url(&mock_server.uri())?
         .build();
 
     // Call the mock

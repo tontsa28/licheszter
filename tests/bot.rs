@@ -6,14 +6,14 @@ use wiremock::{
 };
 
 #[tokio::test]
-async fn stream_events() -> Result<()> {
+async fn bot_game_stream() -> Result<()> {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/stream_event.json").await?;
+    let response = tokio::fs::read_to_string("tests/responses/bot_game_stream.json").await?;
 
     // Mount the mock response into the server
     Mock::given(method("GET"))
-        .and(path("api/stream/event"))
+        .and(path("api/bot/game/stream/is9Gsjun"))
         .respond_with(
             ResponseTemplate::new(200)
                 .set_body_raw(response, "application/x-ndjson")
@@ -28,22 +28,22 @@ async fn stream_events() -> Result<()> {
         .build();
 
     // Call the mock
-    let mut stream = client.events_stream().await?;
+    let mut stream = client.bot_game_stream("is9Gsjun").await?;
     while stream.try_next().await?.is_some() {}
 
     Ok(())
 }
 
 #[tokio::test]
-async fn get_ongoing_games() -> Result<()> {
+async fn bot_play_move() -> Result<()> {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/account_playing.json").await?;
+    let response = r#"{"ok":true}"#;
 
     // Mount the mock response into the server
-    Mock::given(method("GET"))
-        .and(path("api/account/playing"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
+    Mock::given(method("POST"))
+        .and(path("api/bot/game/is9Gsjun/move/e2e4"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/x-ndjson"))
         .mount(&mock_server)
         .await;
 
@@ -53,7 +53,7 @@ async fn get_ongoing_games() -> Result<()> {
         .build();
 
     // Call the mock
-    client.games_ongoing(1).await?;
+    client.bot_play_move("is9Gsjun", "e2e4", true).await?;
 
     Ok(())
 }

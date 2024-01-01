@@ -83,7 +83,7 @@ impl Licheszter {
     }
 
     /// Get the challenges of the current user.
-    pub async fn get_challenges(&self) -> Result<Challenges> {
+    pub async fn challenges(&self) -> Result<Challenges> {
         let mut url = self.base_url();
         url.set_path("api/challenge");
         let builder = self.client.get(url);

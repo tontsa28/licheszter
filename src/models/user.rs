@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
+use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -105,6 +105,7 @@ pub struct ChallengeUser {
 }
 
 #[skip_serializing_none]
+#[serde_as]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
@@ -112,12 +113,14 @@ pub struct BotUser {
     pub id: String,
     pub username: String,
     pub perfs: BotPerfs,
+    #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
     #[serde(default)]
     pub disabled: bool,
     #[serde(default)]
     pub tos_violation: bool,
     pub profile: BotProfile,
+    #[serde_as(as = "TimestampMilliSeconds")]
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
     pub patron: bool,

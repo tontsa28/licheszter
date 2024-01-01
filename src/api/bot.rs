@@ -7,7 +7,7 @@ use futures_util::Stream;
 
 impl Licheszter {
     /// Stream bot game state.
-    pub async fn stream_bot_game_state(
+    pub async fn bot_game_stream(
         &self,
         game_id: &str,
     ) -> Result<impl Stream<Item = Result<BoardState>>> {
@@ -20,7 +20,7 @@ impl Licheszter {
     }
 
     /// Make a move in a bot game.
-    pub async fn make_bot_move(
+    pub async fn bot_play_move(
         &self,
         game_id: &str,
         uci_move: &str,
@@ -29,17 +29,14 @@ impl Licheszter {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/move/{uci_move}");
         url.set_path(&path);
-        let builder = self
-            .client
-            .post(url)
-            .query(&[("offeringDraw", draw_offer)]);
+        let builder = self.client.post(url).query(&[("offeringDraw", draw_offer)]);
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
     /// Write to game chat as a bot.
-    pub async fn write_to_bot_chat(&self, game_id: &str, room: &str, text: &str) -> Result<()> {
+    pub async fn bot_chat_write(&self, game_id: &str, room: &str, text: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/chat");
         url.set_path(&path);
@@ -53,7 +50,7 @@ impl Licheszter {
     }
 
     /// Abort a bot game.
-    pub async fn abort_bot_game(&self, game_id: &str) -> Result<()> {
+    pub async fn bot_game_abort(&self, game_id: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/abort");
         url.set_path(&path);
@@ -64,7 +61,7 @@ impl Licheszter {
     }
 
     /// Resign a bot game.
-    pub async fn resign_bot_game(&self, game_id: &str) -> Result<()> {
+    pub async fn bot_game_resign(&self, game_id: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/resign");
         url.set_path(&path);
@@ -75,7 +72,7 @@ impl Licheszter {
     }
 
     /// Get online bots.
-    pub async fn get_online_bots(
+    pub async fn bots_online(
         &self,
         nb_bots: u8,
     ) -> Result<impl Stream<Item = Result<BotUser>>> {

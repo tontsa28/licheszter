@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::PrimitiveDateTime;
 
-use super::board::Status;
+use super::{board::Status, user::Title};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
@@ -73,6 +73,13 @@ pub enum TimeControl {
         days_per_turn: u8,
     },
     Unlimited,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Clock {
+    pub initial: u32,
+    pub increment: u32,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -205,4 +212,18 @@ pub enum Color {
 pub enum FinalColor {
     Black,
     White,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct GameEventPlayer {
+    #[serde(rename = "aiLevel")]
+    pub ai_level: Option<u8>,
+    pub id: String,
+    pub name: String,
+    pub title: Option<Title>,
+    pub rating: u16,
+    #[serde(default)]
+    pub provisional: bool,
 }

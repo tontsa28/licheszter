@@ -1,9 +1,11 @@
 use super::{
-    game::{Color, Computer, FinalColor, Perf, Speed, TimeControl, Variant},
+    game::{
+        Clock, Color, Computer, FinalColor, GameEventPlayer, Perf, Speed, TimeControl, Variant,
+    },
     user::{ChallengeUser, LightUser},
 };
 use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
+use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -129,17 +131,40 @@ pub enum Event {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct GameState {
-    pub r#type: Option<String>,
     pub moves: String,
-    pub wtime: u32,
-    pub btime: u32,
-    pub winc: u16,
-    pub binc: u16,
-    pub wdraw: Option<bool>,
-    pub bdraw: Option<bool>,
-    pub status: String,
-    pub winner: Option<String>,
-    pub rematch: Option<String>,
+    pub wtime: u64,
+    pub btime: u64,
+    pub winc: u32,
+    pub binc: u32,
+    #[serde(default)]
+    pub wdraw: bool,
+    #[serde(default)]
+    pub bdraw: bool,
+    #[serde(default)]
+    pub wtakeback: bool,
+    #[serde(default)]
+    pub btakeback: bool,
+    pub status: GameStatus,
+    pub winner: Option<Color>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum GameStatus {
+    Created,
+    Started,
+    Aborted,
+    Mate,
+    Resign,
+    Stalemate,
+    Timeout,
+    Draw,
+    #[serde(rename = "outoftime")]
+    OutOfTime,
+    Cheat,
+    NoStart,
+    UnknownFinish,
+    VariantEnd,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -150,6 +175,7 @@ pub enum Challenger {
 }
 
 #[skip_serializing_none]
+#[serde_as]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
@@ -157,12 +183,14 @@ pub struct GameFull {
     pub id: String,
     pub rated: bool,
     pub variant: Variant,
-    pub clock: Option<TimeControl>,
+    pub clock: Option<Clock>,
+    pub days_per_turn: Option<u8>,
     pub speed: Speed,
     pub perf: Perf,
+    #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
-    pub white: Challenger,
-    pub black: Challenger,
+    pub white: GameEventPlayer,
+    pub black: GameEventPlayer,
     pub initial_fen: String,
     pub state: GameState,
     pub tournament_id: Option<String>,
@@ -173,7 +201,14 @@ pub struct GameFull {
 pub struct ChatLine {
     pub username: String,
     pub text: String,
-    pub room: String,
+    pub room: ChatRoom,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ChatRoom {
+    Player,
+    Spectator,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

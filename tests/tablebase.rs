@@ -20,7 +20,7 @@ async fn tablebase_standard() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_tablebase_url(mock_server.uri())?
+        .with_tablebase_url(&mock_server.uri())?
         .build();
 
     // Call the mock
@@ -47,7 +47,7 @@ async fn tablebase_atomic() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_tablebase_url(mock_server.uri())?
+        .with_tablebase_url(&mock_server.uri())?
         .build();
 
     // Call the mock
@@ -74,7 +74,7 @@ async fn tablebase_antichess() -> Result<()> {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_tablebase_url(mock_server.uri())?
+        .with_tablebase_url(&mock_server.uri())?
         .build();
 
     // Call the mock

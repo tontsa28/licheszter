@@ -1,0 +1,13 @@
+{"id":"is9Gsjun","variant":{"key":"standard","name":"Standard","short":"Std"},"speed":"blitz","perf":{"name":"Blitz"},"rated":false,"createdAt":1704116012930,"white":{"id":"li","name":"Li","title":null,"rating":1799},"black":{"id":"bot0","name":"Bot0","title":"BOT","rating":1500,"provisional":true},"initialFen":"startpos","clock":{"initial":180000,"increment":2000},"type":"gameFull","state":{"type":"gameState","moves":"","wtime":180000,"btime":180000,"winc":2000,"binc":2000,"status":"started"}}
+
+{"type":"chatLine","room":"player","username":"Li","text":"Good luck"}
+
+{"type":"chatLine","room":"player","username":"Bot0","text":"Have fun!"}
+
+{"type":"gameState","moves":"f2f3","wtime":180000,"btime":180000,"winc":2000,"binc":2000,"status":"started"}
+
+{"type":"gameState","moves":"f2f3 e7e5","wtime":180000,"btime":180000,"winc":2000,"binc":2000,"status":"started"}
+
+{"type":"gameState","moves":"f2f3 e7e5 g2g4","wtime":113300,"btime":180000,"winc":2000,"binc":2000,"status":"started"}
+
+{"type":"gameState","moves":"f2f3 e7e5 g2g4 d8h4","wtime":113300,"btime":173840,"winc":2000,"binc":2000,"status":"mate","winner":"black"}
