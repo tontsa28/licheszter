@@ -20,14 +20,14 @@ path = "src/lib.rs"
 
 [dependencies]
 tokio = "1.34.0"
-tokio-stream = { version = "0.1.14", features = ["io-util"] }
+tokio-stream = { version = "0.1.14", default-features = false, features = ["io-util"] }
 tokio-util = "0.7.10"
 reqwest = { version = "0.11.22", default-features = false, features = ["stream", "rustls-tls"] }
-time = { version = "0.3.30", features = ["serde-human-readable"] }
+time = { version = "0.3.30", features = [] }
 serde = { version = "1.0.193", features = ["derive"] }
 serde_json = "1.0.108"
 serde_with = { version = "3.4.0", features = ["time_0_3"] }
-futures-util = "0.3.29"
+futures-util = { version = "0.3.29", default-features = false }
 
 [dev-dependencies]
 tokio = { version = "1.34.0", features = ["macros"] }
@@ -38,7 +38,7 @@ wiremock = "0.5.22"
 default = []
 
 # Return an error when an unknown field is encountered while deserializing
-# This is not recommended for production environments as it might cause problems even with a single unknown field
+# This is not recommended for production environments as it might cause unexpected problems
 serde-strict = []
 
 explorer = []

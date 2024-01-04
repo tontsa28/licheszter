@@ -6,7 +6,7 @@ use wiremock::{
 };
 
 #[tokio::test]
-async fn stream_events() -> Result<()> {
+async fn events_stream() -> Result<()> {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
     let response = tokio::fs::read_to_string("tests/responses/stream_event.json").await?;
@@ -35,7 +35,7 @@ async fn stream_events() -> Result<()> {
 }
 
 #[tokio::test]
-async fn get_ongoing_games() -> Result<()> {
+async fn games_ongoing() -> Result<()> {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
     let response = tokio::fs::read_to_string("tests/responses/account_playing.json").await?;

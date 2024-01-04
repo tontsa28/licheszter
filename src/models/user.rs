@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum PerfType {
     UltraBullet,
@@ -45,7 +45,7 @@ pub struct UserPerfs {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct UserPerf {
     pub games: Option<u32>,
@@ -129,10 +129,11 @@ pub struct BotUser {
     #[serde(default)]
     pub play_time: BotPlayTime,
     pub title: Title,
+    pub flair: Option<String>,
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct BotPerfs {
@@ -160,6 +161,7 @@ pub struct BotProfile {
     pub country: Option<String>,
     pub location: Option<String>,
     pub bio: Option<String>,
+    pub flag: Option<String>,
     pub first_name: Option<String>,
     pub last_name: Option<String>,
     pub links: Option<String>,
@@ -179,7 +181,7 @@ pub struct BotPlayTime {
     pub tv: u32,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum Title {
     GM,
     WGM,

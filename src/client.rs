@@ -14,7 +14,6 @@ use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
 
 // Data stream ping JSON & Lichess default URL constants
-//const PING: &str = "{\"type\":\"ping\"}";
 const BASE_URL: &str = "https://lichess.org";
 const EXPLORER_URL: &str = "https://explorer.lichess.ovh";
 const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
