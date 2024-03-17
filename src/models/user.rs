@@ -101,7 +101,7 @@ pub struct ChallengeUser {
     #[serde(default)]
     pub patron: bool,
     pub flair: Option<String>,
-    pub lag: u16,
+    pub lag: Option<u16>,
 }
 
 #[skip_serializing_none]

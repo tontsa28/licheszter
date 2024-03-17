@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::{
     game::{
         Clock, Color, Computer, FinalColor, GameEventPlayer, Perf, Speed, TimeControl, Variant,
@@ -30,7 +32,7 @@ pub struct Challenge {
     pub dest_user: Option<ChallengeUser>,
     pub initial_fen: Option<String>,
     pub decline_reason: Option<String>,
-    pub decline_reason_key: Option<String>,
+    pub decline_reason_key: Option<ChallengeDeclineReason>,
     pub perf: Perf,
     pub rated: bool,
     pub speed: Speed,
@@ -58,6 +60,7 @@ pub struct EntityChallenge {
 }
 
 #[skip_serializing_none]
+#[serde_as]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
@@ -67,19 +70,19 @@ pub struct ChallengeGame {
     pub speed: Speed,
     pub perf: String,
     pub rated: bool,
-    pub initial_fen: String,
+    //pub initial_fen: String,
     pub fen: String,
     pub player: String,
     pub turns: u8,
-    pub started_at_turn: u8,
+    //pub started_at_turn: u8,
     pub source: String,
     pub status: Status,
+    #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
     pub url: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub enum ChallengeStatus {
     Created,
@@ -87,6 +90,22 @@ pub enum ChallengeStatus {
     Canceled,
     Declined,
     Accepted,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ChallengeDeclineReason {
+    Generic,
+    Later,
+    TooFast,
+    TooSlow,
+    TimeControl,
+    Rated,
+    Casual,
+    Standard,
+    Variant,
+    NoBot,
+    OnlyBot,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -209,6 +228,16 @@ pub struct ChatLine {
 pub enum ChatRoom {
     Player,
     Spectator,
+}
+
+// TODO: Possibly temporary solution
+impl Display for ChatRoom {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Player => write!(f, "player"),
+            Self::Spectator => write!(f, "spectator"),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

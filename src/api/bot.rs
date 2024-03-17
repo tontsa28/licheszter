@@ -1,7 +1,11 @@
 use crate::{
     client::Licheszter,
     error::Result,
-    models::{board::BoardState, common::OkResponse, user::BotUser},
+    models::{
+        board::{BoardState, ChatRoom},
+        common::OkResponse,
+        user::BotUser,
+    },
 };
 use futures_util::Stream;
 
@@ -36,14 +40,14 @@ impl Licheszter {
     }
 
     /// Write to game chat as a bot.
-    pub async fn bot_chat_write(&self, game_id: &str, room: &str, text: &str) -> Result<()> {
+    pub async fn bot_chat_write(&self, game_id: &str, room: ChatRoom, text: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/chat");
         url.set_path(&path);
         let builder = self
             .client
             .post(url)
-            .form(&[("room", room), ("text", text)]);
+            .form(&[("room", room.to_string().as_str()), ("text", text)]);
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())
@@ -72,13 +76,10 @@ impl Licheszter {
     }
 
     /// Get online bots.
-    pub async fn bots_online(
-        &self,
-        nb_bots: u8,
-    ) -> Result<impl Stream<Item = Result<BotUser>>> {
+    pub async fn bots_online(&self, bots: u8) -> Result<impl Stream<Item = Result<BotUser>>> {
         let mut url = self.base_url();
         url.set_path("api/bot/online");
-        let builder = self.client.get(url).query(&[("nb", nb_bots)]);
+        let builder = self.client.get(url).query(&[("nb", bots)]);
 
         self.to_model_stream::<BotUser>(builder).await
     }

@@ -12,14 +12,14 @@ impl Licheszter {
     pub async fn challenge_create(
         &self,
         username: &str,
-        form_params: Option<&[(&str, &str)]>,
+        opt_params: Option<&[(&str, &str)]>,
     ) -> Result<EntityChallenge> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{username}");
         url.set_path(&path);
         let mut builder = self.client.post(url);
 
-        if let Some(params) = form_params {
+        if let Some(params) = opt_params {
             builder = builder.form(&params);
         }
 
@@ -63,10 +63,10 @@ impl Licheszter {
     }
 
     /// Challenge Stockfish.
-    pub async fn challenge_stockfish(
+    pub async fn challenge_ai(
         &self,
         level: u8,
-        form_params: Option<&[(&str, &str)]>,
+        opt_params: Option<&[(&str, &str)]>,
     ) -> Result<ChallengeGame> {
         let mut url = self.base_url();
         url.set_path("api/challenge/ai");
@@ -74,7 +74,7 @@ impl Licheszter {
 
         let level = level.to_string();
         let mut form = vec![("level", level.as_str())];
-        if let Some(params) = form_params {
+        if let Some(params) = opt_params {
             form.extend(params);
             builder = builder.form(&form);
         }
