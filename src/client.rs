@@ -171,7 +171,8 @@ impl LicheszterBuilder {
         // Create a new header map & the authentication header
         let mut header_map = HeaderMap::new();
         let token = format!("Bearer {token}");
-        let mut auth_header = HeaderValue::from_str(&token).unwrap();
+        let mut auth_header = HeaderValue::from_str(&token)
+            .expect("Authentication token should only contain visible ASCII characters");
 
         // Insert the authentication header into the header map
         auth_header.set_sensitive(true);

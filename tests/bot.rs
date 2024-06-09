@@ -38,8 +38,15 @@ async fn bot_game_stream() {
         .build();
 
     // Call the mock
-    while client.bot_game_stream("is9Gsjun").await.unwrap().try_next().await.unwrap().is_some() {}
-    //while client.bot_game_stream("o23JsuHn").await.unwrap().try_next().await.unwrap().is_some() {}
+    assert!(client.bot_game_stream("is9Gsjun").await.is_ok());
+    assert!(client.bot_game_stream("o23JsuHn").await.is_err());
+    assert!(client
+        .bot_game_stream("is9Gsjun")
+        .await
+        .unwrap()
+        .try_for_each(|_| async { Ok(()) })
+        .await
+        .is_ok());
 }
 
 #[tokio::test]
@@ -70,14 +77,11 @@ async fn bot_play_move() {
         .build();
 
     // Call the mock
-    client
-        .bot_play_move("is9Gsjun", "e2e4", true)
-        .await
-        .unwrap();
-    client
+    assert!(client.bot_play_move("is9Gsjun", "e2e4", true).await.is_ok());
+    assert!(client
         .bot_play_move("o2J3suHn", "c2c4", false)
         .await
-        .unwrap_err();
+        .is_err());
 }
 
 #[tokio::test]
@@ -107,14 +111,14 @@ async fn bot_chat_write() {
         .build();
 
     // Call the mock
-    client
+    assert!(client
         .bot_chat_write("is9Gsjun", ChatRoom::Player, "Good luck!")
         .await
-        .unwrap();
-    client
+        .is_ok());
+    assert!(client
         .bot_chat_write("o2J3suHn", ChatRoom::Spectator, "Good game!")
         .await
-        .unwrap_err();
+        .is_err());
 }
 
 #[tokio::test]
@@ -144,8 +148,8 @@ async fn bot_game_abort() {
         .build();
 
     // Call the mock
-    client.bot_game_abort("is9Gsjun").await.unwrap();
-    client.bot_game_abort("o2J3suHn").await.unwrap_err();
+    assert!(client.bot_game_abort("is9Gsjun").await.is_ok());
+    assert!(client.bot_game_abort("o2J3suHn").await.is_err());
 }
 
 #[tokio::test]
@@ -175,8 +179,8 @@ async fn bot_game_resign() {
         .build();
 
     // Call the mock
-    client.bot_game_resign("is9Gsjun").await.unwrap();
-    client.bot_game_resign("o2J3suHn").await.unwrap_err();
+    assert!(client.bot_game_resign("is9Gsjun").await.is_ok());
+    assert!(client.bot_game_resign("o2J3suHn").await.is_err());
 }
 
 #[tokio::test]
@@ -205,6 +209,12 @@ async fn bots_online() {
         .build();
 
     // Call the mock
-    let mut stream = client.bots_online(50).await.unwrap();
-    while stream.try_next().await.unwrap().is_some() {}
+    assert!(client.bots_online(50).await.is_ok());
+    assert!(client
+        .bots_online(50)
+        .await
+        .unwrap()
+        .try_for_each(|_| async { Ok(()) })
+        .await
+        .is_ok());
 }
