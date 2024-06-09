@@ -145,7 +145,7 @@ async fn challenges() -> Result<()> {
         .build();
 
     // Call the mock
-    let data = client.challenges().await?;
+    let data = client.challenge_list().await?;
     dbg!(data);
 
     Ok(())

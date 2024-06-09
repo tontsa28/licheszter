@@ -8,7 +8,18 @@ use crate::{
 };
 
 impl Licheszter {
-    /// Create a challenge.
+    /// Get a list of challenges created by targeted at you.
+    pub async fn challenge_list(&self) -> Result<Challenges> {
+        let mut url = self.base_url();
+        url.set_path("api/challenge");
+        let builder = self.client.get(url);
+
+        self.to_model::<Challenges>(builder).await
+    }
+
+    /// Challenge someone to play.
+    /// The targeted player can choose to accept or decline.
+    /// The game ID will be the same as the challenge ID.
     pub async fn challenge_create(
         &self,
         username: &str,
@@ -26,7 +37,7 @@ impl Licheszter {
         self.to_model::<EntityChallenge>(builder).await
     }
 
-    /// Accept a challenge.
+    /// Accept an incoming challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{challenge_id}/accept");
@@ -37,7 +48,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Decline a challenge.
+    /// Decline an incoming challenge.
     pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{challenge_id}/decline");
@@ -51,7 +62,8 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Cancel a challenge.
+    /// Cancel a challenge you sent.
+    /// Aborts the game if the challenge was accepted, but the game was not yet played.
     pub async fn challenge_cancel(&self, challenge_id: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{challenge_id}/cancel");
@@ -62,7 +74,7 @@ impl Licheszter {
         Ok(())
     }
 
-    /// Challenge Stockfish.
+    /// Start a game with Lichess AI (Stockfish).
     pub async fn challenge_ai(
         &self,
         level: u8,
@@ -82,12 +94,39 @@ impl Licheszter {
         self.to_model::<ChallengeGame>(builder).await
     }
 
-    /// Get the challenges of the current user.
-    pub async fn challenges(&self) -> Result<Challenges> {
-        let mut url = self.base_url();
-        url.set_path("api/challenge");
-        let builder = self.client.get(url);
+    /// Create a challenge that 2 players can join.
+    /// The first 2 players to click the URLs will be paired for a game.
+    pub async fn challenge_create_open(&self) -> Result<()> {
+        todo!("An optional function argument solution is required")
+    }
 
-        self.to_model::<Challenges>(builder).await
+    /// Start the clocks of a game immediately, even if a player has not yet made a move.
+    /// If the clocks have already started, this method will have no effect.
+    ///
+    /// Requires the OAuth tokens of both players to contain the `challenge:write` scope.
+    pub async fn challenge_game_clocks_start(&self, game_id: &str) -> Result<()> {
+        let mut url = self.base_url();
+        let path = format!("api/challenge/{game_id}/start-clocks");
+        url.set_path(&path);
+        let builder = self.client.post(url);
+
+        self.to_model::<OkResponse>(builder).await?;
+        Ok(())
+    }
+
+    /// Add seconds to the opponent's clock.
+    /// Can be used to create games with time odds.
+    pub async fn challenge_opponent_clock_increment(
+        &self,
+        game_id: &str,
+        seconds: u32,
+    ) -> Result<()> {
+        let mut url = self.base_url();
+        let path = format!("api/round/{game_id}/add-time/{seconds}");
+        url.set_path(&path);
+        let builder = self.client.post(url);
+
+        self.to_model::<OkResponse>(builder).await?;
+        Ok(())
     }
 }
