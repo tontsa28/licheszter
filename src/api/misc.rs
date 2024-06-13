@@ -2,8 +2,7 @@ use crate::{
     client::Licheszter,
     error::Result,
     models::{
-        board::Event,
-        game::{UserGame, UserGames},
+        board::Event, common::OkResponse, game::{UserGame, UserGames}
     },
 };
 use futures_util::Stream;
@@ -26,5 +25,19 @@ impl Licheszter {
         let builder = self.client.get(url).query(&[("nb", nb_games)]);
 
         Ok(self.to_model::<UserGames>(builder).await?.now_playing)
+    }
+
+    /// Upgrade a Lichess player account into a bot account.
+    /// This method only works for bot accounts.
+    /// The account MUST NOT have any games played before upgrading.
+    /// This action is irreversible.
+    pub async fn account_upgrade_bot(&self, token: &str) -> Result<()> {
+        let mut url = self.base_url();
+        url.set_path("api/bot/account/upgrade");
+        let bearer = format!("Bearer {token}");
+        let builder = self.client.post(url).header("Authorization", bearer);
+
+        self.to_model::<OkResponse>(builder).await?;
+        Ok(())
     }
 }
