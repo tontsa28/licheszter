@@ -13,7 +13,7 @@ use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
 
-// Data stream ping JSON & Lichess default URL constants
+// Lichess default URL constants
 const BASE_URL: &str = "https://lichess.org";
 const EXPLORER_URL: &str = "https://explorer.lichess.ovh";
 const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
@@ -38,7 +38,7 @@ impl Licheszter {
 
     /// Creates a [`LicheszterBuilder`](struct@LicheszterBuilder) to configure a [`Licheszter`].
     ///
-    /// This is the same as [`LicheszterBuilder::new()`](fn@LicheszterBuilder::new()).
+    /// This is the same as [`LicheszterBuilder::new()`](fn@LicheszterBuilder::new).
     #[must_use]
     pub fn builder() -> LicheszterBuilder {
         LicheszterBuilder::default()
@@ -144,7 +144,7 @@ pub struct LicheszterBuilder {
 impl LicheszterBuilder {
     /// Constructs a new `LicheszterBuilder`.
     ///
-    /// This is the same as [`Licheszter::builder()`](fn@Licheszter::builder()).
+    /// This is the same as [`Licheszter::builder()`](fn@Licheszter::builder).
     #[must_use]
     pub fn new() -> LicheszterBuilder {
         LicheszterBuilder::default()

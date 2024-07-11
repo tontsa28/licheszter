@@ -2,7 +2,7 @@ use reqwest::{Response, StatusCode};
 use serde::Deserialize;
 use std::{error::Error as StdError, fmt::Display, result::Result as StdResult};
 
-/// Used to simplify a lot of the function return types in this library.
+/// A shorthand for the actual result type.
 pub type Result<T> = StdResult<T, Error>;
 
 /// A general, library-wide error type that will be returned in case of any error.
@@ -47,6 +47,12 @@ impl Error {
     pub fn is_json(&self) -> bool {
         matches!(self.kind, ErrorKind::Json)
     }
+
+    /// Returns true if the error is a [`url-encoded` error](struct@comma_serde_urlencoded::ser::Error).
+    #[must_use]
+    pub fn is_urlencoded(&self) -> bool {
+        matches!(self.kind, ErrorKind::UrlEncoded)
+    }
 }
 
 impl StdError for Error {
@@ -85,12 +91,19 @@ impl From<serde_json::Error> for Error {
     }
 }
 
+impl From<comma_serde_urlencoded::ser::Error> for Error {
+    fn from(source: comma_serde_urlencoded::ser::Error) -> Self {
+        Error::new(ErrorKind::UrlEncoded, source)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub(crate) enum ErrorKind {
     IO,
     LichessAPI,
     Reqwest,
     Json,
+    UrlEncoded,
 }
 
 impl Display for ErrorKind {
@@ -100,6 +113,7 @@ impl Display for ErrorKind {
             Self::Json => write!(f, "JSON error"),
             Self::LichessAPI => write!(f, "Lichess API error"),
             Self::Reqwest => write!(f, "reqwest error"),
+            Self::UrlEncoded => write!(f, "url-encoded error"),
         }
     }
 }

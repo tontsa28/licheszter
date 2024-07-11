@@ -1,4 +1,4 @@
-#![warn(clippy::pedantic)]
+//#![warn(clippy::pedantic)]
 
 //! # licheszter
 //! Licheszter is a Rust library that aims to wrap the entire Lichess API.
@@ -17,5 +17,6 @@
 
 pub mod api;
 pub mod client;
+pub mod config;
 pub mod error;
 pub mod models;

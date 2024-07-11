@@ -227,3 +227,26 @@ pub struct GameEventPlayer {
     #[serde(default)]
     pub provisional: bool,
 }
+
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum CorrespondenceDays {
+    One = 1,
+    Two = 2,
+    Three = 3,
+    Five = 5,
+    Seven = 7,
+    Ten = 10,
+    Fourteen = 14,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Rules {
+    NoAbort,
+    NoRematch,
+    NoGiveTime,
+    NoClaimWin,
+    NoEarlyDraw,
+}

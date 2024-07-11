@@ -2,7 +2,8 @@ use std::fmt::Display;
 
 use super::{
     game::{
-        Clock, Color, Computer, FinalColor, GameEventPlayer, Perf, Speed, TimeControl, Variant,
+        Clock, Color, Computer, FinalColor, GameEventPlayer, Perf, Rules, Speed, TimeControl,
+        Variant,
     },
     user::{ChallengeUser, LightUser},
 };
@@ -29,7 +30,7 @@ pub struct Challenge {
     pub time_control: TimeControl,
     pub variant: Variant,
     pub challenger: ChallengeUser,
-    pub dest_user: Option<ChallengeUser>,
+    pub dest_user: ChallengeUser,
     pub initial_fen: Option<String>,
     pub decline_reason: Option<String>,
     pub decline_reason_key: Option<ChallengeDeclineReason>,
@@ -37,6 +38,8 @@ pub struct Challenge {
     pub rated: bool,
     pub speed: Speed,
     pub status: ChallengeStatus,
+    #[serde(default)]
+    pub rules: Vec<Rules>,
 }
 
 #[skip_serializing_none]
@@ -47,16 +50,14 @@ pub struct Challenges {
     pub out: Vec<Challenge>,
 }
 
+// TODO: Will potentially be removed in the future
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct EntityChallenge {
-    pub challenge: Option<Challenge>,
-    pub game: Option<ChallengeGame>,
+    pub challenge: Challenge,
     pub socket_version: Option<u8>,
-    pub url_white: Option<String>,
-    pub url_black: Option<String>,
 }
 
 #[skip_serializing_none]

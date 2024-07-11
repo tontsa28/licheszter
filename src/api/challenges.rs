@@ -1,8 +1,11 @@
+use reqwest::header;
+
 use crate::{
     client::Licheszter,
+    config::challenges::ChallengeCreateOptions,
     error::Result,
     models::{
-        board::{ChallengeGame, Challenges, EntityChallenge},
+        board::{Challenge, ChallengeDeclineReason, ChallengeGame, Challenges},
         common::OkResponse,
     },
 };
@@ -23,18 +26,32 @@ impl Licheszter {
     pub async fn challenge_create(
         &self,
         username: &str,
-        opt_params: Option<&[(&str, &str)]>,
-    ) -> Result<EntityChallenge> {
+        options: Option<&ChallengeCreateOptions>,
+    ) -> Result<Challenge> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{username}");
         url.set_path(&path);
         let mut builder = self.client.post(url);
 
-        if let Some(params) = opt_params {
-            builder = builder.form(&params);
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?.replace('_', ".");
+            builder = builder
+                .body(encoded)
+                .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
 
-        self.to_model::<EntityChallenge>(builder).await
+        self.to_model::<Challenge>(builder).await
+    }
+
+    /// Get details about a specific challenge, even if it has been recently accepted, canceled or declined.
+    pub async fn challenge_show(&self, challenge_id: &str) -> Result<Challenge> {
+        let mut url = self.base_url();
+        let path = format!("api/challenge/{challenge_id}/show");
+        url.set_path(&path);
+        let builder = self.client.get(url);
+
+        self.to_model::<Challenge>(builder).await
     }
 
     /// Accept an incoming challenge.
@@ -49,14 +66,18 @@ impl Licheszter {
     }
 
     /// Decline an incoming challenge.
-    pub async fn challenge_decline(&self, challenge_id: &str, reason: Option<&str>) -> Result<()> {
+    pub async fn challenge_decline(
+        &self,
+        challenge_id: &str,
+        reason: Option<ChallengeDeclineReason>,
+    ) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{challenge_id}/decline");
         url.set_path(&path);
         let builder = self
             .client
             .post(url)
-            .form(&[("reason", reason.unwrap_or("generic"))]);
+            .form(&[("reason", reason.unwrap_or(ChallengeDeclineReason::Generic))]);
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())
@@ -64,11 +85,20 @@ impl Licheszter {
 
     /// Cancel a challenge you sent.
     /// Aborts the game if the challenge was accepted, but the game was not yet played.
-    pub async fn challenge_cancel(&self, challenge_id: &str) -> Result<()> {
+    pub async fn challenge_cancel(
+        &self,
+        challenge_id: &str,
+        opponent_token: Option<&str>,
+    ) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{challenge_id}/cancel");
         url.set_path(&path);
-        let builder = self.client.post(url);
+        let mut builder = self.client.post(url);
+
+        // Add the opponent token as a query parameter if it's present
+        if let Some(token) = opponent_token {
+            builder = builder.query(&[("opponentToken", token)]);
+        }
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())
