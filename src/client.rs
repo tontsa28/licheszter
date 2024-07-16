@@ -189,7 +189,7 @@ impl LicheszterBuilder {
     /// Insert a valid base URL of a custom Lichess server.
     /// This can be useful, for example, when hosting your own server for debugging purposes.
     ///
-    /// # Errors:
+    /// # Errors
     /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
     pub fn with_base_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.base_url = url.into_url()?;

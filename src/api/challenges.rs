@@ -2,11 +2,12 @@ use reqwest::header;
 
 use crate::{
     client::Licheszter,
-    config::challenges::ChallengeCreateOptions,
+    config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     error::Result,
     models::{
-        board::{Challenge, ChallengeDeclineReason, ChallengeGame, Challenges},
+        board::{AIChallenge, Challenge, ChallengeDeclineReason, Challenges, OpenChallenge},
         common::OkResponse,
+        game::AILevel,
     },
 };
 
@@ -26,7 +27,7 @@ impl Licheszter {
     pub async fn challenge_create(
         &self,
         username: &str,
-        options: Option<&ChallengeCreateOptions>,
+        options: Option<&ChallengeOptions>,
     ) -> Result<Challenge> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{username}");
@@ -107,38 +108,62 @@ impl Licheszter {
     /// Start a game with Lichess AI (Stockfish).
     pub async fn challenge_ai(
         &self,
-        level: u8,
-        opt_params: Option<&[(&str, &str)]>,
-    ) -> Result<ChallengeGame> {
+        level: AILevel,
+        options: Option<&AIChallengeOptions>,
+    ) -> Result<AIChallenge> {
         let mut url = self.base_url();
         url.set_path("api/challenge/ai");
-        let mut builder = self.client.post(url);
+        let mut builder = self.client.post(url).form(&[("level", level as u8)]);
 
-        let level = level.to_string();
-        let mut form = vec![("level", level.as_str())];
-        if let Some(params) = opt_params {
-            form.extend(params);
-            builder = builder.form(&form);
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?.replace('_', ".");
+            let level = comma_serde_urlencoded::to_string([("level", level as u8)])? + "&";
+            let form = level + &encoded;
+            builder = builder.body(form);
         }
 
-        self.to_model::<ChallengeGame>(builder).await
+        self.to_model::<AIChallenge>(builder).await
     }
 
     /// Create a challenge that 2 players can join.
     /// The first 2 players to click the URLs will be paired for a game.
-    pub async fn challenge_create_open(&self) -> Result<()> {
-        todo!("An optional function argument solution is required")
+    pub async fn challenge_create_open(
+        &self,
+        options: Option<&OpenChallengeOptions>,
+    ) -> Result<OpenChallenge> {
+        let mut url = self.base_url();
+        url.set_path("api/challenge/open");
+        let mut builder = self.client.post(url);
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?.replace('_', ".");
+            builder = builder
+                .body(encoded)
+                .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
+        }
+
+        self.to_model::<OpenChallenge>(builder).await
     }
 
     /// Start the clocks of a game immediately, even if a player has not yet made a move.
     /// If the clocks have already started, this method will have no effect.
     ///
     /// Requires the OAuth tokens of both players to contain the `challenge:write` scope.
-    pub async fn challenge_game_clocks_start(&self, game_id: &str) -> Result<()> {
+    pub async fn challenge_game_clocks_start(
+        &self,
+        game_id: &str,
+        token1: &str,
+        token2: &str,
+    ) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/challenge/{game_id}/start-clocks");
         url.set_path(&path);
-        let builder = self.client.post(url);
+        let builder = self
+            .client
+            .post(url)
+            .query(&[("token1", token1), ("token2", token2)]);
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())

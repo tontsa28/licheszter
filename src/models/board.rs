@@ -5,7 +5,7 @@ use super::{
         Clock, Color, Computer, FinalColor, GameEventPlayer, Perf, Rules, Speed, TimeControl,
         Variant,
     },
-    user::{ChallengeUser, LightUser},
+    user::{ChallengeUser, LightUser, PerfType},
 };
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
@@ -65,22 +65,53 @@ pub struct EntityChallenge {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct ChallengeGame {
+pub struct AIChallenge {
     pub id: String,
     pub variant: Variant,
     pub speed: Speed,
-    pub perf: String,
+    pub perf: PerfType,
     pub rated: bool,
-    //pub initial_fen: String,
+    pub initial_fen: Option<String>,
     pub fen: String,
-    pub player: String,
+    pub player: FinalColor,
     pub turns: u8,
-    //pub started_at_turn: u8,
     pub source: String,
     pub status: Status,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
-    pub url: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct OpenChallenge {
+    pub id: String,
+    pub url: String,
+    pub status: ChallengeStatus,
+    pub challenger: Option<Challenger>,
+    pub dest_user: Option<Challenger>,
+    pub variant: Variant,
+    pub rated: bool,
+    pub speed: Speed,
+    pub time_control: TimeControl,
+    pub color: Color,
+    pub final_color: FinalColor,
+    pub perf: Perf,
+    pub open: OpenChallengePlayers,
+    pub url_white: String,
+    pub url_black: String,
+    #[serde(default)]
+    pub rules: Vec<Rules>,
+    pub initial_fen: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct OpenChallengePlayers {
+    #[serde(default)]
+    #[serde(rename = "userIds")]
+    pub user_ids: Vec<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

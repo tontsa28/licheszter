@@ -1,5 +1,6 @@
 use reqwest::{Response, StatusCode};
 use serde::Deserialize;
+use serde_json::Value;
 use std::{error::Error as StdError, fmt::Display, result::Result as StdResult};
 
 /// A shorthand for the actual result type.
@@ -122,15 +123,22 @@ impl Display for ErrorKind {
 #[derive(Debug)]
 pub(crate) struct LichessAPIError {
     status: StatusCode,
-    msg: String,
+    message: String,
 }
 
 impl LichessAPIError {
     pub(crate) async fn from_response(response: Response) -> Result<Self> {
         let status = response.status();
-        let msg =
-            serde_json::from_slice::<LichessAPIErrorMessage>(&response.bytes().await?)?.to_string();
-        Ok(LichessAPIError { status, msg })
+        let error = serde_json::from_slice::<Value>(&response.bytes().await?);
+
+        // Return a simple "not found" message if the response is a 404 HTML page
+        let message = if status == StatusCode::NOT_FOUND && error.is_err() {
+            String::from("Not found")
+        } else {
+            error?.to_string()
+        };
+
+        Ok(LichessAPIError { status, message })
     }
 }
 
@@ -138,17 +146,35 @@ impl StdError for LichessAPIError {}
 
 impl Display for LichessAPIError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "HTTP code {}: {}", self.status, self.msg)
+        write!(f, "HTTP code {}: {}", self.status, self.message)
     }
 }
 
-#[derive(Debug, Deserialize)]
-struct LichessAPIErrorMessage {
-    error: String,
+#[derive(Debug)]
+enum LichessAPIErrorMessage {
+    StringError(String),
+    ObjectError(Value),
+}
+
+impl<'de> Deserialize<'de> for LichessAPIErrorMessage {
+    fn deserialize<D>(deserializer: D) -> StdResult<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>
+    {
+        let value: Value = Deserialize::deserialize(deserializer)?;
+        match value {
+            Value::String(s) => Ok(Self::StringError(s)),
+            Value::Object(_) => Ok(Self::ObjectError(value)),
+            _ => Err(serde::de::Error::custom("Unexpected error format")),
+        }
+    }
 }
 
 impl Display for LichessAPIErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.error)
+        match self {
+            Self::StringError(s) => write!(f, "{s}"),
+            Self::ObjectError(value) => write!(f, "{value}"),
+        }
     }
 }

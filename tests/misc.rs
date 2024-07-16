@@ -26,7 +26,7 @@ async fn events_stream() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 
@@ -52,7 +52,7 @@ async fn games_ongoing() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 

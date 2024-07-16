@@ -33,7 +33,7 @@ async fn bot_game_stream() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 
@@ -72,7 +72,7 @@ async fn bot_play_move() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 
@@ -106,7 +106,7 @@ async fn bot_chat_write() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 
@@ -143,7 +143,7 @@ async fn bot_game_abort() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 
@@ -174,7 +174,7 @@ async fn bot_game_resign() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 
@@ -204,7 +204,7 @@ async fn bots_online() {
 
     // Create a new instance of Licheszter
     let client = Licheszter::builder()
-        .with_base_url(&mock_server.uri())
+        .with_base_url(mock_server.uri())
         .unwrap()
         .build();
 
