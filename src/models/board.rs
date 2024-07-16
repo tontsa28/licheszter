@@ -79,6 +79,7 @@ pub struct AIChallenge {
     pub status: Status,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
+    pub started_at_turn: Option<u8>,
 }
 
 #[skip_serializing_none]

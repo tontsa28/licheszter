@@ -59,7 +59,7 @@ async fn challenge_create() {
         .clock(24897, 255)
         .days(CorrespondenceDays::Seven)
         .color(Color::Black)
-        .variant(VariantMode::Antichess)
+        .variant(VariantMode::FromPosition)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .rules(vec![Rules::NoEarlyDraw, Rules::NoRematch]);
 
@@ -247,7 +247,7 @@ async fn challenge_ai() {
         .clock(24897, 255)
         .days(CorrespondenceDays::Seven)
         .color(Color::Black)
-        .variant(VariantMode::Antichess)
+        .variant(VariantMode::FromPosition)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
 
     // Run some test cases
@@ -284,7 +284,7 @@ async fn challenge_create_open() {
         .name("An Open Challenge")
         .rules(vec![Rules::NoRematch, Rules::NoEarlyDraw])
         .users(vec!["Adriana", "Bot0"])
-        .variant(VariantMode::Antichess);
+        .variant(VariantMode::FromPosition);
 
     // Run some test cases
     let result = li.challenge_create_open(None).await;
@@ -295,11 +295,18 @@ async fn challenge_create_open() {
     );
 
     let result = li.challenge_create_open(Some(&options)).await;
-    dbg!(&result);
     assert!(
         result.is_ok(),
         "Failed to create an open challenge: {:?}",
         result.unwrap_err().source().unwrap()
+    );
+
+    let options = options.users(vec!["Adriana", "Bot0", "NoSuchUser"]);
+    let result = li.challenge_create_open(Some(&options)).await;
+    assert!(
+        result.is_err(),
+        "Creating an open challenge did not fail: {:?}",
+        result.unwrap()
     );
 }
 

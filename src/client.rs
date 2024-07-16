@@ -1,4 +1,4 @@
-use crate::error::{LichessAPIError, Result};
+use crate::error::{LichessError, Result};
 use futures_util::{Stream, StreamExt, TryStreamExt};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
@@ -78,7 +78,7 @@ impl Licheszter {
 
         // Return an error if the request failed
         if !response.status().is_success() {
-            return Err(LichessAPIError::from_response(response).await?.into());
+            return Err(LichessError::from_response(response).await?.into());
         }
 
         // Deserialize the response data into JSON
@@ -98,7 +98,7 @@ impl Licheszter {
 
         // Return an error if the request failed
         if !response.status().is_success() {
-            return Err(LichessAPIError::from_response(response).await?.into());
+            return Err(LichessError::from_response(response).await?.into());
         }
 
         // Get the byte stream returned by the response
