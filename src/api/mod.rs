@@ -1,5 +1,6 @@
 pub mod bot;
 pub mod challenges;
+pub mod board;
 pub mod misc;
 
 #[cfg(feature = "explorer")]

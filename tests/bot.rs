@@ -6,7 +6,7 @@ use wiremock::{
 };
 
 #[tokio::test]
-async fn bot_game_stream() {
+async fn game_stream() {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
     let response = tokio::fs::read_to_string("tests/responses/bot_game_stream.json")
@@ -38,10 +38,10 @@ async fn bot_game_stream() {
         .build();
 
     // Call the mock
-    assert!(client.bot_game_stream("is9Gsjun").await.is_ok());
-    assert!(client.bot_game_stream("o23JsuHn").await.is_err());
+    assert!(client.board_stream("is9Gsjun").await.is_ok());
+    assert!(client.board_stream("o23JsuHn").await.is_err());
     assert!(client
-        .bot_game_stream("is9Gsjun")
+        .board_stream("is9Gsjun")
         .await
         .unwrap()
         .try_for_each(|_| async { Ok(()) })
@@ -50,7 +50,7 @@ async fn bot_game_stream() {
 }
 
 #[tokio::test]
-async fn bot_play_move() {
+async fn play_move() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -77,15 +77,18 @@ async fn bot_play_move() {
         .build();
 
     // Call the mock
-    assert!(client.bot_play_move("is9Gsjun", "e2e4", true).await.is_ok());
     assert!(client
-        .bot_play_move("o2J3suHn", "c2c4", false)
+        .board_play_move("is9Gsjun", "e2e4", true)
+        .await
+        .is_ok());
+    assert!(client
+        .board_play_move("o2J3suHn", "c2c4", false)
         .await
         .is_err());
 }
 
 #[tokio::test]
-async fn bot_chat_write() {
+async fn chat_write() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -112,17 +115,17 @@ async fn bot_chat_write() {
 
     // Call the mock
     assert!(client
-        .bot_chat_write("is9Gsjun", ChatRoom::Player, "Good luck!")
+        .chat_write("is9Gsjun", ChatRoom::Player, "Good luck!")
         .await
         .is_ok());
     assert!(client
-        .bot_chat_write("o2J3suHn", ChatRoom::Spectator, "Good game!")
+        .chat_write("o2J3suHn", ChatRoom::Spectator, "Good game!")
         .await
         .is_err());
 }
 
 #[tokio::test]
-async fn bot_game_abort() {
+async fn game_abort() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -148,12 +151,12 @@ async fn bot_game_abort() {
         .build();
 
     // Call the mock
-    assert!(client.bot_game_abort("is9Gsjun").await.is_ok());
-    assert!(client.bot_game_abort("o2J3suHn").await.is_err());
+    assert!(client.board_abort("is9Gsjun").await.is_ok());
+    assert!(client.board_abort("o2J3suHn").await.is_err());
 }
 
 #[tokio::test]
-async fn bot_game_resign() {
+async fn game_resign() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -179,8 +182,8 @@ async fn bot_game_resign() {
         .build();
 
     // Call the mock
-    assert!(client.bot_game_resign("is9Gsjun").await.is_ok());
-    assert!(client.bot_game_resign("o2J3suHn").await.is_err());
+    assert!(client.board_resign("is9Gsjun").await.is_ok());
+    assert!(client.board_resign("o2J3suHn").await.is_err());
 }
 
 #[tokio::test]

@@ -22,9 +22,10 @@ const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
 #[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
-    pub(crate) base_url: Url,
-    pub(crate) explorer_url: Url,
-    pub(crate) tablebase_url: Url,
+    kind: AccountKind,
+    base_url: Url,
+    explorer_url: Url,
+    tablebase_url: Url,
 }
 
 impl Licheszter {
@@ -44,25 +45,31 @@ impl Licheszter {
         LicheszterBuilder::default()
     }
 
-    /// Get the base URL used in this instance of `Licheszter`.
+    /// Get the account kind of this `Licheszter` client.
+    #[must_use]
+    pub fn kind(&self) -> AccountKind {
+        self.kind
+    }
+
+    /// Get the base URL used in this `Licheszter` client.
     #[must_use]
     pub fn base_url(&self) -> Url {
         self.base_url.clone()
     }
 
-    /// Get the `reqwest` Client behind this instance of `Licheszter`.
+    /// Get the `reqwest` Client behind this `Licheszter` client.
     #[must_use]
     pub fn client(&self) -> Client {
         self.client.clone()
     }
 
-    /// Get the opening explorer server URL used in this instance of `Licheszter`.
+    /// Get the opening explorer server URL used in this `Licheszter` client.
     #[must_use]
     pub fn explorer_url(&self) -> Url {
         self.explorer_url.clone()
     }
 
-    /// Get the tablebase server URL used in this instance of `Licheszter`.
+    /// Get the tablebase server URL used in this `Licheszter` client.
     #[must_use]
     pub fn tablebase_url(&self) -> Url {
         self.tablebase_url.clone()
@@ -136,6 +143,7 @@ impl Default for Licheszter {
 #[derive(Debug)]
 pub struct LicheszterBuilder {
     client: Client,
+    kind: AccountKind,
     base_url: Url,
     explorer_url: Url,
     tablebase_url: Url,
@@ -155,6 +163,7 @@ impl LicheszterBuilder {
     pub fn build(self) -> Licheszter {
         Licheszter {
             client: self.client,
+            kind: self.kind,
             base_url: self.base_url,
             explorer_url: self.explorer_url,
             tablebase_url: self.tablebase_url,
@@ -186,6 +195,15 @@ impl LicheszterBuilder {
         self
     }
 
+    /// Choose the account kind.
+    /// *NOTE:* it is forbidden to use the Board API (`AccountKind::Normal`) for projects that involve use of chess engines or other things that can be interpreted as cheating.
+    /// This value is set to `Bot` by default to prevent accidents. If you're not developing anything that uses external chess assistance, you can set this to `Normal`.
+    /// This project and its developers are NOT responsible for any account bans that may occur from the misuse of the Board API.
+    pub fn with_account_kind(mut self, kind: AccountKind) -> LicheszterBuilder {
+        self.kind = kind;
+        self
+    }
+
     /// Insert a valid base URL of a custom Lichess server.
     /// This can be useful, for example, when hosting your own server for debugging purposes.
     ///
@@ -212,9 +230,27 @@ impl Default for LicheszterBuilder {
     fn default() -> Self {
         Self {
             client: Client::builder().use_rustls_tls().build().unwrap(),
+            kind: AccountKind::Bot,
             base_url: Url::parse(BASE_URL).unwrap(),
             explorer_url: Url::parse(EXPLORER_URL).unwrap(),
             tablebase_url: Url::parse(TABLEBASE_URL).unwrap(),
+        }
+    }
+}
+
+/// Determines the account kind for the client. The account kind defaults to `Bot` unless otherwise specified while creating the client.
+/// More information: https://lichess.org/api#tag/Board and https://lichess.org/api#tag/Bot.
+#[derive(Debug, Clone, Copy)]
+pub enum AccountKind {
+    Normal,
+    Bot,
+}
+
+impl Display for AccountKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Normal => write!(f, "board"),
+            Self::Bot => write!(f, "bot"),
         }
     }
 }
