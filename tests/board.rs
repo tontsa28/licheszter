@@ -1,9 +1,12 @@
 use futures_util::TryStreamExt;
 use licheszter::{client::Licheszter, models::board::ChatRoom};
-use wiremock::{matchers::{any, method, path, query_param}, Mock, MockServer, ResponseTemplate};
+use wiremock::{
+    matchers::{any, method, path, query_param},
+    Mock, MockServer, ResponseTemplate,
+};
 
 #[tokio::test]
-async fn bot_stream() {
+async fn board_stream() {
     // Start the mock server & get the response from a file
     let mock_server = MockServer::start().await;
     let response = tokio::fs::read_to_string("tests/responses/bot_game_stream.json")
@@ -47,7 +50,7 @@ async fn bot_stream() {
 }
 
 #[tokio::test]
-async fn bot_play_move() {
+async fn board_play_move() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -85,7 +88,7 @@ async fn bot_play_move() {
 }
 
 #[tokio::test]
-async fn bot_chat_write() {
+async fn board_chat_write() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -122,7 +125,7 @@ async fn bot_chat_write() {
 }
 
 #[tokio::test]
-async fn bot_abort() {
+async fn board_abort() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -153,7 +156,7 @@ async fn bot_abort() {
 }
 
 #[tokio::test]
-async fn bot_resign() {
+async fn board_resign() {
     // Start the mock server & set up the response
     let mock_server = MockServer::start().await;
     let response = r#"{"ok":true}"#;
@@ -182,4 +185,3 @@ async fn bot_resign() {
     assert!(client.bot_resign("is9Gsjun").await.is_ok());
     assert!(client.bot_resign("o2J3suHn").await.is_err());
 }
-

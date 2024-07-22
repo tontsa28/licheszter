@@ -51,7 +51,6 @@ pub struct UserPerf {
     pub games: Option<u32>,
     pub rating: u16,
     pub rd: Option<u16>,
-    #[serde(alias = "progress")]
     pub prog: i32,
     #[serde(default)]
     pub prov: bool,

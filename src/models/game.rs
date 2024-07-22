@@ -180,7 +180,7 @@ pub struct UserGame {
     pub has_moved: bool,
     pub opponent: LightUser,
     pub is_my_turn: bool,
-    pub seconds_left: u32,
+    pub seconds_left: Option<u32>,
     pub status: Status,
 }
 

@@ -1,6 +1,4 @@
-pub mod bot;
 pub mod challenges;
-pub mod board;
 pub mod misc;
 
 #[cfg(feature = "explorer")]
@@ -8,3 +6,9 @@ pub mod explorer;
 
 #[cfg(feature = "tablebase")]
 pub mod tablebase;
+
+#[cfg(feature = "board")]
+pub mod board;
+
+#[cfg(feature = "bot")]
+pub mod bot;
