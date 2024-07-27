@@ -1,3 +1,5 @@
+#![cfg(feature = "explorer")]
+
 use futures_util::TryStreamExt;
 use licheszter::client::Licheszter;
 use wiremock::{

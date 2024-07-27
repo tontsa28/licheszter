@@ -183,6 +183,9 @@ pub enum Event {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct GameState {
+    // This field is useless and only present to prevent errors
+    #[serde(skip_serializing)]
+    r#type: Option<String>,
     pub moves: String,
     pub wtime: u64,
     pub btime: u64,

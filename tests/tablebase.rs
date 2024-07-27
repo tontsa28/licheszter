@@ -1,3 +1,5 @@
+#![cfg(feature = "tablebase")]
+
 use licheszter::client::Licheszter;
 use wiremock::{
     matchers::{method, path, query_param},

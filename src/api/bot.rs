@@ -10,7 +10,7 @@ use futures_util::Stream;
 
 impl Licheszter {
     /// Stream game state using the Bot API.
-    pub async fn bot_stream(
+    pub async fn bot_game_stream(
         &self,
         game_id: &str,
     ) -> Result<impl Stream<Item = Result<BoardState>>> {
@@ -54,17 +54,17 @@ impl Licheszter {
     }
 
     /// Fetch the messages posted in the game chat using the Bot API.
-    pub async fn bot_chat_read(&self, game_id: &str) -> Result<ChatMessage> {
+    pub async fn bot_chat_read(&self, game_id: &str) -> Result<Vec<ChatMessage>> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/chat");
         url.set_path(&path);
         let builder = self.client.get(url);
 
-        self.to_model::<ChatMessage>(builder).await
+        self.to_model::<Vec<ChatMessage>>(builder).await
     }
 
     /// Abort a bot game using the Bot API.
-    pub async fn bot_abort(&self, game_id: &str) -> Result<()> {
+    pub async fn bot_game_abort(&self, game_id: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/abort");
         url.set_path(&path);
@@ -75,7 +75,7 @@ impl Licheszter {
     }
 
     /// Resign a bot game using the Bot API.
-    pub async fn bot_resign(&self, game_id: &str) -> Result<()> {
+    pub async fn bot_game_resign(&self, game_id: &str) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/resign");
         url.set_path(&path);
@@ -100,30 +100,6 @@ impl Licheszter {
     pub async fn bot_handle_takebacks(&self, game_id: &str, accept: bool) -> Result<()> {
         let mut url = self.base_url();
         let path = format!("api/bot/game/{game_id}/takeback/{accept}");
-        url.set_path(&path);
-        let builder = self.client.post(url);
-
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
-    }
-
-    /// Claim victory when the opponent has left the game for a while using the Bot API.
-    pub async fn bot_claim_victory(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
-        let path = format!("api/bot/game/{game_id}/claim-victory");
-        url.set_path(&path);
-        let builder = self.client.post(url);
-
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
-    }
-
-    /// Go berserk on an arena tournament game using the Bot API.
-    /// Halves the clock time while granting an extra point upon winning.
-    /// Only available in arena tournaments that allow berserk, and before each player has made a move.
-    pub async fn bot_berserk(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
-        let path = format!("api/bot/game/{game_id}/berserk");
         url.set_path(&path);
         let builder = self.client.post(url);
 

@@ -2,6 +2,7 @@ use std::error::Error;
 
 use futures_util::StreamExt;
 use licheszter::client::Licheszter;
+use tokio::time::{sleep, Duration};
 
 #[tokio::test]
 async fn events_stream() {
@@ -30,7 +31,7 @@ async fn events_stream() {
         }
     });
 
-    tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+    sleep(Duration::from_secs(1)).await;
     thread.abort();
 
     let thread = tokio::spawn(async move {
@@ -44,7 +45,7 @@ async fn events_stream() {
         }
     });
 
-    tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+    sleep(Duration::from_secs(1)).await;
     thread.abort();
 }
 
@@ -99,8 +100,5 @@ async fn bots_online() {
     }
 
     let result = li.bots_online(0).await;
-    assert!(
-        result.is_ok(),
-        "Failed to fetch 0 online bots"
-    );
+    assert!(result.is_ok(), "Failed to fetch 0 online bots");
 }

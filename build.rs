@@ -16,6 +16,6 @@ fn main() {
 
     if dev {
         println!("cargo:warning=The `dev` feature is enabled.");
-        println!("cargo:warning=The use of this feature is not recommended in production as it is only meant for the library development.");
+        println!("cargo:warning=The use of this feature is not recommended in production as it is only meant for library development.");
     }
 }
