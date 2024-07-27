@@ -1,27 +1,31 @@
-use std::error::Error;
+use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::client::Licheszter;
 use tokio::time::{sleep, Duration};
 
-#[tokio::test]
-async fn events_stream() {
-    // Connect to a test account
-    let li = Licheszter::builder()
+// Connect to test accounts
+static LI: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_li")
-        .build();
+        .build()
+});
 
-    let bot0 = Licheszter::builder()
+static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_bot0")
-        .build();
+        .build()
+});
 
+#[tokio::test]
+async fn events_stream() {
     // Run some test cases
     let thread = tokio::spawn(async move {
-        let mut result = li.events_stream().await.unwrap();
+        let mut result = LI.events_stream().await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -35,7 +39,7 @@ async fn events_stream() {
     thread.abort();
 
     let thread = tokio::spawn(async move {
-        let mut result = bot0.events_stream().await.unwrap();
+        let mut result = BOT0.events_stream().await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -51,28 +55,15 @@ async fn events_stream() {
 
 #[tokio::test]
 async fn games_ongoing() {
-    // Connect to a test account
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let bot0 = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_bot0")
-        .build();
-
     // Run some test cases
-    let result = li.games_ongoing(10).await;
+    let result = LI.games_ongoing(10).await;
     assert!(
         result.is_ok(),
         "Failed to fetch ongoing games: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = bot0.games_ongoing(10).await;
+    let result = BOT0.games_ongoing(10).await;
     assert!(
         result.is_ok(),
         "Failed to fetch ongoing games: {:?}",
@@ -82,15 +73,8 @@ async fn games_ongoing() {
 
 #[tokio::test]
 async fn bots_online() {
-    // Connect to a test account
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
     // Run some test cases
-    let mut result = li.bots_online(10).await.unwrap();
+    let mut result = LI.bots_online(10).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -99,6 +83,6 @@ async fn bots_online() {
         );
     }
 
-    let result = li.bots_online(0).await;
+    let result = LI.bots_online(0).await;
     assert!(result.is_ok(), "Failed to fetch 0 online bots");
 }

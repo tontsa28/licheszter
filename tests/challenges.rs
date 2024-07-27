@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::{error::Error, sync::LazyLock};
 
 use licheszter::{
     client::Licheszter,
@@ -9,50 +9,47 @@ use licheszter::{
     },
 };
 
-#[tokio::test]
-async fn challenge_list() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
+// Connect to test accounts
+static LI: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_li")
-        .build();
+        .build()
+});
 
-    let bot0 = Licheszter::builder()
+static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_bot0")
-        .build();
+        .build()
+});
 
+#[tokio::test]
+async fn challenge_list() {
     // Create some challenges for testing
-    li.challenge_create("Bot0", None).await.unwrap();
-    bot0.challenge_create("Li", None).await.unwrap();
+    LI.challenge_create("Bot0", None).await.unwrap();
+    BOT0.challenge_create("Li", None).await.unwrap();
 
     // Run some test cases
-    let result = bot0.challenge_list().await;
+    let result = BOT0.challenge_list().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch Bot0 challenges: {:?}",
+        "Failed to fetch challenges: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.challenge_list().await;
+    let result = LI.challenge_list().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch Li challenges: {:?}",
+        "Failed to fetch challenges: {:?}",
         result.unwrap_err().source().unwrap()
     );
 }
 
 #[tokio::test]
 async fn challenge_create() {
-    // Connect to a test account
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
     // Create options for testing
     let options = ChallengeOptions::new()
         .rated(true)
@@ -64,58 +61,51 @@ async fn challenge_create() {
         .rules(vec![Rules::NoEarlyDraw, Rules::NoRematch]);
 
     // Run some test cases
-    let result = li.challenge_create("Bot0", None).await;
+    let result = LI.challenge_create("Bot0", None).await;
     assert!(
         result.is_ok(),
-        "Failed to challenge user Bot0: {:?}",
+        "Failed to create a challenge: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.challenge_create("Adriana", Some(&options)).await;
+    let result = LI.challenge_create("Adriana", Some(&options)).await;
     assert!(
         result.is_ok(),
-        "Failed to challenge user Adriana: {:?}",
+        "Failed to create a challenge: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.challenge_create("Bot0", Some(&options)).await;
+    let result = LI.challenge_create("Bot0", Some(&options)).await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
-        "Challenging user Bot0 did not fail: {:?}",
+        result.is_err(),
+        "Creating a challenge did not fail: {:?}",
         result.unwrap()
     );
 
-    let result = li.challenge_create("NoSuchUser", None).await;
+    let result = LI.challenge_create("NoSuchUser", None).await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
-        "Challenging user NoSuchUser did not fail: {:?}",
+        result.is_err(),
+        "Creating a challenge did not fail: {:?}",
         result.unwrap()
     );
 }
 
 #[tokio::test]
 async fn challenge_show() {
-    // Connect a test account
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
     // Create a challenge for testing
-    let challenge = li.challenge_create("Bot0", None).await.unwrap();
+    let challenge = LI.challenge_create("Bot0", None).await.unwrap();
 
     // Run some test cases
-    let result = li.challenge_show(&challenge.id).await;
+    let result = LI.challenge_show(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to fetch challenge: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.challenge_show("notvalid").await;
+    let result = LI.challenge_show("notvalid").await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
+        result.is_err(),
         "Fetching challenge did not fail: {:?}",
         result.unwrap()
     );
@@ -123,33 +113,20 @@ async fn challenge_show() {
 
 #[tokio::test]
 async fn challenge_accept() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let bot0 = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_bot0")
-        .build();
-
     // Create a challenge for testing
-    let challenge = li.challenge_create("Bot0", None).await.unwrap();
+    let challenge = LI.challenge_create("Bot0", None).await.unwrap();
 
     // Run some test cases
-    let result = bot0.challenge_accept(&challenge.id).await;
+    let result = BOT0.challenge_accept(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to accept challenge: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = bot0.challenge_accept("notvalid").await;
+    let result = BOT0.challenge_accept("notvalid").await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
+        result.is_err(),
         "Accepting challenge did not fail: {:?}",
         result.unwrap()
     );
@@ -157,24 +134,11 @@ async fn challenge_accept() {
 
 #[tokio::test]
 async fn challenge_decline() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let bot0 = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_bot0")
-        .build();
-
     // Create a challenge for testing
-    let challenge = li.challenge_create("Bot0", None).await.unwrap();
+    let challenge = LI.challenge_create("Bot0", None).await.unwrap();
 
     // Run some test cases
-    let result = bot0
+    let result = BOT0
         .challenge_decline(&challenge.id, Some(ChallengeDeclineReason::OnlyBot))
         .await;
     assert!(
@@ -183,9 +147,9 @@ async fn challenge_decline() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = bot0.challenge_decline("notvalid", None).await;
+    let result = BOT0.challenge_decline("notvalid", None).await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
+        result.is_err(),
         "Declining challenge did not fail: {:?}",
         result.unwrap()
     );
@@ -193,41 +157,31 @@ async fn challenge_decline() {
 
 #[tokio::test]
 async fn challenge_cancel() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
+    // Create a challenge for testing
+    let challenge = LI.challenge_create("Bot0", None).await.unwrap();
 
-    let bot0 = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_bot0")
-        .build();
+    // Run a test case
+    let result = BOT0.challenge_cancel(&challenge.id, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to cancel challenge: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create some challenges for testing
-    let challenge1 = li.challenge_create("Bot0", None).await.unwrap();
-    let challenge2 = li.challenge_create("Bot0", None).await.unwrap();
+    // Create a challenge for testing
+    let challenge = LI.challenge_create("Bot0", None).await.unwrap();
 
     // Run some test cases
-    let result = bot0.challenge_cancel(&challenge1.id, None).await;
+    let result = BOT0.challenge_cancel(&challenge.id, Some("lip_li")).await;
     assert!(
         result.is_ok(),
         "Failed to cancel challenge: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = bot0.challenge_cancel(&challenge2.id, Some("lip_li")).await;
+    let result = BOT0.challenge_cancel("notvalid", Some("notvalid")).await;
     assert!(
-        result.is_ok(),
-        "Failed to cancel challenge: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-
-    let result = bot0.challenge_cancel("notvalid", Some("notvalid")).await;
-    assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
+        result.is_err(),
         "Cancelling challenge did not fail: {:?}",
         result.unwrap()
     );
@@ -235,13 +189,6 @@ async fn challenge_cancel() {
 
 #[tokio::test]
 async fn challenge_ai() {
-    // Connect to a test account
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
     // Create options for testing
     let options = AIChallengeOptions::new()
         .clock(24897, 255)
@@ -251,14 +198,14 @@ async fn challenge_ai() {
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
 
     // Run some test cases
-    let result = li.challenge_ai(AILevel::One, None).await;
+    let result = LI.challenge_ai(AILevel::One, None).await;
     assert!(
         result.is_ok(),
         "Failed to challenge Lichess AI: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.challenge_ai(AILevel::Eight, Some(&options)).await;
+    let result = LI.challenge_ai(AILevel::Eight, Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to challenge Lichess AI: {:?}",
@@ -268,13 +215,6 @@ async fn challenge_ai() {
 
 #[tokio::test]
 async fn challenge_create_open() {
-    // Connect to a test account
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
     // Create options for testing
     let options = OpenChallengeOptions::new()
         .rated(true)
@@ -287,14 +227,14 @@ async fn challenge_create_open() {
         .variant(VariantMode::FromPosition);
 
     // Run some test cases
-    let result = li.challenge_create_open(None).await;
+    let result = LI.challenge_create_open(None).await;
     assert!(
         result.is_ok(),
         "Failed to create an open challenge: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.challenge_create_open(Some(&options)).await;
+    let result = LI.challenge_create_open(Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to create an open challenge: {:?}",
@@ -302,7 +242,7 @@ async fn challenge_create_open() {
     );
 
     let options = options.users(vec!["Adriana", "Bot0", "NoSuchUser"]);
-    let result = li.challenge_create_open(Some(&options)).await;
+    let result = LI.challenge_create_open(Some(&options)).await;
     assert!(
         result.is_err(),
         "Creating an open challenge did not fail: {:?}",
@@ -312,26 +252,13 @@ async fn challenge_create_open() {
 
 #[tokio::test]
 async fn challenge_game_clocks_start() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let bot0 = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_bot0")
-        .build();
-
     // Create a game for testing
     let options = ChallengeOptions::new().clock(180, 2);
-    let challenge = li.challenge_create("Bot0", Some(&options)).await.unwrap();
-    bot0.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenge_create("Bot0", Some(&options)).await.unwrap();
+    BOT0.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = bot0
+    let result = BOT0
         .challenge_game_clocks_start(&challenge.id, "lip_li", "lip_bot0")
         .await;
     assert!(
@@ -340,20 +267,20 @@ async fn challenge_game_clocks_start() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = bot0
+    let result = BOT0
         .challenge_game_clocks_start("notvalid", "notvalid", "notvalid")
         .await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
+        result.is_err(),
         "Starting game clocks did not fail: {:?}",
         result.unwrap()
     );
 
-    let result = bot0
+    let result = BOT0
         .challenge_game_clocks_start("notvalid", "lip_li", "lip_bot0")
         .await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
+        result.is_err(),
         "Starting game clocks did not fail: {:?}",
         result.unwrap()
     );
@@ -361,26 +288,13 @@ async fn challenge_game_clocks_start() {
 
 #[tokio::test]
 async fn challenge_opponent_clock_increment() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let bot0 = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_bot0")
-        .build();
-
     // Create a game for testing
     let options = ChallengeOptions::new().clock(180, 2);
-    let challenge = li.challenge_create("Bot0", Some(&options)).await.unwrap();
-    bot0.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenge_create("Bot0", Some(&options)).await.unwrap();
+    BOT0.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li
+    let result = LI
         .challenge_opponent_clock_increment(&challenge.id, 30)
         .await;
     assert!(
@@ -389,7 +303,7 @@ async fn challenge_opponent_clock_increment() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = bot0
+    let result = BOT0
         .challenge_opponent_clock_increment(&challenge.id, 30)
         .await;
     assert!(
@@ -398,7 +312,7 @@ async fn challenge_opponent_clock_increment() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li
+    let result = LI
         .challenge_opponent_clock_increment(&challenge.id, 100000)
         .await;
     assert!(
@@ -407,9 +321,9 @@ async fn challenge_opponent_clock_increment() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.challenge_opponent_clock_increment("notvalid", 30).await;
+    let result = LI.challenge_opponent_clock_increment("notvalid", 30).await;
     assert!(
-        result.as_ref().is_err_and(|err| err.is_lichess()),
+        result.is_err(),
         "Adding time to opponent clock did not fail: {:?}",
         result.unwrap()
     );

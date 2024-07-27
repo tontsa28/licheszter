@@ -1,6 +1,6 @@
 #![cfg(feature = "board")]
 
-use std::error::Error;
+use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::{
@@ -13,21 +13,25 @@ use licheszter::{
 };
 use tokio::time::{sleep, Duration};
 
-#[tokio::test]
-async fn board_seek_create() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
+// Connect to test accounts
+static LI: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_li")
-        .build();
+        .build()
+});
 
-    let adriana = Licheszter::builder()
+static ADRIANA: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_adriana")
-        .build();
+        .build()
+});
 
+#[tokio::test]
+async fn board_seek_create() {
     // Create options for testing
     let options1 = SeekOptions::new()
         .rated(true)
@@ -38,7 +42,7 @@ async fn board_seek_create() {
 
     // Run some test cases
     let thread1 = tokio::spawn(async move {
-        let mut result = li.board_seek_create(Some(&options1)).await.unwrap();
+        let mut result = LI.board_seek_create(Some(&options1)).await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -49,7 +53,7 @@ async fn board_seek_create() {
     });
 
     let thread2 = tokio::spawn(async move {
-        let mut result = adriana.board_seek_create(Some(&options2)).await.unwrap();
+        let mut result = ADRIANA.board_seek_create(Some(&options2)).await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -64,30 +68,16 @@ async fn board_seek_create() {
 
 #[tokio::test]
 async fn board_game_stream() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    // Connect to test accounts
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = li
+    let challenge = LI
         .challenge_create("Adriana", Some(&options))
         .await
         .unwrap();
-    adriana.challenge_accept(&challenge.id).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run a test case
-    let mut result = li.board_game_stream(&challenge.id).await.unwrap();
+    let mut result = LI.board_game_stream(&challenge.id).await.unwrap();
     let thread = tokio::spawn(async move {
         while let Some(event) = result.next().await {
             assert!(
@@ -99,25 +89,25 @@ async fn board_game_stream() {
     });
 
     // Play the game
-    li.board_play_move(&challenge.id, "e2e4", true)
+    LI.board_play_move(&challenge.id, "e2e4", true)
         .await
         .unwrap();
-    adriana
+    ADRIANA
         .board_play_move(&challenge.id, "e7e5", true)
         .await
         .unwrap();
-    li.board_play_move(&challenge.id, "g1f3", true)
+    LI.board_play_move(&challenge.id, "g1f3", true)
         .await
         .unwrap();
-    adriana
+    ADRIANA
         .board_play_move(&challenge.id, "b1c3", true)
         .await
         .unwrap();
 
-    li.board_chat_write(&challenge.id, ChatRoom::Player, "Good game!")
+    LI.board_chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
-    adriana
+    ADRIANA
         .board_chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
@@ -128,64 +118,51 @@ async fn board_game_stream() {
 
 #[tokio::test]
 async fn board_play_move() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = li
+    let challenge = LI
         .challenge_create("Adriana", Some(&options))
         .await
         .unwrap();
-    adriana.challenge_accept(&challenge.id).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li.board_play_move(&challenge.id, "e2e4", false).await;
+    let result = LI.board_play_move(&challenge.id, "e2e4", false).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = adriana.board_play_move(&challenge.id, "e7e5", true).await;
+    let result = ADRIANA.board_play_move(&challenge.id, "e7e5", true).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.board_play_move(&challenge.id, "d1d3", true).await;
+    let result = LI.board_play_move(&challenge.id, "d1d3", true).await;
     assert!(
         result.is_err(),
         "Playing a move did not fail: {:?}",
         result.unwrap()
     );
 
-    let result = li.board_play_move(&challenge.id, "g1f3", true).await;
+    let result = LI.board_play_move(&challenge.id, "g1f3", true).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = adriana.board_play_move(&challenge.id, "b8c6", true).await;
+    let result = ADRIANA.board_play_move(&challenge.id, "b8c6", true).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.board_play_move("notvalid", "a1a3", false).await;
+    let result = LI.board_play_move("notvalid", "a1a3", false).await;
     assert!(
         result.is_err(),
         "Playing a move did not fail: {:?}",
@@ -195,25 +172,12 @@ async fn board_play_move() {
 
 #[tokio::test]
 async fn board_chat_write() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
     // Create a game for testing
-    let challenge = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li
+    let result = LI
         .board_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await;
     assert!(
@@ -222,7 +186,7 @@ async fn board_chat_write() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = adriana
+    let result = ADRIANA
         .board_chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
         .await;
     assert!(
@@ -231,7 +195,7 @@ async fn board_chat_write() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li
+    let result = LI
         .board_chat_write("notvalid", ChatRoom::Player, "GLHF!")
         .await;
     assert!(
@@ -243,41 +207,28 @@ async fn board_chat_write() {
 
 #[tokio::test]
 async fn board_chat_read() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
     // Create a game for testing
-    let challenge = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Write some messages to the chat
-    li.board_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+    LI.board_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
-    adriana
+    ADRIANA
         .board_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
 
     // Run some test cases
-    let result = li.board_chat_read(&challenge.id).await;
+    let result = LI.board_chat_read(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to read chat messages: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.board_chat_read("notvalid").await;
+    let result = LI.board_chat_read("notvalid").await;
     assert!(
         result.is_err(),
         "Reading chat messages did not fail: {:?}",
@@ -287,48 +238,38 @@ async fn board_chat_read() {
 
 #[tokio::test]
 async fn board_game_abort() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
-    // Create some games for testing
-    let challenge1 = li.challenge_create("Adriana", None).await.unwrap();
-    let challenge2 = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge1.id).await.unwrap();
-    adriana.challenge_accept(&challenge2.id).await.unwrap();
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li.board_game_abort(&challenge1.id).await;
+    let result = LI.board_game_abort(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to abort game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = adriana.board_game_abort(&challenge2.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to abort game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-
-    let result = adriana.board_game_abort(&challenge1.id).await;
+    let result = ADRIANA.board_game_abort(&challenge.id).await;
     assert!(
         result.is_err(),
         "Aborting game did not fail: {:?}",
         result.unwrap()
     );
 
-    let result = li.board_game_abort("notvalid").await;
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+
+    // Run some test cases
+    let result = ADRIANA.board_game_abort(&challenge.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to abort game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.board_game_abort("notvalid").await;
     assert!(
         result.is_err(),
         "Aborting game did not fail: {:?}",
@@ -338,48 +279,38 @@ async fn board_game_abort() {
 
 #[tokio::test]
 async fn board_game_resign() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
-    // Create some games for testing
-    let challenge1 = li.challenge_create("Adriana", None).await.unwrap();
-    let challenge2 = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge1.id).await.unwrap();
-    adriana.challenge_accept(&challenge2.id).await.unwrap();
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li.board_game_resign(&challenge1.id).await;
+    let result = LI.board_game_resign(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to resign game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = adriana.board_game_resign(&challenge2.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to resign game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-
-    let result = adriana.board_game_resign(&challenge1.id).await;
+    let result = ADRIANA.board_game_resign(&challenge.id).await;
     assert!(
         result.is_err(),
         "Resigning game did not fail: {:?}",
         result.unwrap()
     );
 
-    let result = li.board_game_resign("notvalid").await;
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+
+    // Run some test cases
+    let result = ADRIANA.board_game_resign(&challenge.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to resign game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.board_game_resign("notvalid").await;
     assert!(
         result.is_err(),
         "Resigning game did not fail: {:?}",
@@ -389,41 +320,31 @@ async fn board_game_resign() {
 
 #[tokio::test]
 async fn board_handle_draws() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
+    // Run a test case
+    let result = LI.board_handle_draws(&challenge.id, true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to handle draws: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create some games for testing
-    let challenge1 = li.challenge_create("Adriana", None).await.unwrap();
-    let challenge2 = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge1.id).await.unwrap();
-    adriana.challenge_accept(&challenge2.id).await.unwrap();
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li.board_handle_draws(&challenge1.id, true).await;
+    let result = LI.board_handle_draws(&challenge.id, false).await;
     assert!(
         result.is_ok(),
         "Failed to handle draws: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.board_handle_draws(&challenge2.id, false).await;
-    assert!(
-        result.is_ok(),
-        "Failed to handle draws: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-
-    let result = li.board_handle_draws("notvalid", true).await;
+    let result = LI.board_handle_draws("notvalid", true).await;
     assert!(
         result.is_err(),
         "Handling draws did not fail: {:?}",
@@ -433,41 +354,31 @@ async fn board_handle_draws() {
 
 #[tokio::test]
 async fn board_handle_takebacks() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
+    // Run a test case
+    let result = LI.board_handle_takebacks(&challenge.id, true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to handle takebacks: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create some games for testing
-    let challenge1 = li.challenge_create("Adriana", None).await.unwrap();
-    let challenge2 = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge1.id).await.unwrap();
-    adriana.challenge_accept(&challenge2.id).await.unwrap();
+    // Create a game for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li.board_handle_takebacks(&challenge1.id, true).await;
+    let result = LI.board_handle_takebacks(&challenge.id, false).await;
     assert!(
         result.is_ok(),
         "Failed to handle takebacks: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.board_handle_takebacks(&challenge2.id, false).await;
-    assert!(
-        result.is_ok(),
-        "Failed to handle takebacks: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-
-    let result = li.board_handle_takebacks("notvalid", true).await;
+    let result = LI.board_handle_takebacks("notvalid", true).await;
     assert!(
         result.is_err(),
         "Handling takebacks did not fail: {:?}",
@@ -477,39 +388,26 @@ async fn board_handle_takebacks() {
 
 #[tokio::test]
 async fn board_claim_victory() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
     // Create some games for testing
-    let challenge = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li.board_claim_victory(&challenge.id).await;
+    let result = LI.board_claim_victory(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to claim victory of a game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = adriana.board_claim_victory(&challenge.id).await;
+    let result = ADRIANA.board_claim_victory(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to claim victory of a game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.board_claim_victory("notvalid").await;
+    let result = LI.board_claim_victory("notvalid").await;
     assert!(
         result.is_err(),
         "Claiming victory of a game did not fail: {:?}",
@@ -520,32 +418,19 @@ async fn board_claim_victory() {
 // TODO: Needs more test cases when tournament functionality is implemented
 #[tokio::test]
 async fn board_berserk() {
-    // Connect to test accounts
-    let li = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_li")
-        .build();
-
-    let adriana = Licheszter::builder()
-        .with_base_url("http://localhost:8080")
-        .unwrap()
-        .with_authentication("lip_adriana")
-        .build();
-
     // Create some games for testing
-    let challenge = li.challenge_create("Adriana", None).await.unwrap();
-    adriana.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = li.board_berserk(&challenge.id).await;
+    let result = LI.board_berserk(&challenge.id).await;
     assert!(
         result.is_err(),
         "Berserking a game did not fail: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = li.board_berserk("notvalid").await;
+    let result = LI.board_berserk("notvalid").await;
     assert!(
         result.is_err(),
         "Berserking a game did not fail: {:?}",
