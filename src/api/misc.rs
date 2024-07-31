@@ -13,7 +13,7 @@ use futures_util::Stream;
 impl Licheszter {
     /// Stream the events reaching a Lichess user in real time.
     /// When the stream opens, all current challenges and games are sent.
-    pub async fn events_stream(&self) -> Result<impl Stream<Item = Result<Event>>> {
+    pub async fn connect(&self) -> Result<impl Stream<Item = Result<Event>>> {
         let mut url = self.base_url();
         url.set_path("api/stream/event");
         let builder = self.client.get(url);

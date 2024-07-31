@@ -10,8 +10,8 @@ use crate::{
 use futures_util::Stream;
 
 impl Licheszter {
-    /// Search the Masters opening database.
-    pub async fn opening_masters(
+    /// Lookup positions from the Masters opening database.
+    pub async fn opening_explorer_masters(
         &self,
         options: Option<&MastersOpeningOptions>,
     ) -> Result<Opening> {
@@ -28,8 +28,8 @@ impl Licheszter {
         self.to_model::<Opening>(builder).await
     }
 
-    /// Search the Lichess opening database.
-    pub async fn opening_lichess(
+    /// Lookup positions from the Lichess opening database.
+    pub async fn opening_explorer_lichess(
         &self,
         options: Option<&LichessOpeningOptions>,
     ) -> Result<Opening> {
@@ -46,8 +46,8 @@ impl Licheszter {
         self.to_model::<Opening>(builder).await
     }
 
-    /// Search the player opening database.
-    pub async fn opening_player(
+    /// Lookup positions from the Player opening database.
+    pub async fn opening_explorer_player(
         &self,
         player: &str,
         color: Color,

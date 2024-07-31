@@ -77,7 +77,7 @@ async fn board_game_stream() {
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run a test case
-    let mut result = LI.board_game_stream(&challenge.id).await.unwrap();
+    let mut result = LI.board_game_connect(&challenge.id).await.unwrap();
     let thread = tokio::spawn(async move {
         while let Some(event) = result.next().await {
             assert!(

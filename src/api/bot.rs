@@ -10,7 +10,7 @@ use futures_util::Stream;
 
 impl Licheszter {
     /// Stream game state using the Bot API.
-    pub async fn bot_game_stream(
+    pub async fn bot_game_connect(
         &self,
         game_id: &str,
     ) -> Result<impl Stream<Item = Result<BoardState>>> {

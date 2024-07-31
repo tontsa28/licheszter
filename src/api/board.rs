@@ -32,7 +32,7 @@ impl Licheszter {
     }
 
     /// Stream game state using the Board API.
-    pub async fn board_game_stream(
+    pub async fn board_game_connect(
         &self,
         game_id: &str,
     ) -> Result<impl Stream<Item = Result<BoardState>>> {

@@ -25,7 +25,7 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
 async fn events_stream() {
     // Run some test cases
     let thread = tokio::spawn(async move {
-        let mut result = LI.events_stream().await.unwrap();
+        let mut result = LI.connect().await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -38,7 +38,7 @@ async fn events_stream() {
     thread.abort();
 
     let thread = tokio::spawn(async move {
-        let mut result = BOT0.events_stream().await.unwrap();
+        let mut result = BOT0.connect().await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
