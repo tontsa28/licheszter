@@ -17,7 +17,7 @@ use tokio::time::{sleep, Duration};
 static EXPLORER: LazyLock<Licheszter> = LazyLock::new(|| Licheszter::new());
 
 #[tokio::test]
-async fn opening_masters() {
+async fn opening_explorer_masters() {
     // Create options for testing
     let options = MastersOpeningOptions::new()
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
@@ -52,7 +52,7 @@ async fn opening_masters() {
 }
 
 #[tokio::test]
-async fn opening_lichess() {
+async fn opening_explorer_lichess() {
     // Create options for testing
     let options = LichessOpeningOptions::new()
         .variant(VariantMode::Standard)
@@ -92,7 +92,7 @@ async fn opening_lichess() {
 }
 
 #[tokio::test]
-async fn opening_player() {
+async fn opening_explorer_player() {
     // Create options for testing
     let options1 = PlayerOpeningOptions::new()
         .variant(VariantMode::Standard)

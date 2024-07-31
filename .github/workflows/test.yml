@@ -1,4 +1,4 @@
-name: licheszter test CI
+name: licheszter integration tests
 
 on:
   push:
@@ -9,6 +9,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container: debian:sid-slim
+    services:
+      lila:
+        image: ghcr.io/lichess-org/lila-docker:main
+        options: --restart=always
     steps:
       - uses: actions/checkout@v3
 
@@ -16,4 +21,4 @@ jobs:
         run: rustup update
 
       - name: Check the project
-        run: cargo check
+        run: cargo test --features=dev -- --test-threads=1

@@ -28,7 +28,7 @@ static BOT1: LazyLock<Licheszter> = LazyLock::new(|| {
 });
 
 #[tokio::test]
-async fn bot_game_stream() {
+async fn bot_game_connect() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
     let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();

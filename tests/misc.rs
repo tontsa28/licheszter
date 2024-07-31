@@ -22,7 +22,7 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
 });
 
 #[tokio::test]
-async fn events_stream() {
+async fn connect() {
     // Run some test cases
     let thread = tokio::spawn(async move {
         let mut result = LI.connect().await.unwrap();

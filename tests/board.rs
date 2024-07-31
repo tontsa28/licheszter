@@ -67,7 +67,7 @@ async fn board_seek_create() {
 }
 
 #[tokio::test]
-async fn board_game_stream() {
+async fn board_game_connect() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
     let challenge = LI
