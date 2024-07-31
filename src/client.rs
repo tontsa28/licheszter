@@ -196,11 +196,23 @@ impl LicheszterBuilder {
         Ok(self)
     }
 
+    /// Insert a valid URL of a custom opening explorer server.
+    /// This can be useful, for example, when hosting your own server for debugging purposes.
+    ///
+    /// # Errors
+    /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
+    #[cfg(feature = "explorer")]
     pub fn with_explorer_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.explorer_url = url.into_url()?;
         Ok(self)
     }
 
+    /// Insert a valid URL of a custom endgame tablebase server.
+    /// This can be useful, for example, when hosting your own server for debugging purposes.
+    ///
+    /// # Errors
+    /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
+    #[cfg(feature = "tablebase")]
     pub fn with_tablebase_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.tablebase_url = url.into_url()?;
         Ok(self)

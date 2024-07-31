@@ -32,7 +32,6 @@ comma_serde_urlencoded = "0.8.1"
 
 [dev-dependencies]
 tokio = { version = "1.38.0", features = ["macros"] }
-wiremock = "0.6.0"
 
 [features]
 # No features are enabled by default

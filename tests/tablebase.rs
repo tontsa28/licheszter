@@ -1,94 +1,95 @@
 #![cfg(feature = "tablebase")]
 
+use std::{error::Error, sync::LazyLock};
+
 use licheszter::client::Licheszter;
-use wiremock::{
-    matchers::{method, path, query_param},
-    Mock, MockServer, ResponseTemplate,
-};
+
+// Connect to a test client
+static TABLEBASE: LazyLock<Licheszter> = LazyLock::new(|| Licheszter::new());
 
 #[tokio::test]
 async fn tablebase_standard() {
-    // Start the mock server & get the response from a file
-    let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/tablebase_standard.json")
-        .await
-        .unwrap();
-
-    // Mount the mock response into the server
-    Mock::given(method("GET"))
-        .and(path("standard"))
-        .and(query_param("fen", "4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
-        .mount(&mock_server)
+    // Run some test cases
+    let result = TABLEBASE
+        .endgame_standard("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch tablebase: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create a new instance of Licheszter
-    let client = Licheszter::builder()
-        .with_tablebase_url(&mock_server.uri())
-        .unwrap()
-        .build();
+    let result = TABLEBASE
+        .endgame_standard("8/8/8/8/7P/4B3/4kP1K/8 b - - 0 46")
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch tablebase: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Call the mock
-    client
-        .endgame_standard("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1")
-        .await
-        .unwrap();
+    let result = TABLEBASE.endgame_standard("invalidfen").await;
+    assert!(
+        result.is_err(),
+        "Fetching tablebase did not fail: {:?}",
+        result.unwrap()
+    );
 }
 
 #[tokio::test]
 async fn tablebase_atomic() {
-    // Start the mock server & get the response from a file
-    let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/tablebase_atomic.json")
-        .await
-        .unwrap();
-
-    // Mount the mock response into the server
-    Mock::given(method("GET"))
-        .and(path("atomic"))
-        .and(query_param("fen", "4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
-        .mount(&mock_server)
+    // Run some test cases
+    let result = TABLEBASE
+        .endgame_atomic("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch tablebase: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create a new instance of Licheszter
-    let client = Licheszter::builder()
-        .with_tablebase_url(&mock_server.uri())
-        .unwrap()
-        .build();
+    let result = TABLEBASE
+        .endgame_atomic("8/8/8/8/7P/4B3/4kP1K/8 b - - 0 46")
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch tablebase: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Call the mock
-    client
-        .endgame_atomic("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1")
-        .await
-        .unwrap();
+    let result = TABLEBASE.endgame_atomic("invalidfen").await;
+    assert!(
+        result.is_err(),
+        "Fetching tablebase did not fail: {:?}",
+        result.unwrap()
+    );
 }
 
 #[tokio::test]
 async fn tablebase_antichess() {
-    // Start the mock server & get the response from a file
-    let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/tablebase_antichess.json")
-        .await
-        .unwrap();
-
-    // Mount the mock response into the server
-    Mock::given(method("GET"))
-        .and(path("antichess"))
-        .and(query_param("fen", "4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
-        .mount(&mock_server)
+    // Run some test cases
+    let result = TABLEBASE
+        .endgame_antichess("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch tablebase: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create a new instance of Licheszter
-    let client = Licheszter::builder()
-        .with_tablebase_url(&mock_server.uri())
-        .unwrap()
-        .build();
+    let result = TABLEBASE
+        .endgame_antichess("8/8/8/8/7P/4B3/4kP1K/8 b - - 0 46")
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch tablebase: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Call the mock
-    client
-        .endgame_antichess("4k3/6KP/8/8/8/8/7p/8_w_-_-_0_1")
-        .await
-        .unwrap();
+    let result = TABLEBASE.endgame_antichess("invalidfen").await;
+    assert!(
+        result.is_err(),
+        "Fetching tablebase did not fail: {:?}",
+        result.unwrap()
+    );
 }
