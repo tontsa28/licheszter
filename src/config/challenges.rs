@@ -188,7 +188,7 @@ impl AIChallengeOptions {
     }
 }
 
-/// Optional configuration for creating challenges using [`Licheszter::challenge_create()`](fn@crate::client::Licheszter::challenge_create).
+/// Optional configuration for creating challenges using [`Licheszter::challenge_create_open()`](fn@crate::client::Licheszter::challenge_create_open).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
@@ -207,7 +207,7 @@ pub struct OpenChallengeOptions {
 }
 
 impl OpenChallengeOptions {
-    /// Create a new instance of [`ChallengeOptions`] with default configuration.
+    /// Create a new instance of [`OpenChallengeOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -289,12 +289,7 @@ impl OpenChallengeOptions {
     /// If set, only these users will be allowed to join the game.
     /// The first username gets the white pieces.
     pub fn users(mut self, users: Vec<&str>) -> Self {
-        self.users = Some(
-            users
-                .iter()
-                .map(|str| str.to_string())
-                .collect::<Vec<String>>(),
-        );
+        self.users = Some(users.iter().map(|s| s.to_string()).collect::<Vec<String>>());
         self
     }
 

@@ -34,7 +34,6 @@ async fn events_stream() {
             );
         }
     });
-
     sleep(Duration::from_secs(1)).await;
     thread.abort();
 
@@ -48,7 +47,6 @@ async fn events_stream() {
             );
         }
     });
-
     sleep(Duration::from_secs(1)).await;
     thread.abort();
 }

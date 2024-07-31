@@ -31,7 +31,7 @@ pub struct PlayerOpening {
     pub moves: Vec<PlayerOpeningMove>,
     pub recent_games: Vec<HistoricOpening>,
     pub opening: Option<OpeningDetails>,
-    pub queue_position: u8,
+    pub queue_position: u16,
 }
 
 #[skip_serializing_none]
@@ -75,7 +75,7 @@ pub struct HistoricOpening {
     pub white: PlayerDetails,
     pub black: PlayerDetails,
     pub year: u16,
-    pub month: String,
+    pub month: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -99,4 +99,19 @@ pub struct HistoricMonth {
     pub white: u32,
     pub black: u32,
     pub draws: u32,
+}
+
+#[repr(u16)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename = "camelCase")]
+pub enum OpeningRatings {
+    Zero = 0,
+    Thousand = 1000,
+    TwelveHundred = 1200,
+    FourteenHundred = 1400,
+    SixteenHundred = 1600,
+    EighteenHundred = 1800,
+    TwoThousand = 2000,
+    TwentyTwoHundred = 2200,
+    TwentyFiveHundred = 2500,
 }

@@ -1,50 +1,70 @@
 use crate::{
     client::Licheszter,
+    config::explorer::{LichessOpeningOptions, MastersOpeningOptions, PlayerOpeningOptions},
     error::Result,
-    models::explorer::{Opening, PlayerOpening},
+    models::{
+        explorer::{Opening, PlayerOpening},
+        game::Color,
+    },
 };
 use futures_util::Stream;
 
 impl Licheszter {
     /// Search the Masters opening database.
-    pub async fn opening_masters(&self, query_params: Option<&[(&str, &str)]>) -> Result<Opening> {
+    pub async fn opening_masters(
+        &self,
+        options: Option<&MastersOpeningOptions>,
+    ) -> Result<Opening> {
         let mut url = self.explorer_url();
         url.set_path("masters");
-        let mut builder = self.client.get(url);
 
-        if let Some(params) = query_params {
-            builder = builder.query(&params);
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
         }
 
+        let builder = self.client.get(url);
         self.to_model::<Opening>(builder).await
     }
 
     /// Search the Lichess opening database.
-    pub async fn opening_lichess(&self, query_params: Option<&[(&str, &str)]>) -> Result<Opening> {
+    pub async fn opening_lichess(
+        &self,
+        options: Option<&LichessOpeningOptions>,
+    ) -> Result<Opening> {
         let mut url = self.explorer_url();
         url.set_path("lichess");
-        let mut builder = self.client.get(url);
 
-        if let Some(params) = query_params {
-            builder = builder.query(&params);
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
         }
 
+        let builder = self.client.get(url);
         self.to_model::<Opening>(builder).await
     }
 
     /// Search the player opening database.
     pub async fn opening_player(
         &self,
-        query_params: Option<&[(&str, &str)]>,
+        player: &str,
+        color: Color,
+        options: Option<&PlayerOpeningOptions>,
     ) -> Result<impl Stream<Item = Result<PlayerOpening>>> {
         let mut url = self.explorer_url();
         url.set_path("player");
-        let mut builder = self.client.get(url);
+        let encoded = comma_serde_urlencoded::to_string(&(("player", player), ("color", color)))?;
+        url.set_query(Some(&encoded));
 
-        if let Some(params) = query_params {
-            builder = builder.query(&params);
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = encoded + "&" + &comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
         }
 
+        let builder = self.client.get(url);
         self.to_model_stream::<PlayerOpening>(builder).await
     }
 }

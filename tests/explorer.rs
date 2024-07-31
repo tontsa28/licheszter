@@ -1,88 +1,148 @@
 #![cfg(feature = "explorer")]
 
-use futures_util::TryStreamExt;
-use licheszter::client::Licheszter;
-use wiremock::{
-    matchers::{method, path},
-    Mock, MockServer, ResponseTemplate,
+use std::{error::Error, sync::LazyLock};
+
+use futures_util::StreamExt;
+use licheszter::{
+    client::Licheszter,
+    config::explorer::{LichessOpeningOptions, MastersOpeningOptions, PlayerOpeningOptions},
+    models::{
+        explorer::OpeningRatings,
+        game::{Color, GameType, Speed, VariantMode},
+    },
 };
+use tokio::time::{sleep, Duration};
+
+// Connect to a test client
+static EXPLORER: LazyLock<Licheszter> = LazyLock::new(|| Licheszter::new());
 
 #[tokio::test]
 async fn opening_masters() {
-    // Start the mock server & get the response from a file
-    let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/explorer_masters.json")
-        .await
-        .unwrap();
+    // Create options for testing
+    let options = MastersOpeningOptions::new()
+        .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
+        .play(vec!["g1f3"])
+        .since(1967)
+        .until(2024)
+        .moves(20)
+        .top_games(10);
 
-    // Mount the mock response into the server
-    Mock::given(method("GET"))
-        .and(path("masters"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
-        .mount(&mock_server)
-        .await;
+    // Run some test cases
+    let result = EXPLORER.opening_masters(None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch masters openings: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create a new instance of Licheszter
-    let client = Licheszter::builder()
-        .with_explorer_url(&mock_server.uri())
-        .unwrap()
-        .build();
+    let result = EXPLORER.opening_masters(Some(&options)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch masters openings: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Call the mock
-    client.opening_masters(None).await.unwrap();
+    let options = options.play(vec!["d1d3"]);
+    let result = EXPLORER.opening_masters(Some(&options)).await;
+    assert!(
+        result.is_err(),
+        "Fetching masters openings did not fail: {:?}",
+        result.unwrap()
+    );
 }
 
 #[tokio::test]
 async fn opening_lichess() {
-    // Start the mock server & get the response from a file
-    let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/explorer_lichess.json")
-        .await
-        .unwrap();
+    // Create options for testing
+    let options = LichessOpeningOptions::new()
+        .variant(VariantMode::Standard)
+        .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
+        .play(vec!["g1f3"])
+        .speeds(vec![Speed::Blitz, Speed::Rapid])
+        .ratings(vec![OpeningRatings::TwoThousand])
+        .since("1967-01")
+        .until("2024-01")
+        .moves(20)
+        .top_games(1)
+        .recent_games(1)
+        .history(true);
 
-    // Mount the mock response into the server
-    Mock::given(method("GET"))
-        .and(path("lichess"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(response, "application/json"))
-        .mount(&mock_server)
-        .await;
+    // Run some test cases
+    let result = EXPLORER.opening_lichess(None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch Lichess openings: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Create a new instance of Licheszter
-    let client = Licheszter::builder()
-        .with_explorer_url(&mock_server.uri())
-        .unwrap()
-        .build();
+    let result = EXPLORER.opening_lichess(Some(&options)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch Lichess openings: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
 
-    // Call the mock
-    client.opening_lichess(None).await.unwrap();
+    let options = options.since("invalid-month");
+    let result = EXPLORER.opening_lichess(Some(&options)).await;
+    assert!(
+        result.is_err(),
+        "Fetching Lichess openings did not fail: {:?}",
+        result.unwrap()
+    );
 }
 
 #[tokio::test]
 async fn opening_player() {
-    // Start the mock server & get the response from a file
-    let mock_server = MockServer::start().await;
-    let response = tokio::fs::read_to_string("tests/responses/explorer_player.json")
-        .await
-        .unwrap();
+    // Create options for testing
+    let options1 = PlayerOpeningOptions::new()
+        .variant(VariantMode::Standard)
+        .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
+        .play(vec!["g1f3"])
+        .speeds(vec![Speed::Blitz, Speed::Rapid])
+        .mode(GameType::Rated)
+        .since("1967-01")
+        .until("2024-01")
+        .moves(20)
+        .recent_games(1);
+    let options2 = options1.to_owned().since("invalid-month");
 
-    // Mount the mock response into the server
-    Mock::given(method("GET"))
-        .and(path("player"))
-        .respond_with(
-            ResponseTemplate::new(200)
-                .set_body_raw(response, "application/x-ndjson")
-                .append_header("Transfer-Encoding", "chunked"),
-        )
-        .mount(&mock_server)
+    // Run some test cases
+    let thread = tokio::spawn(async move {
+        let mut result = EXPLORER
+            .opening_player("Cheszter", Color::White, None)
+            .await
+            .unwrap();
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to fetch player openings: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    });
+    let handle = thread.abort_handle();
+    sleep(Duration::from_secs(1)).await;
+    handle.abort();
+
+    let thread = tokio::spawn(async move {
+        let mut result = EXPLORER
+            .opening_player("Cheszter", Color::White, Some(&options1))
+            .await
+            .unwrap();
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to fetch player openings: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    });
+    let handle = thread.abort_handle();
+    sleep(Duration::from_secs(1)).await;
+    handle.abort();
+
+    let result = EXPLORER
+        .opening_player("NoSuchUser", Color::Black, Some(&options2))
         .await;
-
-    // Create a new instance of Licheszter
-    let client = Licheszter::builder()
-        .with_explorer_url(&mock_server.uri())
-        .unwrap()
-        .build();
-
-    // Call the mock
-    let mut stream = client.opening_player(None).await.unwrap();
-    while stream.try_next().await.unwrap().is_some() {}
+    assert!(result.is_err(), "Fetching player openings did not fail");
 }

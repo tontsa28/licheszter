@@ -264,3 +264,10 @@ pub enum AILevel {
     Seven = 7,
     Eight = 8,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum GameType {
+    Casual,
+    Rated,
+}
