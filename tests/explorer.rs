@@ -1,6 +1,6 @@
 #![cfg(feature = "explorer")]
 
-use std::{error::Error, sync::LazyLock};
+use std::{error::Error, panic, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::{
@@ -120,9 +120,12 @@ async fn opening_explorer_player() {
             );
         }
     });
-    let handle = thread.abort_handle();
     sleep(Duration::from_secs(1)).await;
-    handle.abort();
+    thread.abort();
+    let result = thread.await;
+    if result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(result.unwrap_err().into_panic());
+    }
 
     let thread = tokio::spawn(async move {
         let mut result = EXPLORER
@@ -137,9 +140,12 @@ async fn opening_explorer_player() {
             );
         }
     });
-    let handle = thread.abort_handle();
     sleep(Duration::from_secs(1)).await;
-    handle.abort();
+    thread.abort();
+    let result = thread.await;
+    if result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(result.unwrap_err().into_panic());
+    }
 
     let result = EXPLORER
         .opening_explorer_player("NoSuchUser", Color::Black, Some(&options2))

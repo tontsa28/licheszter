@@ -1,13 +1,15 @@
 use std::{error::Error, sync::LazyLock};
 
+use futures_util::StreamExt;
 use licheszter::{
     client::Licheszter,
     config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     models::{
-        board::ChallengeDeclineReason,
+        board::{ChallengeComplete, ChallengeDeclineReason},
         game::{AILevel, Color, CorrespondenceDays, Rules, VariantMode},
     },
 };
+use tokio::time::{sleep, Duration};
 
 // Connect to test accounts
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
@@ -87,6 +89,60 @@ async fn challenge_create() {
         result.is_err(),
         "Creating a challenge did not fail: {:?}",
         result.unwrap()
+    );
+}
+
+#[tokio::test]
+async fn challenge_create_connect() {
+    // Create options for testing
+    let options = ChallengeOptions::new()
+        .rated(true)
+        .clock(24897, 255)
+        .days(CorrespondenceDays::Seven)
+        .color(Color::Black)
+        .variant(VariantMode::FromPosition)
+        .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
+
+    // Run some test cases
+    let mut result = LI.challenge_create_connect("Bot0", None).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to create a streamed challenge: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+        sleep(Duration::from_secs(1)).await;
+        if let ChallengeComplete::Challenge(challenge) = event.unwrap() {
+            BOT0.challenge_accept(&challenge.id).await.unwrap();
+        }
+    }
+
+    let mut result = LI
+        .challenge_create_connect("Bot0", Some(&options))
+        .await
+        .unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to create a streamed challenge: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+        sleep(Duration::from_secs(1)).await;
+        if let ChallengeComplete::Challenge(challenge) = event.unwrap() {
+            BOT0.challenge_accept(&challenge.id).await.unwrap();
+        }
+    }
+
+    let result = LI.challenge_create_connect("Li", None).await;
+    assert!(
+        result.is_err(),
+        "Creating a streamed challenge did not fail"
+    );
+
+    let result = LI.challenge_create_connect("NoSuchUser", None).await;
+    assert!(
+        result.is_err(),
+        "Creating a streamed challenge did not fail"
     );
 }
 

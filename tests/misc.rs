@@ -1,4 +1,4 @@
-use std::{error::Error, sync::LazyLock};
+use std::{error::Error, panic, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::client::Licheszter;
@@ -36,6 +36,10 @@ async fn connect() {
     });
     sleep(Duration::from_secs(1)).await;
     thread.abort();
+    let result = thread.await;
+    if result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(result.unwrap_err().into_panic());
+    }
 
     let thread = tokio::spawn(async move {
         let mut result = BOT0.connect().await.unwrap();
@@ -49,6 +53,10 @@ async fn connect() {
     });
     sleep(Duration::from_secs(1)).await;
     thread.abort();
+    let result = thread.await;
+    if result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(result.unwrap_err().into_panic());
+    }
 }
 
 #[tokio::test]

@@ -1,3 +1,4 @@
+use futures_util::Stream;
 use reqwest::header;
 
 use crate::{
@@ -5,7 +6,10 @@ use crate::{
     config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     error::Result,
     models::{
-        board::{AIChallenge, Challenge, ChallengeDeclineReason, Challenges, OpenChallenge},
+        board::{
+            AIChallenge, Challenge, ChallengeComplete, ChallengeDeclineReason, Challenges,
+            OpenChallenge,
+        },
         common::OkResponse,
         game::AILevel,
     },
@@ -43,6 +47,32 @@ impl Licheszter {
         }
 
         self.to_model::<Challenge>(builder).await
+    }
+
+    /// Challenge someone to play and stream the response.
+    /// The challenge is kept alive until the connection is closed by the client.
+    /// The targeted player can choose to accept or decline.
+    /// The game ID will be the same as the challenge ID.
+    pub async fn challenge_create_connect(
+        &self,
+        username: &str,
+        options: Option<&ChallengeOptions>,
+    ) -> Result<impl Stream<Item = Result<ChallengeComplete>>> {
+        let mut url = self.base_url();
+        let path = format!("api/challenge/{username}");
+        url.set_path(&path);
+        let mut builder = self.client.post(url).form(&[("keepAliveStream", true)]);
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = "keepAliveStream=true&".to_string()
+                + &comma_serde_urlencoded::to_string(options)?.replace('_', ".");
+            builder = builder
+                .body(encoded)
+                .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
+        }
+
+        self.to_model_stream::<ChallengeComplete>(builder).await
     }
 
     /// Get details about a specific challenge, even if it has been recently accepted, canceled or declined.

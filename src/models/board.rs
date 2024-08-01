@@ -151,6 +151,14 @@ pub enum ChallengeDirection {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(untagged)]
+pub enum ChallengeComplete {
+    Challenge(Challenge),
+    Done { done: ChallengeStatus },
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Status {
     pub id: u8,
     pub name: String,

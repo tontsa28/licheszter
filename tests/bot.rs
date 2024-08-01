@@ -1,6 +1,6 @@
 #![cfg(feature = "bot")]
 
-use std::{error::Error, sync::LazyLock};
+use std::{error::Error, panic, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::{
@@ -69,6 +69,10 @@ async fn bot_game_connect() {
 
     sleep(Duration::from_secs(1)).await;
     thread.abort();
+    let result = thread.await;
+    if result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(result.unwrap_err().into_panic());
+    }
 }
 
 #[tokio::test]

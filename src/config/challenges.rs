@@ -15,8 +15,6 @@ pub struct ChallengeOptions {
     color: Option<Color>,
     variant: Option<VariantMode>,
     fen: Option<String>,
-    #[serde(rename = "keepAliveStream")]
-    keep_alive_stream: Option<bool>,
     rules: Option<Vec<Rules>>,
 }
 
@@ -89,15 +87,6 @@ impl ChallengeOptions {
     #[must_use]
     pub fn fen(mut self, fen: &str) -> Self {
         self.fen = Some(fen.to_string());
-        self
-    }
-
-    /// Determines whether the response will be streamed as NDJSON or not.
-    /// Defaults to false.
-    // TODO: It is not clear what are the consequences of setting this to true at the moment
-    #[must_use]
-    pub fn keep_alive_stream(mut self, keep_alive: bool) -> Self {
-        self.keep_alive_stream = Some(keep_alive);
         self
     }
 
