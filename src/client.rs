@@ -15,7 +15,11 @@ use tokio_util::io::StreamReader;
 
 // Lichess default URL constants
 const BASE_URL: &str = "https://lichess.org";
-const EXPLORER_URL: &str = "https://explorer.lichess.ovh";
+
+#[cfg(feature = "openings")]
+const OPENINGS_URL: &str = "https://explorer.lichess.ovh";
+
+#[cfg(feature = "tablebase")]
 const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
 
 /// [`Licheszter`] is used to connect to the Lichess API.
@@ -23,7 +27,9 @@ const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
 pub struct Licheszter {
     pub(crate) client: Client,
     base_url: Url,
-    explorer_url: Url,
+    #[cfg(feature = "openings")]
+    openings_url: Url,
+    #[cfg(feature = "tablebase")]
     tablebase_url: Url,
 }
 
@@ -57,12 +63,14 @@ impl Licheszter {
     }
 
     /// Get the opening explorer server URL used in this `Licheszter` client.
+    #[cfg(feature = "openings")]
     #[must_use]
-    pub fn explorer_url(&self) -> Url {
-        self.explorer_url.clone()
+    pub fn openings_url(&self) -> Url {
+        self.openings_url.clone()
     }
 
     /// Get the tablebase server URL used in this `Licheszter` client.
+    #[cfg(feature = "tablebase")]
     #[must_use]
     pub fn tablebase_url(&self) -> Url {
         self.tablebase_url.clone()
@@ -137,7 +145,9 @@ impl Default for Licheszter {
 pub struct LicheszterBuilder {
     client: Client,
     base_url: Url,
-    explorer_url: Url,
+    #[cfg(feature = "openings")]
+    openings_url: Url,
+    #[cfg(feature = "tablebase")]
     tablebase_url: Url,
 }
 
@@ -156,7 +166,9 @@ impl LicheszterBuilder {
         Licheszter {
             client: self.client,
             base_url: self.base_url,
-            explorer_url: self.explorer_url,
+            #[cfg(feature = "openings")]
+            openings_url: self.openings_url,
+            #[cfg(feature = "tablebase")]
             tablebase_url: self.tablebase_url,
         }
     }
@@ -202,8 +214,8 @@ impl LicheszterBuilder {
     /// # Errors
     /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
     #[cfg(feature = "openings")]
-    pub fn with_explorer_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
-        self.explorer_url = url.into_url()?;
+    pub fn with_openings_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
+        self.openings_url = url.into_url()?;
         Ok(self)
     }
 
@@ -225,7 +237,9 @@ impl Default for LicheszterBuilder {
         Self {
             client: Client::builder().use_rustls_tls().build().unwrap(),
             base_url: Url::parse(BASE_URL).unwrap(),
-            explorer_url: Url::parse(EXPLORER_URL).unwrap(),
+            #[cfg(feature = "openings")]
+            openings_url: Url::parse(OPENINGS_URL).unwrap(),
+            #[cfg(feature = "tablebase")]
             tablebase_url: Url::parse(TABLEBASE_URL).unwrap(),
         }
     }

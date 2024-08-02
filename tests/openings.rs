@@ -7,8 +7,8 @@ use licheszter::{
     client::Licheszter,
     config::openings::{LichessOpeningsOptions, MastersOpeningsOptions, PlayerOpeningsOptions},
     models::{
-        openings::OpeningRatings,
         game::{Color, GameType, Speed, VariantMode},
+        openings::OpeningRatings,
     },
 };
 use tokio::time::{sleep, Duration};
@@ -17,7 +17,7 @@ use tokio::time::{sleep, Duration};
 static EXPLORER: LazyLock<Licheszter> = LazyLock::new(|| Licheszter::new());
 
 #[tokio::test]
-async fn opening_masters() {
+async fn openings_masters() {
     // Create options for testing
     let options = MastersOpeningsOptions::new()
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")

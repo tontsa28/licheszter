@@ -3,8 +3,8 @@ use crate::{
     config::openings::{LichessOpeningsOptions, MastersOpeningsOptions, PlayerOpeningsOptions},
     error::Result,
     models::{
-        openings::{Opening, PlayerOpening},
         game::Color,
+        openings::{Opening, PlayerOpening},
     },
 };
 use futures_util::Stream;
@@ -15,7 +15,7 @@ impl Licheszter {
         &self,
         options: Option<&MastersOpeningsOptions>,
     ) -> Result<Opening> {
-        let mut url = self.explorer_url();
+        let mut url = self.openings_url();
         url.set_path("masters");
 
         // Add the options to the request if they are present
@@ -33,7 +33,7 @@ impl Licheszter {
         &self,
         options: Option<&LichessOpeningsOptions>,
     ) -> Result<Opening> {
-        let mut url = self.explorer_url();
+        let mut url = self.openings_url();
         url.set_path("lichess");
 
         // Add the options to the request if they are present
@@ -53,7 +53,7 @@ impl Licheszter {
         color: Color,
         options: Option<&PlayerOpeningsOptions>,
     ) -> Result<impl Stream<Item = Result<PlayerOpening>>> {
-        let mut url = self.explorer_url();
+        let mut url = self.openings_url();
         url.set_path("player");
         let encoded = comma_serde_urlencoded::to_string(&(("player", player), ("color", color)))?;
         url.set_query(Some(&encoded));

@@ -5,7 +5,7 @@ use licheszter::{
     client::Licheszter,
     config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     models::{
-        board::{ChallengeComplete, ChallengeDeclineReason},
+        challenge::{ChallengeComplete, ChallengeDeclineReason},
         game::{AILevel, Color, CorrespondenceDays, Rules, VariantMode},
     },
 };

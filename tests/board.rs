@@ -7,7 +7,7 @@ use licheszter::{
     client::Licheszter,
     config::{board::SeekOptions, challenges::ChallengeOptions},
     models::{
-        board::ChatRoom,
+        chat::ChatRoom,
         game::{Color, VariantMode},
     },
 };

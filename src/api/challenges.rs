@@ -6,7 +6,7 @@ use crate::{
     config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     error::Result,
     models::{
-        board::{
+        challenge::{
             AIChallenge, Challenge, ChallengeComplete, ChallengeDeclineReason, Challenges,
             OpenChallenge,
         },

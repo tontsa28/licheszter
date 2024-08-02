@@ -3,7 +3,8 @@ use crate::{
     config::board::SeekOptions,
     error::Result,
     models::{
-        board::{BoardState, ChatMessage, ChatRoom},
+        board::BoardState,
+        chat::{ChatMessage, ChatRoom},
         common::OkResponse,
     },
 };
@@ -69,7 +70,7 @@ impl Licheszter {
         let builder = self
             .client
             .post(url)
-            .form(&[("room", room.to_string().as_str()), ("text", text)]);
+            .form(&(("room", room), ("text", text)));
 
         self.to_model::<OkResponse>(builder).await?;
         Ok(())

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::PrimitiveDateTime;
 
-use super::{board::Status, user::Title};
+use super::{board::{Compat, Status}, challenge::ChallengeSource, user::Title};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
@@ -37,6 +37,7 @@ pub struct Computer {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(untagged)]
 pub enum Player {
     Entity(Box<Entity>),
@@ -83,7 +84,6 @@ pub struct Clock {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub enum Speed {
     UltraBullet,
@@ -226,6 +226,30 @@ pub struct GameEventPlayer {
     pub rating: u16,
     #[serde(default)]
     pub provisional: bool,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct GameEventInfo {
+    pub id: String,
+    pub full_id: String,
+    pub game_id: String,
+    pub fen: String,
+    pub color: Color,
+    pub last_move: String,
+    pub source: ChallengeSource,
+    pub variant: Variant,
+    pub speed: Speed,
+    pub perf: String,
+    pub rated: bool,
+    pub has_moved: bool,
+    pub opponent: LightUser,
+    pub is_my_turn: bool,
+    pub seconds_left: Option<u32>,
+    pub status: Status,
+    pub compat: Option<Compat>,
 }
 
 #[repr(u8)]

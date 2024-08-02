@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::models::{
-    openings::OpeningRatings,
     game::{GameType, Speed, VariantMode},
+    openings::OpeningRatings,
 };
 
 #[skip_serializing_none]
