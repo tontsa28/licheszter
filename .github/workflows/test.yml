@@ -18,8 +18,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Update toolchain
-        run: rustup update
-
       - name: Check the project
-        run: cargo test --features=dev -- --test-threads=1
+        run: cargo test --features=serde-strict,all -- --test-threads=1
