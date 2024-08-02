@@ -175,6 +175,10 @@ impl LicheszterBuilder {
 
     /// Use authentication to gain full access to the Lichess API.
     /// This is recommended for most use cases.
+    /// 
+    /// # Panics
+    /// This method panics if the provided authentication token contains non-visible ASCII characters.
+    /// A panic can also rarely occur in specific conditions while initializing the inner [`reqwest::Client`].
     #[must_use]
     pub fn with_authentication<S>(mut self, token: S) -> LicheszterBuilder
     where

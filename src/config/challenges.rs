@@ -261,6 +261,7 @@ impl OpenChallengeOptions {
 
     /// Determines an optional name for the challenge.
     /// This name will be displayed on the challenge page.
+    #[must_use]
     pub fn name(mut self, name: &str) -> Self {
         self.name = Some(name.to_string());
         self
@@ -277,14 +278,16 @@ impl OpenChallengeOptions {
     /// Determines an optional pair of usernames.
     /// If set, only these users will be allowed to join the game.
     /// The first username gets the white pieces.
+    #[must_use]
     pub fn users(mut self, users: Vec<&str>) -> Self {
-        self.users = Some(users.iter().map(|s| s.to_string()).collect::<Vec<String>>());
+        self.users = Some(users.iter().map(ToString::to_string).collect::<Vec<String>>());
         self
     }
 
     /// Determines when the challenge will expire.
     /// The timestamp is in MILLISECONDS.
     /// Can't be more than 2 weeks.
+    #[must_use]
     pub fn expires_at(mut self, timestamp: u64) -> Self {
         self.expires_at = Some(timestamp);
         self

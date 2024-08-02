@@ -48,7 +48,7 @@ impl Error {
         matches!(self.kind, ErrorKind::Json)
     }
 
-    /// Returns true if the error is a [`url-encoded` error](struct@comma_serde_urlencoded::ser::Error).
+    /// Returns true if the error is a [`url-encoded` error](enum@comma_serde_urlencoded::ser::Error).
     #[must_use]
     pub fn is_urlencoded(&self) -> bool {
         matches!(self.kind, ErrorKind::UrlEncoded)
