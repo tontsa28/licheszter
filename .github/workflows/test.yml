@@ -16,7 +16,7 @@ jobs:
     services:
       lila:
         image: ghcr.io/lichess-org/lila-docker:main
-        options: --restart=always -p 9663:8080
+        options: --restart=always -p 8080:9663
     steps:
       - uses: actions/checkout@v3
 
