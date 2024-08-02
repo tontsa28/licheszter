@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  schedule:
+    - cron: '0 18 * * 6'
   workflow_dispatch:
 
 jobs:
@@ -14,9 +16,9 @@ jobs:
     services:
       lila:
         image: ghcr.io/lichess-org/lila-docker:main
-        options: --restart=always
+        options: --restart=always -p 9663:8080
     steps:
       - uses: actions/checkout@v3
 
       - name: Check the project
-        run: cargo test --features=serde-strict,all -- --test-threads=1
+        run: cargo test --release --features=serde-strict,all -- --test-threads=1
