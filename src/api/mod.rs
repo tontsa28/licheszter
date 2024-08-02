@@ -1,8 +1,8 @@
 pub mod challenges;
 pub mod misc;
 
-#[cfg(feature = "explorer")]
-pub mod explorer;
+#[cfg(feature = "openings")]
+pub mod openings;
 
 #[cfg(feature = "tablebase")]
 pub mod tablebase;

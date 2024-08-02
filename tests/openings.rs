@@ -1,13 +1,13 @@
-#![cfg(feature = "explorer")]
+#![cfg(feature = "openings")]
 
 use std::{error::Error, panic, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::{
     client::Licheszter,
-    config::explorer::{LichessOpeningOptions, MastersOpeningOptions, PlayerOpeningOptions},
+    config::openings::{LichessOpeningsOptions, MastersOpeningsOptions, PlayerOpeningsOptions},
     models::{
-        explorer::OpeningRatings,
+        openings::OpeningRatings,
         game::{Color, GameType, Speed, VariantMode},
     },
 };
@@ -17,9 +17,9 @@ use tokio::time::{sleep, Duration};
 static EXPLORER: LazyLock<Licheszter> = LazyLock::new(|| Licheszter::new());
 
 #[tokio::test]
-async fn opening_explorer_masters() {
+async fn opening_masters() {
     // Create options for testing
-    let options = MastersOpeningOptions::new()
+    let options = MastersOpeningsOptions::new()
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .play(vec!["g1f3"])
         .since(1967)
@@ -28,14 +28,14 @@ async fn opening_explorer_masters() {
         .top_games(10);
 
     // Run some test cases
-    let result = EXPLORER.opening_explorer_masters(None).await;
+    let result = EXPLORER.openings_masters(None).await;
     assert!(
         result.is_ok(),
         "Failed to fetch masters openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = EXPLORER.opening_explorer_masters(Some(&options)).await;
+    let result = EXPLORER.openings_masters(Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to fetch masters openings: {:?}",
@@ -43,7 +43,7 @@ async fn opening_explorer_masters() {
     );
 
     let options = options.play(vec!["d1d3"]);
-    let result = EXPLORER.opening_explorer_masters(Some(&options)).await;
+    let result = EXPLORER.openings_masters(Some(&options)).await;
     assert!(
         result.is_err(),
         "Fetching masters openings did not fail: {:?}",
@@ -52,9 +52,9 @@ async fn opening_explorer_masters() {
 }
 
 #[tokio::test]
-async fn opening_explorer_lichess() {
+async fn openings_lichess() {
     // Create options for testing
-    let options = LichessOpeningOptions::new()
+    let options = LichessOpeningsOptions::new()
         .variant(VariantMode::Standard)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .play(vec!["g1f3"])
@@ -68,14 +68,14 @@ async fn opening_explorer_lichess() {
         .history(true);
 
     // Run some test cases
-    let result = EXPLORER.opening_explorer_lichess(None).await;
+    let result = EXPLORER.openings_lichess(None).await;
     assert!(
         result.is_ok(),
         "Failed to fetch Lichess openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = EXPLORER.opening_explorer_lichess(Some(&options)).await;
+    let result = EXPLORER.openings_lichess(Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to fetch Lichess openings: {:?}",
@@ -83,7 +83,7 @@ async fn opening_explorer_lichess() {
     );
 
     let options = options.since("invalid-month");
-    let result = EXPLORER.opening_explorer_lichess(Some(&options)).await;
+    let result = EXPLORER.openings_lichess(Some(&options)).await;
     assert!(
         result.is_err(),
         "Fetching Lichess openings did not fail: {:?}",
@@ -92,9 +92,9 @@ async fn opening_explorer_lichess() {
 }
 
 #[tokio::test]
-async fn opening_explorer_player() {
+async fn openings_player() {
     // Create options for testing
-    let options1 = PlayerOpeningOptions::new()
+    let options1 = PlayerOpeningsOptions::new()
         .variant(VariantMode::Standard)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .play(vec!["g1f3"])
@@ -109,7 +109,7 @@ async fn opening_explorer_player() {
     // Run some test cases
     let thread = tokio::spawn(async move {
         let mut result = EXPLORER
-            .opening_explorer_player("Cheszter", Color::White, None)
+            .openings_player("Cheszter", Color::White, None)
             .await
             .unwrap();
         while let Some(event) = result.next().await {
@@ -129,7 +129,7 @@ async fn opening_explorer_player() {
 
     let thread = tokio::spawn(async move {
         let mut result = EXPLORER
-            .opening_explorer_player("Cheszter", Color::White, Some(&options1))
+            .openings_player("Cheszter", Color::White, Some(&options1))
             .await
             .unwrap();
         while let Some(event) = result.next().await {
@@ -148,7 +148,7 @@ async fn opening_explorer_player() {
     }
 
     let result = EXPLORER
-        .opening_explorer_player("NoSuchUser", Color::Black, Some(&options2))
+        .openings_player("NoSuchUser", Color::Black, Some(&options2))
         .await;
     assert!(result.is_err(), "Fetching player openings did not fail");
 }

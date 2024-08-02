@@ -3,5 +3,5 @@ pub mod challenges;
 #[cfg(feature = "board")]
 pub mod board;
 
-#[cfg(feature = "explorer")]
-pub mod explorer;
+#[cfg(feature = "openings")]
+pub mod openings;

@@ -41,7 +41,7 @@ default = ["bot"]
 # This is not recommended for production environments as it might cause unexpected problems
 serde-strict = []
 
-explorer = []
+openings = []
 tablebase = []
 
 # Only one of these features can be enabled at a time. Enabling both will result in a compilation error.
@@ -50,4 +50,4 @@ board = []
 
 # WARNING: This feature is not intended for production use.
 # This project and its developers are not responsible for any possible consequences that may occur from using this feature.
-dev = ["bot", "board", "explorer", "tablebase", "serde-strict"]
+dev = ["bot", "board", "openings", "tablebase", "serde-strict"]

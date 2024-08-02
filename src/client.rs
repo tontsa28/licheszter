@@ -201,7 +201,7 @@ impl LicheszterBuilder {
     ///
     /// # Errors
     /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
-    #[cfg(feature = "explorer")]
+    #[cfg(feature = "openings")]
     pub fn with_explorer_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.explorer_url = url.into_url()?;
         Ok(self)

@@ -3,8 +3,8 @@ pub mod common;
 pub mod game;
 pub mod user;
 
-#[cfg(feature = "explorer")]
-pub mod explorer;
+#[cfg(feature = "openings")]
+pub mod openings;
 
 #[cfg(feature = "tablebase")]
 pub mod tablebase;

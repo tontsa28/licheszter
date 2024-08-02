@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::models::{
-    explorer::OpeningRatings,
+    openings::OpeningRatings,
     game::{GameType, Speed, VariantMode},
 };
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-pub struct MastersOpeningOptions {
+pub struct MastersOpeningsOptions {
     fen: Option<String>,
     play: Option<Vec<String>>,
     since: Option<u16>,
@@ -19,7 +19,7 @@ pub struct MastersOpeningOptions {
     top_games: Option<u8>,
 }
 
-impl MastersOpeningOptions {
+impl MastersOpeningsOptions {
     /// Create a new instance of [`MastersOpeningOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
@@ -75,7 +75,7 @@ impl MastersOpeningOptions {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename = "camelCase")]
-pub struct LichessOpeningOptions {
+pub struct LichessOpeningsOptions {
     variant: Option<VariantMode>,
     fen: Option<String>,
     play: Option<Vec<String>>,
@@ -89,7 +89,7 @@ pub struct LichessOpeningOptions {
     history: Option<bool>,
 }
 
-impl LichessOpeningOptions {
+impl LichessOpeningsOptions {
     /// Create a new instance of [`LichessOpeningOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
@@ -187,7 +187,7 @@ impl LichessOpeningOptions {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename = "camelCase")]
-pub struct PlayerOpeningOptions {
+pub struct PlayerOpeningsOptions {
     variant: Option<VariantMode>,
     fen: Option<String>,
     play: Option<Vec<String>>,
@@ -199,7 +199,7 @@ pub struct PlayerOpeningOptions {
     recent_games: Option<u8>,
 }
 
-impl PlayerOpeningOptions {
+impl PlayerOpeningsOptions {
     /// Create a new instance of [`LichessOpeningOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
