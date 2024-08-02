@@ -1,5 +1,5 @@
 use super::{
-    board::Status,
+    game::FullGameStatus,
     game::{Color, Computer, FinalColor, Perf, Rules, Speed, TimeControl, Variant},
     user::{ChallengeUser, LightUser, PerfType},
 };
@@ -56,7 +56,7 @@ pub struct AIChallenge {
     pub player: FinalColor,
     pub turns: u8,
     pub source: String,
-    pub status: Status,
+    pub status: FullGameStatus,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
     pub started_at_turn: Option<u8>,

@@ -1,9 +1,9 @@
 use crate::models::user::{LightUser, PerfType};
 use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
+use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
-use super::{board::{Compat, Status}, challenge::ChallengeSource, user::Title};
+use super::{challenge::ChallengeSource, user::Title};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
@@ -140,6 +140,60 @@ pub struct Game {
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct GameState {
+    // This field is useless and only present to prevent errors
+    #[serde(skip_serializing)]
+    r#type: Option<String>,
+    pub moves: String,
+    pub wtime: u64,
+    pub btime: u64,
+    pub winc: u32,
+    pub binc: u32,
+    #[serde(default)]
+    pub wdraw: bool,
+    #[serde(default)]
+    pub bdraw: bool,
+    #[serde(default)]
+    pub wtakeback: bool,
+    #[serde(default)]
+    pub btakeback: bool,
+    pub status: GameStatus,
+    pub winner: Option<Color>,
+}
+
+#[skip_serializing_none]
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct GameFull {
+    pub id: String,
+    pub rated: bool,
+    pub variant: Variant,
+    pub clock: Option<Clock>,
+    pub days_per_turn: Option<u8>,
+    pub speed: Speed,
+    pub perf: Perf,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub created_at: PrimitiveDateTime,
+    pub white: GameEventPlayer,
+    pub black: GameEventPlayer,
+    pub initial_fen: String,
+    pub state: GameState,
+    pub tournament_id: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct OpponentGone {
+    pub gone: bool,
+    #[serde(rename = "claimWinInSeconds")]
+    pub claim_win_in_seconds: u8,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Variant {
     pub key: VariantMode,
     pub short: Option<String>,
@@ -181,7 +235,7 @@ pub struct UserGame {
     pub opponent: LightUser,
     pub is_my_turn: bool,
     pub seconds_left: Option<u32>,
-    pub status: Status,
+    pub status: FullGameStatus,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -248,8 +302,8 @@ pub struct GameEventInfo {
     pub opponent: LightUser,
     pub is_my_turn: bool,
     pub seconds_left: Option<u32>,
-    pub status: Status,
-    pub compat: Option<Compat>,
+    pub status: FullGameStatus,
+    pub compat: Option<GameCompatibility>,
 }
 
 #[repr(u8)]
@@ -294,4 +348,37 @@ pub enum AILevel {
 pub enum GameType {
     Casual,
     Rated,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum GameStatus {
+    Created,
+    Started,
+    Aborted,
+    Mate,
+    Resign,
+    Stalemate,
+    Timeout,
+    Draw,
+    #[serde(rename = "outoftime")]
+    OutOfTime,
+    Cheat,
+    NoStart,
+    UnknownFinish,
+    VariantEnd,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct FullGameStatus {
+    pub id: u8,
+    pub name: GameStatus,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct GameCompatibility {
+    pub bot: bool,
+    pub board: bool,
 }

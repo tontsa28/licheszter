@@ -56,11 +56,12 @@ pub struct UserPerf {
     pub prov: bool,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-#[serde(default)]
 pub struct UserPuzzleModePerf {
+    #[serde(default)]
     pub runs: u32,
+    #[serde(default)]
     pub score: u32,
 }
 
