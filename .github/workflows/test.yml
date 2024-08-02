@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: debian:sid-slim
+    container: rust:slim
     services:
       lila:
         image: ghcr.io/lichess-org/lila-docker:main
