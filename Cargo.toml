@@ -34,20 +34,20 @@ comma_serde_urlencoded = "0.8.1"
 tokio = { version = "1.38.0", features = ["macros"] }
 
 [features]
-# No features are enabled by default
 default = ["bot"]
 
-# Return an error when an unknown field is encountered while deserializing
-# This is not recommended for production environments as it might cause unexpected problems
+# Return an error when an unknown field is encountered while deserializing.
+# This is not recommended for production environments as it might cause unexpected problems.
 serde-strict = []
 
 openings = []
 tablebase = []
 
-# Only one of these features can be enabled at a time. Enabling both will result in a compilation error.
+# Only bot is enabled by default to prevent accidental cheating with the Board API.
+# Any kind of chess assistance is only allowed using the Bot API.
+# This project and its developers are not responsible for any possible consequences that may occur from misusing the Board API.
 bot = []
 board = []
 
-# WARNING: This feature is not intended for production use.
-# This project and its developers are not responsible for any possible consequences that may occur from using this feature.
-dev = ["bot", "board", "openings", "tablebase", "serde-strict"]
+# Enable all features at once.
+all = ["bot", "board", "openings", "tablebase"]
