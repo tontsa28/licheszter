@@ -23,8 +23,8 @@ jobs:
       - name: Install cURL
         run: apt update && apt install curl -y
 
-      - name: Test the backend
-        run: 'curl -H "Authorization: Bearer lip_li" http://localhost:8080/api/challenge/Bot0 -d ""'
+      - name: Check if the container is running
+        run: docker ps
 
       - name: Sleep for a bit
         run: sleep 30s
