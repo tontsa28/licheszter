@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install cURL
-        run: apt update && apt install curl -y
+        run: sudo apt update && sudo apt install curl -y
 
       - name: Wait for lila to start
         run: |
