@@ -16,18 +16,28 @@ jobs:
     services:
       lila:
         image: ghcr.io/lichess-org/lila-docker:main
-        options: -p 8080:9663 --restart=always --name lila
+        options: --restart=always --name lila
+        ports:
+          - 8080:9663
     steps:
       - uses: actions/checkout@v3
 
       - name: Install cURL
         run: apt update && apt install curl -y
 
-      - name: Sleep for a bit
-        run: sleep 30s
-
-      - name: Test the backend
-        run: 'curl -H "Authorization: Bearer lip_li" http://localhost:8080/api/challenge/Bot0 -d ""'
+      - name: Wait for lila to start
+        run: |
+          echo "Waiting for Lila to be ready..."
+          for i in {1..30}; do
+            if curl -sSf http://localhost:8080/api/challenge/Bot0; then
+              echo "Lila is ready!"
+              exit 0
+            fi
+            echo "Lila is not ready yet... waiting..."
+            sleep 10
+          done
+          echo "Lila did not start in time"
+          exit 1
 
       - name: Check the project
         run: cargo test --release --features=serde-strict,all -- --test-threads=1
