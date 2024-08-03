@@ -1,9 +1,9 @@
 [package]
 name = "licheszter"
-version = "0.1.0"
-authors = ["tontsa28 <tontsadev@gmail.com>"]
-license-file = "LICENSE"
-description = "API wrapper for Lichess bot API"
+version = "0.2.0"
+authors = ["tontsa28 <miika@tontsa.fi>"]
+license = "MIT OR Apache-2.0"
+description = "An API wrapper for the Lichess API"
 homepage = "https://github.com/tontsa28/licheszter"
 repository = "https://github.com/tontsa28/licheszter"
 documentation = "https://docs.rs/licheszter"
@@ -19,14 +19,35 @@ path = "src/lib.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1.19.2", features = ["rt-multi-thread", "macros"] }
-tokio-stream = { version = "0.1.9", features = ["io-util"] }
-tokio-util = { version = "0.7.3", features = ["io"] }
-reqwest = { version = "0.11.11", features = ["json", "stream"] }
-chrono = { version = "0.4.19", features = ["serde"] }
-serde = { version = "1.0.138", features = ["derive"] }
-serde_json = "1.0.82"
-serde_with = "1.14.0"
-thiserror = "1.0.31"
-futures-util = "0.3.21"
-bytes = "1.1.0"
+tokio = "1.39.2"
+tokio-stream = { version = "0.1.15", default-features = false, features = ["io-util"] }
+tokio-util = "0.7.11"
+reqwest = { version = "0.12.5", default-features = false, features = ["stream", "rustls-tls"] }
+time = "0.3.36"
+serde = { version = "1.0.204", features = ["derive"] }
+serde_json = "1.0.122"
+serde_with = { version = "3.9.0", features = ["time_0_3"] }
+futures-util = { version = "0.3.30", default-features = false }
+comma_serde_urlencoded = "0.8.1"
+
+[dev-dependencies]
+tokio = { version = "1.39.2", features = ["macros"] }
+
+[features]
+default = ["bot"]
+
+# Return an error when an unknown field is encountered while deserializing.
+# This is not recommended for production environments as it might cause unexpected problems.
+serde-strict = []
+
+openings = []
+tablebase = []
+
+# Only bot is enabled by default to prevent accidental cheating with the Board API.
+# Any kind of chess assistance is only allowed using the Bot API.
+# This project and its developers are not responsible for any possible consequences that may occur from misusing the Board API.
+bot = []
+board = []
+
+# Enable all features at once.
+all = ["bot", "board", "openings", "tablebase"]
