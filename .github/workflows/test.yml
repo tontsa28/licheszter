@@ -5,14 +5,14 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  - workflow_dispatch
   schedule:
     - cron: '0 18 * * 6'
-  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: rust:slim
+
     services:
       lila:
         image: ghcr.io/lichess-org/lila-docker:main
