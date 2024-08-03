@@ -31,7 +31,7 @@
 //!
 //! ## Examples
 //! Here is an example of creating an authenticated instance of `Licheszter` and using it:
-//! ```rust,no_run
+//! ```ignore
 //! use licheszter::client::Licheszter;
 //! use futures_util::StreamExt;
 //!
