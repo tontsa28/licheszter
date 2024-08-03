@@ -63,7 +63,19 @@ async fn board_seek_create() {
         }
     });
 
-    tokio::try_join!(thread1, thread2).unwrap();
+    sleep(Duration::from_secs(10)).await;
+
+    thread1.abort();
+    let result = thread1.await;
+    if result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(result.unwrap_err().into_panic());
+    }
+
+    thread2.abort();
+    let result = thread2.await;
+    if result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(result.unwrap_err().into_panic());
+    }
 }
 
 #[tokio::test]

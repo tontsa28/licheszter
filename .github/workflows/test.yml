@@ -22,8 +22,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Wait for lila to start
-        run: sleep 30s
-
       - name: Run all integration tests
         run: cargo test --release --features=serde-strict,all -- --test-threads=1
