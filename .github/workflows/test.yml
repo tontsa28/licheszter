@@ -22,22 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install cURL
-        run: sudo apt update && sudo apt install curl -y
-
       - name: Wait for lila to start
-        run: |
-          echo "Waiting for Lila to be ready..."
-          for i in {1..30}; do
-            if curl -sSf http://localhost:8080/api/challenge/Bot0; then
-              echo "Lila is ready!"
-              exit 0
-            fi
-            echo "Lila is not ready yet... waiting..."
-            sleep 10
-          done
-          echo "Lila did not start in time"
-          exit 1
+        run: sleep 30s
 
-      - name: Check the project
+      - name: Run all integration tests
         run: cargo test --release --features=serde-strict,all -- --test-threads=1
