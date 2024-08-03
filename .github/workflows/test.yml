@@ -20,6 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install cURL
+        run: apt update && apt install curl -y
+
       - name: Test the backend
         run: 'curl -H "Authorization: Bearer lip_li" http://localhost:8080/api/challenge/Bot0 -d ""'
 
