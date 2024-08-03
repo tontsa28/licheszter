@@ -23,12 +23,6 @@ jobs:
       - name: Install cURL
         run: apt update && apt install curl -y
 
-      - name: Check if the container is running
-        run: /usr/bin/docker ps
-
-      - name: Print container logs
-        run: /usr/bin/docker logs lila
-
       - name: Sleep for a bit
         run: sleep 30s
 
