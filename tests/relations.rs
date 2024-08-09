@@ -94,3 +94,28 @@ async fn relations_unfollow() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn relations_block() {
+    // Run some test cases
+    let result = LI.relations_block("Bot0").await;
+    assert!(
+        result.is_ok(),
+        "Failed to block a player: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.relations_block("Li").await;
+    assert!(
+        result.is_ok(),
+        "Failed to block a player: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.relations_block("NoSuchUser").await;
+    assert!(
+        result.is_err(),
+        "Blocking non-existent player did not fail: {:?}",
+        result.unwrap()
+    );
+}
