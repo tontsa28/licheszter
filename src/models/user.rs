@@ -2,6 +2,49 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
+use super::game::GameCount;
+
+#[skip_serializing_none]
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct User {
+    pub id: String,
+    pub username: String,
+    pub perfs: UserPerfs,
+    pub flair: Option<String>,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub created_at: PrimitiveDateTime,
+    #[serde(default)]
+    pub disabled: bool,
+    #[serde(default)]
+    pub tos_violation: bool,
+    pub profile: Option<BotProfile>,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub seen_at: PrimitiveDateTime,
+    #[serde(default)]
+    pub patron: bool,
+    #[serde(default)]
+    pub verified: bool,
+    pub play_time: BotPlayTime,
+    pub title: Option<Title>,
+    pub url: String,
+    pub playing: Option<String>,
+    pub count: Option<GameCount>,
+    #[serde(default)]
+    pub streaming: bool,
+    pub streamer: Option<Streamer>,
+    #[serde(default)]
+    pub followable: bool,
+    #[serde(default)]
+    pub following: bool,
+    #[serde(default)]
+    pub blocking: bool,
+    #[serde(default)]
+    pub follows_you: bool,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum PerfType {
@@ -22,6 +65,7 @@ pub enum PerfType {
     Correspondence,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UserPerfs {
@@ -195,4 +239,19 @@ pub enum Title {
     WNM,
     LM,
     BOT,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Streamer {
+    pub twitch: Option<StreamerChannel>,
+    #[serde(rename = "youTube")]
+    pub youtube: Option<StreamerChannel>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamerChannel {
+    pub channel: String,
 }

@@ -20,7 +20,7 @@
 //! IF YOU COME ACROSS ANY UNEXPECTED ERRORS, PLEASE OPEN A GITHUB ISSUE DESCRIBING THE ERROR.
 //! As the Lichess API evolves continuously, especially the deserialization models can become inaccurate and produce errors.
 //! Such bugs will be fixed ASAP.**
-//! 
+//!
 //! ### NOTE
 //! It is forbidden to use the Board API (crate feature `board`) for projects that involve use of chess engines or other things that can be interpreted as cheating.
 //! The feature `bot` is enabled by default to prevent accidents.
