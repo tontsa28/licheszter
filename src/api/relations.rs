@@ -26,4 +26,15 @@ impl Licheszter {
         self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
+
+    /// Unfollow a player, removing them from your list of Lichess friends.
+    pub async fn relations_unfollow(&self, username: &str) -> Result<()> {
+        let mut url = self.base_url();
+        let path = format!("api/rel/unfollow/{username}");
+        url.set_path(&path);
+        let builder = self.client.post(url);
+
+        self.to_model::<OkResponse>(builder).await?;
+        Ok(())
+    }
 }

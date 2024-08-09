@@ -69,3 +69,28 @@ async fn relations_follow() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn relations_unfollow() {
+    // Run some test cases
+    let result = LI.relations_unfollow("Bot0").await;
+    assert!(
+        result.is_ok(),
+        "Failed to unfollow a player: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.relations_unfollow("Li").await;
+    assert!(
+        result.is_ok(),
+        "Failed to unfollow a player: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.relations_unfollow("NoSuchUser").await;
+    assert!(
+        result.is_err(),
+        "Unfollowing non-existent player did not fail: {:?}",
+        result.unwrap()
+    );
+}
