@@ -44,3 +44,28 @@ async fn relations_followed_users_list() {
     let result = Licheszter::new().relations_followed_users_list().await;
     assert!(result.is_err(), "Fetching followers did not fail");
 }
+
+#[tokio::test]
+async fn relations_follow() {
+    // Run some test cases
+    let result = LI.relations_follow("Bot0").await;
+    assert!(
+        result.is_ok(),
+        "Failed to follow a player: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.relations_follow("Li").await;
+    assert!(
+        result.is_ok(),
+        "Failed to follow a player: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.relations_follow("NoSuchUser").await;
+    assert!(
+        result.is_err(),
+        "Following non-existent player did not fail: {:?}",
+        result.unwrap()
+    );
+}
