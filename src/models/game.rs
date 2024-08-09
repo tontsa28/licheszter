@@ -382,3 +382,22 @@ pub struct GameCompatibility {
     pub bot: bool,
     pub board: bool,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct GameCount {
+    pub all: u32,
+    pub rated: u32,
+    pub ai: u32,
+    pub draw: u32,
+    pub draw_h: u32,
+    pub loss: u32,
+    pub loss_h: u32,
+    pub win: u32,
+    pub win_h: u32,
+    pub bookmark: u32,
+    pub playing: u32,
+    pub import: u32,
+    pub me: u32,
+}
