@@ -50,4 +50,16 @@ impl Licheszter {
         self.to_model::<Value>(builder).await?;
         Ok(())
     }
+
+    /// Unblock a player, removing them from your list of blocked Lichess users.
+    pub async fn relations_unblock(&self, username: &str) -> Result<()> {
+        let mut url = self.base_url();
+        let path = format!("api/rel/unblock/{username}");
+        url.set_path(&path);
+        let builder = self.client.post(url);
+
+        // TODO: Temporary solution, waiting for Lichess developers' comments on the returned data
+        self.to_model::<Value>(builder).await?;
+        Ok(())
+    }
 }
