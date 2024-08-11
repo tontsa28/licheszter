@@ -93,3 +93,28 @@ async fn account_kid_mode() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn account_kid_mode_set() {
+    // Run some test cases
+    let result = LI.account_kid_mode_set(false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to set account kid mode: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.account_kid_mode_set(false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to set account kid mode: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().account_kid_mode_set(true).await;
+    assert!(
+        result.is_err(),
+        "Setting account kid mode did not fail: {:?}",
+        result.unwrap()
+    );
+}
