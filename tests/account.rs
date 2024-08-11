@@ -43,3 +43,28 @@ async fn account_profile() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn account_email() {
+    // Run some test cases
+    let result = LI.account_email().await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch account email: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.account_email().await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch account email: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().account_email().await;
+    assert!(
+        result.is_err(),
+        "Fetching account email did not fail: {:?}",
+        result.unwrap()
+    );
+}

@@ -253,3 +253,9 @@ pub struct Streamer {
 pub struct StreamerChannel {
     pub channel: String,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Email {
+    pub email: String,
+}
