@@ -280,7 +280,12 @@ impl OpenChallengeOptions {
     /// The first username gets the white pieces.
     #[must_use]
     pub fn users(mut self, users: Vec<&str>) -> Self {
-        self.users = Some(users.iter().map(ToString::to_string).collect::<Vec<String>>());
+        self.users = Some(
+            users
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<String>>(),
+        );
         self
     }
 

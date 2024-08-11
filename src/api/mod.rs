@@ -1,5 +1,6 @@
 pub mod challenges;
 pub mod misc;
+pub mod relations;
 
 #[cfg(feature = "openings")]
 pub mod openings;
