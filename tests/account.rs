@@ -68,3 +68,28 @@ async fn account_email() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn account_kid_mode() {
+    // Run some test cases
+    let result = LI.account_kid_mode().await;
+    assert!(
+        result.is_ok(),
+        "Failed to check account kid mode: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.account_kid_mode().await;
+    assert!(
+        result.is_ok(),
+        "Failed to check account kid mode: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().account_kid_mode().await;
+    assert!(
+        result.is_err(),
+        "Checking account kid mode did not fail: {:?}",
+        result.unwrap()
+    );
+}

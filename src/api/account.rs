@@ -1,4 +1,4 @@
-use crate::{client::Licheszter, error::Result, models::user::{Email, User}};
+use crate::{client::Licheszter, error::Result, models::user::{Email, KidMode, User}};
 
 impl Licheszter {
     /// Public information about the logged in user.
@@ -17,5 +17,14 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.to_model::<Email>(builder).await
+    }
+
+    /// Read the kid mode status of the logged in user.
+    pub async fn account_kid_mode(&self) -> Result<KidMode> {
+        let mut url = self.base_url();
+        url.set_path("api/account/kid");
+        let builder = self.client.get(url);
+
+        self.to_model::<KidMode>(builder).await
     }
 }
