@@ -20,7 +20,7 @@ pub struct User {
     pub disabled: bool,
     #[serde(default)]
     pub tos_violation: bool,
-    pub profile: Option<BotProfile>,
+    pub profile: Option<Profile>,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
@@ -163,7 +163,7 @@ pub struct BotUser {
     pub disabled: bool,
     #[serde(default)]
     pub tos_violation: bool,
-    pub profile: BotProfile,
+    pub profile: Profile,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
@@ -201,13 +201,11 @@ pub struct BotPerfs {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct BotProfile {
-    pub country: Option<String>,
+pub struct Profile {
     pub location: Option<String>,
     pub bio: Option<String>,
     pub flag: Option<String>,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
+    pub real_name: Option<String>,
     pub links: Option<String>,
     pub fide_rating: Option<u16>,
     pub uscf_rating: Option<u16>,
