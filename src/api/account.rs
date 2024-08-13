@@ -1,4 +1,11 @@
-use crate::{client::Licheszter, error::Result, models::{common::OkResponse, user::{Email, KidMode, Preferences, User}}};
+use crate::{
+    client::Licheszter,
+    error::Result,
+    models::{
+        common::OkResponse,
+        user::{Email, KidMode, Preferences, Timeline, User},
+    },
+};
 
 impl Licheszter {
     /// Public information about the logged in user.
@@ -44,5 +51,14 @@ impl Licheszter {
         let builder = self.client.post(url).query(&[("v", kid)]);
 
         self.to_model::<OkResponse>(builder).await
+    }
+
+    /// Get the timeline events of the logged in user.
+    pub async fn account_timeline(&self, since: Option<u64>, nb: Option<u8>) -> Result<Timeline> {
+        let mut url = self.base_url();
+        url.set_path("api/timeline");
+        let builder = self.client.get(url).query(&(("since", since), ("nb", nb)));
+
+        self.to_model::<Timeline>(builder).await
     }
 }

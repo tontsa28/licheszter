@@ -143,3 +143,35 @@ async fn account_kid_mode_set() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn account_timeline() {
+    // Run some test cases
+    let result = LI.account_timeline(None, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch account timeline: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.account_timeline(Some(1704060000000), Some(10)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch account timeline: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.account_timeline(Some(1704060000000), Some(30)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch account timeline: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().account_timeline(None, None).await;
+    assert!(
+        result.is_err(),
+        "Fetching account timeline did not fail: {:?}",
+        result.unwrap()
+    );
+}
