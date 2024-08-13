@@ -45,6 +45,57 @@ pub struct User {
     pub follows_you: bool,
 }
 
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct UserPreferences {
+    pub dark: bool,
+    pub transp: bool,
+    pub bg_img: Option<String>,
+    pub is_3d: bool,
+    pub theme: String,
+    pub piece_set: String,
+    pub theme_3d: String,
+    pub piece_set_3d: String,
+    pub sound_set: String,
+    pub blindfold: Option<u8>,
+    pub auto_queen: u8,
+    pub auto_threefold: u8,
+    pub takeback: u8,
+    pub moretime: u8,
+    pub clock_tenths: u8,
+    pub clock_bar: bool,
+    pub clock_sound: bool,
+    pub premove: bool,
+    pub animation: u8,
+    pub piece_notation: u8,
+    pub captured: bool,
+    pub follow: bool,
+    pub highlight: bool,
+    pub destination: bool,
+    pub coords: u8,
+    pub replay: u8,
+    pub challenge: u8,
+    pub message: u8,
+    pub coord_color: Option<u8>,
+    pub submit_move: u8,
+    pub confirm_resign: u8,
+    pub insight_share: u8,
+    pub keyboard_move: u8,
+    pub zen: u8,
+    pub ratings: u8,
+    pub move_event: u8,
+    pub rook_castle: u8,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Preferences {
+    pub prefs: UserPreferences,
+    pub language: String,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum PerfType {

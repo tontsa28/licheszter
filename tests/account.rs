@@ -70,6 +70,31 @@ async fn account_email() {
 }
 
 #[tokio::test]
+async fn account_preferences() {
+    // Run some test cases
+    let result = LI.account_preferences().await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch account preferences: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.account_preferences().await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch account preferences: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().account_preferences().await;
+    assert!(
+        result.is_err(),
+        "Fetching account preferences did not fail: {:?}",
+        result.unwrap()
+    );
+}
+
+#[tokio::test]
 async fn account_kid_mode() {
     // Run some test cases
     let result = LI.account_kid_mode().await;
