@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
@@ -20,14 +22,14 @@ pub struct User {
     pub disabled: bool,
     #[serde(default)]
     pub tos_violation: bool,
-    pub profile: Option<BotProfile>,
+    pub profile: Option<Profile>,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
     pub patron: bool,
     #[serde(default)]
     pub verified: bool,
-    pub play_time: BotPlayTime,
+    pub play_time: PlayTime,
     pub title: Option<Title>,
     pub url: String,
     pub playing: Option<String>,
@@ -43,6 +45,57 @@ pub struct User {
     pub blocking: bool,
     #[serde(default)]
     pub follows_you: bool,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct UserPreferences {
+    pub dark: bool,
+    pub transp: bool,
+    pub bg_img: Option<String>,
+    pub is_3d: bool,
+    pub theme: String,
+    pub piece_set: String,
+    pub theme_3d: String,
+    pub piece_set_3d: String,
+    pub sound_set: String,
+    pub blindfold: Option<u8>,
+    pub auto_queen: u8,
+    pub auto_threefold: u8,
+    pub takeback: u8,
+    pub moretime: u8,
+    pub clock_tenths: u8,
+    pub clock_bar: bool,
+    pub clock_sound: bool,
+    pub premove: bool,
+    pub animation: u8,
+    pub piece_notation: u8,
+    pub captured: bool,
+    pub follow: bool,
+    pub highlight: bool,
+    pub destination: bool,
+    pub coords: u8,
+    pub replay: u8,
+    pub challenge: u8,
+    pub message: u8,
+    pub coord_color: Option<u8>,
+    pub submit_move: u8,
+    pub confirm_resign: u8,
+    pub insight_share: u8,
+    pub keyboard_move: u8,
+    pub zen: u8,
+    pub ratings: u8,
+    pub move_event: u8,
+    pub rook_castle: u8,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Preferences {
+    pub prefs: UserPreferences,
+    pub language: String,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -119,15 +172,32 @@ pub struct LightUser {
     pub ai: Option<u8>,
     pub perfs: Option<UserPerfs>,
     pub title: Option<Title>,
-    pub online: Option<bool>,
-    pub playing: Option<bool>,
-    pub streaming: Option<bool>,
-    pub patron: Option<bool>,
+    #[serde(default)]
+    pub online: bool,
+    #[serde(default)]
+    pub playing: bool,
+    #[serde(default)]
+    pub streaming: bool,
+    #[serde(default)]
+    pub patron: bool,
     pub rating: Option<u16>,
-    pub provisional: Option<bool>,
+    #[serde(default)]
+    pub provisional: bool,
     pub lag: Option<u16>,
     #[serde(rename = "gameId")]
     pub game_id: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct MinimalUser {
+    pub id: String,
+    pub name: String,
+    pub title: Option<Title>,
+    #[serde(default)]
+    pub patron: bool,
+    pub flair: Option<String>,
 }
 
 #[skip_serializing_none]
@@ -163,7 +233,7 @@ pub struct BotUser {
     pub disabled: bool,
     #[serde(default)]
     pub tos_violation: bool,
-    pub profile: BotProfile,
+    pub profile: Profile,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
@@ -171,7 +241,7 @@ pub struct BotUser {
     #[serde(default)]
     pub verified: bool,
     #[serde(default)]
-    pub play_time: BotPlayTime,
+    pub play_time: PlayTime,
     pub title: Title,
     pub flair: Option<String>,
 }
@@ -201,13 +271,11 @@ pub struct BotPerfs {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct BotProfile {
-    pub country: Option<String>,
+pub struct Profile {
     pub location: Option<String>,
     pub bio: Option<String>,
     pub flag: Option<String>,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
+    pub real_name: Option<String>,
     pub links: Option<String>,
     pub fide_rating: Option<u16>,
     pub uscf_rating: Option<u16>,
@@ -220,7 +288,7 @@ pub struct BotProfile {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(default)]
-pub struct BotPlayTime {
+pub struct PlayTime {
     pub total: u32,
     pub tv: u32,
 }
@@ -254,4 +322,143 @@ pub struct Streamer {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct StreamerChannel {
     pub channel: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Email {
+    pub email: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct KidMode {
+    pub kid: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Timeline {
+    pub entries: Vec<TimelineEvent>,
+    pub users: BTreeMap<String, MinimalUser>,
+}
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TimelineEvent {
+    pub r#type: TimelineEventType,
+    pub data: Option<TimelineEventData>,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub date: PrimitiveDateTime,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum TimelineEventType {
+    Follow,
+    TeamJoin,
+    TeamCreate,
+    ForumPost,
+    UblogPost,
+    TourJoin,
+    GameEnd,
+    SimulCreate,
+    SimulJoin,
+    StudyLike,
+    PlanStart,
+    PlanRenew,
+    BlogPost,
+    UblogPostLike,
+    StreamStart,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(untagged)]
+pub enum TimelineEventData {
+    Follow {
+        u1: String,
+        u2: String,
+    },
+    Team {
+        #[serde(rename = "userId")]
+        user_id: String,
+        #[serde(rename = "teamId")]
+        team_id: String,
+    },
+    ForumPost {
+        #[serde(rename = "userId")]
+        user_id: String,
+        #[serde(rename = "topicId")]
+        topic_id: String,
+        #[serde(rename = "topicName")]
+        topic_name: String,
+        #[serde(rename = "postId")]
+        post_id: String,
+    },
+    UblogPost {
+        #[serde(rename = "userId")]
+        user_id: String,
+        id: String,
+        slug: String,
+        title: String,
+    },
+    TourJoin {
+        #[serde(rename = "userId")]
+        user_id: String,
+        #[serde(rename = "tourId")]
+        tour_id: String,
+        #[serde(rename = "tourName")]
+        tour_name: String,
+    },
+    GameEnd {
+        #[serde(rename = "fullId")]
+        full_id: String,
+        perf: PerfType,
+        opponent: String,
+        win: Option<bool>,
+    },
+    Simul {
+        #[serde(rename = "userId")]
+        user_id: String,
+        #[serde(rename = "simulId")]
+        simul_id: String,
+        #[serde(rename = "simulName")]
+        simul_name: String,
+    },
+    StudyLike {
+        #[serde(rename = "userId")]
+        user_id: String,
+        #[serde(rename = "studyId")]
+        study_id: String,
+        #[serde(rename = "studyName")]
+        study_name: String,
+    },
+    PlanStart {
+        #[serde(rename = "userId")]
+        user_id: String,
+    },
+    PlanRenew {
+        #[serde(rename = "userId")]
+        user_id: String,
+        months: u16,
+    },
+    BlogPost {
+        id: String,
+        slug: String,
+        title: String,
+    },
+    UblogPostLike {
+        #[serde(rename = "userId")]
+        user_id: String,
+        id: String,
+        title: String,
+    },
+    StreamStart {
+        #[serde(rename = "userId")]
+        user_id: String,
+        title: String,
+    },
 }
