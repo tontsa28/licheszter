@@ -1,5 +1,6 @@
 pub mod account;
 pub mod challenges;
+pub mod messaging;
 pub mod misc;
 pub mod relations;
 
