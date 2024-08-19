@@ -20,23 +20,52 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
 });
 
 #[tokio::test]
-async fn puzzles_daily() {
+async fn puzzle_daily() {
     // Run some test cases
-    let result = LI.puzzles_daily().await;
+    let result = LI.puzzle_daily().await;
     assert!(
         result.is_ok(),
         "Failed to get daily puzzle: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.puzzles_daily().await;
+    let result = BOT0.puzzle_daily().await;
     assert!(
         result.is_ok(),
         "Failed to get daily puzzle: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().puzzles_daily().await;
+    let result = Licheszter::new().puzzle_daily().await;
+    assert!(
+        result.is_ok(),
+        "Failed to get daily puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
+async fn puzzle_show() {
+    // Get a puzzle ID for testing
+    let id = LI.puzzle_daily().await.unwrap().puzzle.id;
+
+    // Run some test cases
+    let result = LI.puzzle_show(&id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get daily puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.puzzle_show(&id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get daily puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    // Run some test cases
+    let result = Licheszter::new().puzzle_show(&id).await;
     assert!(
         result.is_ok(),
         "Failed to get daily puzzle: {:?}",
