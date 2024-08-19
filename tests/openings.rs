@@ -31,14 +31,14 @@ async fn openings_masters() {
     let result = EXPLORER.openings_masters(None).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch masters openings: {:?}",
+        "Failed to get masters openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = EXPLORER.openings_masters(Some(&options)).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch masters openings: {:?}",
+        "Failed to get masters openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -71,14 +71,14 @@ async fn openings_lichess() {
     let result = EXPLORER.openings_lichess(None).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch Lichess openings: {:?}",
+        "Failed to get Lichess openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = EXPLORER.openings_lichess(Some(&options)).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch Lichess openings: {:?}",
+        "Failed to get Lichess openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -115,7 +115,7 @@ async fn openings_player() {
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
-                "Failed to fetch player openings: {:?}",
+                "Failed to get player openings: {:?}",
                 event.unwrap_err().source().unwrap()
             );
         }
@@ -135,7 +135,7 @@ async fn openings_player() {
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
-                "Failed to fetch player openings: {:?}",
+                "Failed to get player openings: {:?}",
                 event.unwrap_err().source().unwrap()
             );
         }

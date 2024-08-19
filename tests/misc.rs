@@ -65,14 +65,14 @@ async fn games_ongoing() {
     let result = LI.games_ongoing(10).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch ongoing games: {:?}",
+        "Failed to get ongoing games: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.games_ongoing(10).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch ongoing games: {:?}",
+        "Failed to get ongoing games: {:?}",
         result.unwrap_err().source().unwrap()
     );
 }
@@ -84,11 +84,11 @@ async fn bots_online() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to fetch online bots: {:?}",
+            "Failed to get online bots: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }
 
     let result = LI.bots_online(0).await;
-    assert!(result.is_ok(), "Failed to fetch 0 online bots");
+    assert!(result.is_ok(), "Failed to get 0 online bots");
 }
