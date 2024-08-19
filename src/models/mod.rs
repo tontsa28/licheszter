@@ -3,6 +3,7 @@ pub mod challenge;
 pub mod chat;
 pub mod common;
 pub mod game;
+pub mod puzzle;
 pub mod user;
 
 #[cfg(feature = "openings")]

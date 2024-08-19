@@ -15,7 +15,7 @@ async fn tablebase_standard() {
         .await;
     assert!(
         result.is_ok(),
-        "Failed to fetch tablebase: {:?}",
+        "Failed to get tablebase: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -24,7 +24,7 @@ async fn tablebase_standard() {
         .await;
     assert!(
         result.is_ok(),
-        "Failed to fetch tablebase: {:?}",
+        "Failed to get tablebase: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -44,7 +44,7 @@ async fn tablebase_atomic() {
         .await;
     assert!(
         result.is_ok(),
-        "Failed to fetch tablebase: {:?}",
+        "Failed to get tablebase: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -53,7 +53,7 @@ async fn tablebase_atomic() {
         .await;
     assert!(
         result.is_ok(),
-        "Failed to fetch tablebase: {:?}",
+        "Failed to get tablebase: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -73,7 +73,7 @@ async fn tablebase_antichess() {
         .await;
     assert!(
         result.is_ok(),
-        "Failed to fetch tablebase: {:?}",
+        "Failed to get tablebase: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -82,7 +82,7 @@ async fn tablebase_antichess() {
         .await;
     assert!(
         result.is_ok(),
-        "Failed to fetch tablebase: {:?}",
+        "Failed to get tablebase: {:?}",
         result.unwrap_err().source().unwrap()
     );
 

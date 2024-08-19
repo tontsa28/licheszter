@@ -38,14 +38,14 @@ async fn challenge_list() {
     let result = BOT0.challenge_list().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch challenges: {:?}",
+        "Failed to get challenges: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = LI.challenge_list().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch challenges: {:?}",
+        "Failed to get challenges: {:?}",
         result.unwrap_err().source().unwrap()
     );
 }
@@ -155,7 +155,7 @@ async fn challenge_show() {
     let result = LI.challenge_show(&challenge.id).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch challenge: {:?}",
+        "Failed to get challenge: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
