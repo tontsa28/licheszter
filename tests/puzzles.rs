@@ -1,5 +1,6 @@
 use std::{error::Error, sync::LazyLock};
 
+use futures_util::StreamExt;
 use licheszter::client::Licheszter;
 
 // Connect to test accounts
@@ -53,14 +54,14 @@ async fn puzzle_show() {
     let result = LI.puzzle_show(&id).await;
     assert!(
         result.is_ok(),
-        "Failed to get daily puzzle: {:?}",
+        "Failed to get puzzle: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.puzzle_show(&id).await;
     assert!(
         result.is_ok(),
-        "Failed to get daily puzzle: {:?}",
+        "Failed to get puzzle: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -68,7 +69,23 @@ async fn puzzle_show() {
     let result = Licheszter::new().puzzle_show(&id).await;
     assert!(
         result.is_ok(),
-        "Failed to get daily puzzle: {:?}",
+        "Failed to get puzzle: {:?}",
         result.unwrap_err().source().unwrap()
     );
+}
+
+#[tokio::test]
+async fn puzzle_activity() {
+    // Run some test cases
+    let mut result = LI.puzzle_activity(Some(10), None).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to get puzzle activity: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let result = Licheszter::new().puzzle_activity(None, None).await;
+    assert!(result.is_err(), "Getting puzzle activity did not fail");
 }

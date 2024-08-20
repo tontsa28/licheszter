@@ -1,7 +1,11 @@
 use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
+use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
+use time::PrimitiveDateTime;
 
-use super::{game::Color, user::{PerfType, Title}};
+use super::{
+    game::Color,
+    user::{PerfType, Title},
+};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
@@ -52,4 +56,27 @@ pub struct PuzzleUser {
     pub patron: bool,
     pub rating: u16,
     pub title: Option<Title>,
+}
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleActivity {
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub date: PrimitiveDateTime,
+    pub puzzle: PuzzleActivityDetails,
+    pub win: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleActivityDetails {
+    pub id: String,
+    pub fen: String,
+    #[serde(rename = "lastMove")]
+    pub last_move: String,
+    pub plays: u32,
+    pub rating: u16,
+    pub solution: Vec<String>,
+    pub themes: Vec<String>,
 }
