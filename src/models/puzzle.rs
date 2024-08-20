@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
@@ -79,4 +81,30 @@ pub struct PuzzleActivityDetails {
     pub rating: u16,
     pub solution: Vec<String>,
     pub themes: Vec<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleDashboard {
+    pub days: u8,
+    pub global: PuzzlePerformance,
+    pub themes: BTreeMap<String, PuzzleTheme>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct PuzzlePerformance {
+    pub first_wins: u32,
+    pub nb: u32,
+    pub performance: u16,
+    pub puzzle_rating_avg: u16,
+    pub replay_wins: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleTheme {
+    pub results: PuzzlePerformance,
+    pub theme: String,
 }
