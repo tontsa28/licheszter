@@ -72,7 +72,10 @@ async fn puzzle_activity() {
         );
     }
 
-    let mut result = LI.puzzle_activity(Some(5), Some(1704060000000)).await.unwrap();
+    let mut result = LI
+        .puzzle_activity(Some(5), Some(1704060000000))
+        .await
+        .unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -125,5 +128,23 @@ async fn puzzle_dashboard_storm() {
         result.is_ok(),
         "Failed to get puzzle storm dashboard: {:?}",
         result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
+async fn puzzle_race_create() {
+    // Run some test cases
+    let result = LI.puzzle_race_create().await;
+    assert!(
+        result.is_ok(),
+        "Failed to create puzzle race: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().puzzle_race_create().await;
+    assert!(
+        result.is_err(),
+        "Creating puzzle race did not fail: {:?}",
+        result.unwrap()
     );
 }
