@@ -36,7 +36,9 @@ async fn message_private_send() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.message_private_send("NoSuchUser", "Let's try our luck").await;
+    let result = LI
+        .message_private_send("NoSuchUser", "Let's try our luck")
+        .await;
     assert!(
         result.is_err(),
         "Sending private message did not fail: {:?}",

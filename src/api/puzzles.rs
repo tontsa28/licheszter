@@ -1,4 +1,10 @@
-use crate::{client::Licheszter, error::Result, models::puzzle::Puzzle};
+use futures_util::Stream;
+
+use crate::{
+    client::Licheszter,
+    error::Result,
+    models::puzzle::{Puzzle, PuzzleActivity},
+};
 
 impl Licheszter {
     /// Get the daily puzzle.
@@ -18,5 +24,21 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.to_model::<Puzzle>(builder).await
+    }
+
+    /// Get the puzzle activity of the logged in user.
+    pub async fn puzzle_activity(
+        &self,
+        max: Option<u16>,
+        before: Option<u64>,
+    ) -> Result<impl Stream<Item = Result<PuzzleActivity>>> {
+        let mut url = self.base_url();
+        url.set_path("api/puzzle/activity");
+        let builder = self
+            .client
+            .get(url)
+            .query(&(("max", max), ("before", before)));
+
+        self.to_model_stream::<PuzzleActivity>(builder).await
     }
 }
