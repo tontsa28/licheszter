@@ -3,7 +3,7 @@ use futures_util::Stream;
 use crate::{
     client::Licheszter,
     error::Result,
-    models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard, PuzzleStormDashboard},
+    models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard, PuzzleRace, PuzzleStormDashboard},
 };
 
 impl Licheszter {
@@ -56,12 +56,26 @@ impl Licheszter {
     /// Get the puzzle storm dashboard of any player.
     /// Contains the aggregated highscores and the history of storm runs aggregated by days.
     /// Use `days = 0` if you only care about the highscores.
-    pub async fn puzzle_dashboard_storm(&self, username: &str, days: Option<u16>) -> Result<PuzzleStormDashboard> {
+    pub async fn puzzle_dashboard_storm(
+        &self,
+        username: &str,
+        days: Option<u16>,
+    ) -> Result<PuzzleStormDashboard> {
         let mut url = self.base_url();
         let path = format!("api/storm/dashboard/{username}");
         url.set_path(&path);
         let builder = self.client.get(url).query(&[("days", days)]);
 
         self.to_model::<PuzzleStormDashboard>(builder).await
+    }
+
+    /// Create a new private puzzle race.
+    /// Once the puzzle race has been created, the creator must join the page and manually start the race when enough players have joined.
+    pub async fn puzzle_race_create(&self) -> Result<PuzzleRace> {
+        let mut url = self.base_url();
+        url.set_path("api/racer");
+        let builder = self.client.post(url);
+
+        self.to_model::<PuzzleRace>(builder).await
     }
 }

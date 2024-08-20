@@ -139,3 +139,10 @@ pub struct PuzzleStormRecord {
     pub month: u8,
     pub week: u8,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleRace {
+    pub id: String,
+    pub url: String,
+}
