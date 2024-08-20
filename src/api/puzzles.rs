@@ -3,7 +3,7 @@ use futures_util::Stream;
 use crate::{
     client::Licheszter,
     error::Result,
-    models::puzzle::{Puzzle, PuzzleActivity},
+    models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard},
 };
 
 impl Licheszter {
@@ -40,5 +40,16 @@ impl Licheszter {
             .query(&(("max", max), ("before", before)));
 
         self.to_model_stream::<PuzzleActivity>(builder).await
+    }
+
+    /// Get the puzzle dashboard of the logged in user.
+    /// Includes all puzzle themes played, with aggregated results.
+    pub async fn puzzle_dashboard(&self, days: u8) -> Result<PuzzleDashboard> {
+        let mut url = self.base_url();
+        let path = format!("api/puzzle/dashboard/{days}");
+        url.set_path(&path);
+        let builder = self.client.get(url);
+
+        self.to_model::<PuzzleDashboard>(builder).await
     }
 }
