@@ -102,3 +102,28 @@ async fn puzzle_dashboard() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn puzzle_dashboard_storm() {
+    // Run some test cases
+    let result = LI.puzzle_dashboard_storm("Li", Some(1)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle storm dashboard: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.puzzle_dashboard_storm("Li", None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle storm dashboard: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.puzzle_dashboard_storm("Bot0", None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle storm dashboard: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
