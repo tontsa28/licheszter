@@ -108,3 +108,34 @@ pub struct PuzzleTheme {
     pub results: PuzzlePerformance,
     pub theme: String,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleStormDashboard {
+    pub days: Vec<PuzzleStormDay>,
+    pub high: PuzzleStormRecord,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleStormDay {
+    #[serde(rename = "_id")]
+    pub id: String,
+    pub combo: u16,
+    pub errors: u16,
+    pub highest: u16,
+    pub moves: u32,
+    pub runs: u16,
+    pub score: u8,
+    pub time: u8,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleStormRecord {
+    #[serde(rename = "allTime")]
+    pub all_time: u8,
+    pub day: u8,
+    pub month: u8,
+    pub week: u8,
+}
