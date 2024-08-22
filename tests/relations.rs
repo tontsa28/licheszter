@@ -27,7 +27,7 @@ async fn relations_followed_users_list() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to fetch followers: {:?}",
+            "Failed to get followers: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }
@@ -36,7 +36,7 @@ async fn relations_followed_users_list() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to fetch followers: {:?}",
+            "Failed to get followers: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }

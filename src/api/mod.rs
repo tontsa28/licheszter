@@ -2,6 +2,7 @@ pub mod account;
 pub mod challenges;
 pub mod messaging;
 pub mod misc;
+pub mod puzzles;
 pub mod relations;
 
 #[cfg(feature = "openings")]

@@ -25,14 +25,14 @@ async fn account_profile() {
     let result = LI.account_profile().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch profile information: {:?}",
+        "Failed to get profile information: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.account_profile().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch profile information: {:?}",
+        "Failed to get profile information: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -50,14 +50,14 @@ async fn account_email() {
     let result = LI.account_email().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch account email: {:?}",
+        "Failed to get account email: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.account_email().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch account email: {:?}",
+        "Failed to get account email: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -75,14 +75,14 @@ async fn account_preferences() {
     let result = LI.account_preferences().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch account preferences: {:?}",
+        "Failed to get account preferences: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.account_preferences().await;
     assert!(
         result.is_ok(),
-        "Failed to fetch account preferences: {:?}",
+        "Failed to get account preferences: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -150,21 +150,21 @@ async fn account_timeline() {
     let result = LI.account_timeline(None, None).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch account timeline: {:?}",
+        "Failed to get account timeline: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = LI.account_timeline(Some(1704060000000), Some(10)).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch account timeline: {:?}",
+        "Failed to get account timeline: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.account_timeline(Some(1704060000000), Some(30)).await;
     assert!(
         result.is_ok(),
-        "Failed to fetch account timeline: {:?}",
+        "Failed to get account timeline: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
