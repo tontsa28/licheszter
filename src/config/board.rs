@@ -6,7 +6,6 @@ use crate::models::game::{Color, CorrespondenceDays, VariantMode};
 /// Optional configuration for seeking opponents using [`Licheszter::board_seek()`](fn@crate::client::Licheszter::board_seek).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct SeekOptions {
     rated: Option<bool>,
     time: Option<u8>,

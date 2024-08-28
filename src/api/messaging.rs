@@ -7,7 +7,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url).form(&[("text", text)]);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 }

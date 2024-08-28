@@ -6,7 +6,6 @@ use crate::models::game::{Color, CorrespondenceDays, Rules, VariantMode};
 /// Optional configuration for creating challenges using [`Licheszter::challenge_create()`](fn@crate::client::Licheszter::challenge_create).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct ChallengeOptions {
     rated: Option<bool>,
     clock_limit: Option<u16>,
@@ -102,7 +101,6 @@ impl ChallengeOptions {
 /// Optional configuration for creating challenges using [`Licheszter::challenge_ai()`](fn@crate::client::Licheszter::challenge_ai).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct AIChallengeOptions {
     clock_limit: Option<u16>,
     clock_increment: Option<u8>,
@@ -180,7 +178,6 @@ impl AIChallengeOptions {
 /// Optional configuration for creating challenges using [`Licheszter::challenge_create_open()`](fn@crate::client::Licheszter::challenge_create_open).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct OpenChallengeOptions {
     rated: Option<bool>,
     clock_limit: Option<u16>,

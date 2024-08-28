@@ -8,7 +8,7 @@ impl Licheszter {
         let fen = fen.replace(' ', "_");
         let builder = self.client.get(url).query(&[("fen", &fen)]);
 
-        self.to_model::<Endgame>(builder).await
+        self.into::<Endgame>(builder).await
     }
 
     /// Lookup positions from the atomic endgame tablebase.
@@ -18,7 +18,7 @@ impl Licheszter {
         let fen = fen.replace(' ', "_");
         let builder = self.client.get(url).query(&[("fen", &fen)]);
 
-        self.to_model::<Endgame>(builder).await
+        self.into::<Endgame>(builder).await
     }
 
     /// Lookup positions from the antichess endgame tablebase.
@@ -28,6 +28,6 @@ impl Licheszter {
         let fen = fen.replace(' ', "_");
         let builder = self.client.get(url).query(&[("fen", &fen)]);
 
-        self.to_model::<Endgame>(builder).await
+        self.into::<Endgame>(builder).await
     }
 }

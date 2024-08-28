@@ -8,7 +8,6 @@ use crate::models::{
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct MastersOpeningsOptions {
     fen: Option<String>,
     play: Option<Vec<String>>,
@@ -73,7 +72,6 @@ impl MastersOpeningsOptions {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename = "camelCase")]
 pub struct LichessOpeningsOptions {
     variant: Option<VariantMode>,
@@ -185,7 +183,6 @@ impl LichessOpeningsOptions {
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename = "camelCase")]
 pub struct PlayerOpeningsOptions {
     variant: Option<VariantMode>,

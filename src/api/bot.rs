@@ -20,7 +20,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.get(url);
 
-        self.to_model_stream::<BoardState>(builder).await
+        self.into_stream::<BoardState>(builder).await
     }
 
     /// Make a move in a game using the Bot API.
@@ -36,7 +36,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url).query(&[("offeringDraw", draw_offer)]);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -50,7 +50,7 @@ impl Licheszter {
             .post(url)
             .form(&(("room", room), ("text", text)));
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -61,7 +61,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.get(url);
 
-        self.to_model::<Vec<ChatMessage>>(builder).await
+        self.into::<Vec<ChatMessage>>(builder).await
     }
 
     /// Abort a bot game using the Bot API.
@@ -71,7 +71,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -82,7 +82,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -93,7 +93,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -104,7 +104,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 }

@@ -25,7 +25,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url);
-        self.to_model::<Opening>(builder).await
+        self.into::<Opening>(builder).await
     }
 
     /// Lookup positions from the Lichess opening database.
@@ -43,7 +43,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url);
-        self.to_model::<Opening>(builder).await
+        self.into::<Opening>(builder).await
     }
 
     /// Lookup positions from the Player opening database.
@@ -65,6 +65,6 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url);
-        self.to_model_stream::<PlayerOpening>(builder).await
+        self.into_stream::<PlayerOpening>(builder).await
     }
 }
