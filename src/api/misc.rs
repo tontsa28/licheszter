@@ -18,7 +18,7 @@ impl Licheszter {
         url.set_path("api/stream/event");
         let builder = self.client.get(url);
 
-        self.to_model_stream::<Event>(builder).await
+        self.into_stream::<Event>(builder).await
     }
 
     /// Get the ongoing games of the current user.
@@ -29,7 +29,7 @@ impl Licheszter {
         url.set_path("api/account/playing");
         let builder = self.client.get(url).query(&[("nb", games)]);
 
-        Ok(self.to_model::<UserGames>(builder).await?.now_playing)
+        Ok(self.into::<UserGames>(builder).await?.now_playing)
     }
 
     /// Get online bots.
@@ -38,7 +38,7 @@ impl Licheszter {
         url.set_path("api/bot/online");
         let builder = self.client.get(url).query(&[("nb", bots)]);
 
-        self.to_model_stream::<BotUser>(builder).await
+        self.into_stream::<BotUser>(builder).await
     }
 
     /// Upgrade a Lichess player account into a bot account.
@@ -51,7 +51,7 @@ impl Licheszter {
         let bearer = format!("Bearer {token}");
         let builder = self.client.post(url).header("Authorization", bearer);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 }

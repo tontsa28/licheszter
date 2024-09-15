@@ -22,7 +22,7 @@ impl Licheszter {
         url.set_path("api/challenge");
         let builder = self.client.get(url);
 
-        self.to_model::<Challenges>(builder).await
+        self.into::<Challenges>(builder).await
     }
 
     /// Challenge someone to play.
@@ -46,7 +46,7 @@ impl Licheszter {
                 .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
 
-        self.to_model::<Challenge>(builder).await
+        self.into::<Challenge>(builder).await
     }
 
     /// Challenge someone to play and stream the response.
@@ -72,7 +72,7 @@ impl Licheszter {
                 .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
 
-        self.to_model_stream::<ChallengeComplete>(builder).await
+        self.into_stream::<ChallengeComplete>(builder).await
     }
 
     /// Get details about a specific challenge, even if it has been recently accepted, canceled or declined.
@@ -82,7 +82,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.get(url);
 
-        self.to_model::<Challenge>(builder).await
+        self.into::<Challenge>(builder).await
     }
 
     /// Accept an incoming challenge.
@@ -92,7 +92,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -110,7 +110,7 @@ impl Licheszter {
             .post(url)
             .form(&[("reason", reason.unwrap_or(ChallengeDeclineReason::Generic))]);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -131,7 +131,7 @@ impl Licheszter {
             builder = builder.query(&[("opponentToken", token)]);
         }
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -153,7 +153,7 @@ impl Licheszter {
             builder = builder.body(form);
         }
 
-        self.to_model::<AIChallenge>(builder).await
+        self.into::<AIChallenge>(builder).await
     }
 
     /// Create a challenge that 2 players can join.
@@ -174,7 +174,7 @@ impl Licheszter {
                 .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
 
-        self.to_model::<OpenChallenge>(builder).await
+        self.into::<OpenChallenge>(builder).await
     }
 
     /// Start the clocks of a game immediately, even if a player has not yet made a move.
@@ -195,7 +195,7 @@ impl Licheszter {
             .post(url)
             .query(&[("token1", token1), ("token2", token2)]);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -211,7 +211,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 }

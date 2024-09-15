@@ -13,7 +13,7 @@ impl Licheszter {
         url.set_path("api/puzzle/daily");
         let builder = self.client.get(url);
 
-        self.to_model::<Puzzle>(builder).await
+        self.into::<Puzzle>(builder).await
     }
 
     /// Get a single puzzle by ID.
@@ -23,7 +23,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.get(url);
 
-        self.to_model::<Puzzle>(builder).await
+        self.into::<Puzzle>(builder).await
     }
 
     /// Get the puzzle activity of the logged in user.
@@ -39,7 +39,7 @@ impl Licheszter {
             .get(url)
             .query(&(("max", max), ("before", before)));
 
-        self.to_model_stream::<PuzzleActivity>(builder).await
+        self.into_stream::<PuzzleActivity>(builder).await
     }
 
     /// Get the puzzle dashboard of the logged in user.
@@ -50,7 +50,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.get(url);
 
-        self.to_model::<PuzzleDashboard>(builder).await
+        self.into::<PuzzleDashboard>(builder).await
     }
 
     /// Get the puzzle storm dashboard of any player.
@@ -66,7 +66,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.get(url).query(&[("days", days)]);
 
-        self.to_model::<PuzzleStormDashboard>(builder).await
+        self.into::<PuzzleStormDashboard>(builder).await
     }
 
     /// Create a new private puzzle race.
@@ -76,6 +76,6 @@ impl Licheszter {
         url.set_path("api/racer");
         let builder = self.client.post(url);
 
-        self.to_model::<PuzzleRace>(builder).await
+        self.into::<PuzzleRace>(builder).await
     }
 }

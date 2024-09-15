@@ -50,6 +50,32 @@ async fn main() {
 }
 ```
 
+## Features
+Below is a list of supported API endpoints as of the last release:
+| Category          | Supported |
+| --------          | --------- |
+| Account           | ✅        |
+| Users             | ❌        |
+| Relations         | ✅        |
+| Games             | ❌        |
+| TV                | ❌        |
+| Puzzles           | ✅        |
+| Teams             | ❌        |
+| Bot               | ✅        |
+| Board             | ✅        |
+| Challenges        | ✅        |
+| Bulk pairings     | ❌        |
+| Arena tournaments | ❌        |
+| Swiss tournaments | ❌        |
+| Simuls            | ❌        |
+| Studies           | ❌        |
+| Messaging         | ✅        |
+| Broadcasts        | ❌        |
+| Analysis          | ❌        |
+| External engine   | ❌        |
+| Opening explorer  | ✅        |
+| Tablebase         | ✅        |
+
 ## Contributions
 All contributions are greatly appreciated, no matter if they provide improvements to code, documentation or anything else related to the project.
 Please follow [semantic commit message](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) guidelines in your commits.

@@ -85,6 +85,7 @@ pub struct UserPreferences {
     pub confirm_resign: u8,
     pub insight_share: u8,
     pub keyboard_move: u8,
+    pub voice_move: bool,
     pub zen: u8,
     pub ratings: u8,
     pub move_event: u8,

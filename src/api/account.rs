@@ -14,7 +14,7 @@ impl Licheszter {
         url.set_path("api/account");
         let builder = self.client.get(url);
 
-        self.to_model::<User>(builder).await
+        self.into::<User>(builder).await
     }
 
     /// Read the email address of the logged in user.
@@ -23,7 +23,7 @@ impl Licheszter {
         url.set_path("api/account/email");
         let builder = self.client.get(url);
 
-        self.to_model::<Email>(builder).await
+        self.into::<Email>(builder).await
     }
 
     /// Read the preferences of the logged in user.
@@ -32,7 +32,7 @@ impl Licheszter {
         url.set_path("api/account/preferences");
         let builder = self.client.get(url);
 
-        self.to_model::<Preferences>(builder).await
+        self.into::<Preferences>(builder).await
     }
 
     /// Read the kid mode status of the logged in user.
@@ -41,7 +41,7 @@ impl Licheszter {
         url.set_path("api/account/kid");
         let builder = self.client.get(url);
 
-        self.to_model::<KidMode>(builder).await
+        self.into::<KidMode>(builder).await
     }
 
     /// Set the kid mode status of the logged in user.
@@ -50,7 +50,7 @@ impl Licheszter {
         url.set_path("api/account/kid");
         let builder = self.client.post(url).query(&[("v", kid)]);
 
-        self.to_model::<OkResponse>(builder).await
+        self.into::<OkResponse>(builder).await
     }
 
     /// Get the timeline events of the logged in user.
@@ -59,6 +59,6 @@ impl Licheszter {
         url.set_path("api/timeline");
         let builder = self.client.get(url).query(&(("since", since), ("nb", nb)));
 
-        self.to_model::<Timeline>(builder).await
+        self.into::<Timeline>(builder).await
     }
 }

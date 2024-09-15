@@ -14,7 +14,7 @@ impl Licheszter {
         url.set_path("api/rel/following");
         let builder = self.client.get(url);
 
-        self.to_model_stream::<User>(builder).await
+        self.into_stream::<User>(builder).await
     }
 
     /// Follow a player, adding them to your list of Lichess friends.
@@ -24,7 +24,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -35,7 +35,7 @@ impl Licheszter {
         url.set_path(&path);
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -47,7 +47,7 @@ impl Licheszter {
         let builder = self.client.post(url);
 
         // TODO: Temporary solution, waiting for Lichess developers' comments on the returned data
-        self.to_model::<Value>(builder).await?;
+        self.into::<Value>(builder).await?;
         Ok(())
     }
 
@@ -59,7 +59,7 @@ impl Licheszter {
         let builder = self.client.post(url);
 
         // TODO: Temporary solution, waiting for Lichess developers' comments on the returned data
-        self.to_model::<Value>(builder).await?;
+        self.into::<Value>(builder).await?;
         Ok(())
     }
 }

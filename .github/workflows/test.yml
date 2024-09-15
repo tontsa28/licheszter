@@ -2,9 +2,11 @@ name: licheszter integration tests
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
   schedule:
     - cron: '0 18 * * 6'
@@ -19,8 +21,15 @@ jobs:
         options: --restart=always --name lila
         ports:
           - 8080:9663
+      lila-bots:
+        image: python:latest
+        options: -t --name lila-bots --entrypoint "/bin/sh"
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Connect to bot accounts
+        run: docker cp ${{ github.workspace }}/.github/docker/entrypoint.sh lila-bots:/entrypoint.sh && docker exec -d lila-bots ./entrypoint.sh && sleep 5s
 
       - name: Run all integration tests
         run: cargo test --release --features=serde-strict,all -- --test-threads=1
