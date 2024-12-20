@@ -65,13 +65,13 @@ Below is a list of supported API endpoints as of the last release:
 | Board             | ✅        |
 | Challenges        | ✅        |
 | Bulk pairings     | ❌        |
-| Arena tournaments | ❌        |
+| Arena tournaments | ❌        |
 | Swiss tournaments | ❌        |
-| Simuls            | ❌        |
+| Simuls            | ✅        |
 | Studies           | ❌        |
 | Messaging         | ✅        |
 | Broadcasts        | ❌        |
-| Analysis          | ❌        |
+| Analysis          | ✅        |
 | External engine   | ❌        |
 | Opening explorer  | ✅        |
 | Tablebase         | ✅        |
