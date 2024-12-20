@@ -1,3 +1,4 @@
+pub mod analysis;
 pub mod board;
 pub mod challenge;
 pub mod chat;
