@@ -55,4 +55,6 @@ pub struct SimulHost {
     #[serde(default)]
     pub provisional: bool,
     pub flair: Option<String>,
+    #[serde(default)]
+    pub patron: bool,
 }
