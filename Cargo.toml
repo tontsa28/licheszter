@@ -19,19 +19,19 @@ path = "src/lib.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = "1.40.0"
-tokio-stream = { version = "0.1.16", default-features = false, features = ["io-util"] }
-tokio-util = "0.7.12"
-reqwest = { version = "0.12.7", default-features = false, features = ["stream", "rustls-tls"] }
-time = "0.3.36"
-serde = { version = "1.0.210", features = ["derive"] }
-serde_json = "1.0.128"
-serde_with = { version = "3.9.0", features = ["time_0_3"] }
-futures-util = { version = "0.3.30", default-features = false }
+tokio = "1.42.0"
+tokio-stream = { version = "0.1.17", default-features = false, features = ["io-util"] }
+tokio-util = "0.7.13"
+reqwest = { version = "0.12.9", default-features = false, features = ["stream", "rustls-tls"] }
+time = "0.3.37"
+serde = { version = "1.0.216", features = ["derive"] }
+serde_json = "1.0.133"
+serde_with = { version = "3.11.0", features = ["time_0_3"] }
+futures-util = { version = "0.3.31", default-features = false }
 comma_serde_urlencoded = "0.8.1"
 
 [dev-dependencies]
-tokio = { version = "1.40.0", features = ["macros"] }
+tokio = { version = "1.42.0", features = ["macros"] }
 
 [features]
 default = ["bot"]
