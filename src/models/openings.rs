@@ -46,6 +46,7 @@ pub struct OpeningMove {
     pub black: u32,
     pub draws: u32,
     pub game: Option<HistoricOpening>,
+    pub opening: Option<OpeningDetails>,
 }
 
 #[skip_serializing_none]
@@ -61,6 +62,7 @@ pub struct PlayerOpeningMove {
     pub black: u32,
     pub draws: u32,
     pub game: Option<HistoricOpening>,
+    pub opening: Option<OpeningDetails>,
 }
 
 #[skip_serializing_none]
