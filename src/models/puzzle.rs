@@ -14,6 +14,7 @@ use super::{
 pub struct Puzzle {
     pub game: PuzzleGame,
     pub puzzle: PuzzleDetails,
+    pub user: Option<PuzzleAuthUser>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -58,6 +59,13 @@ pub struct PuzzleUser {
     pub patron: bool,
     pub rating: u16,
     pub title: Option<Title>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleAuthUser {
+    pub id: String,
+    pub rating: u16,
 }
 
 #[serde_as]
