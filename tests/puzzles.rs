@@ -1,7 +1,7 @@
 use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;
-use licheszter::client::Licheszter;
+use licheszter::{client::Licheszter, config::puzzles::PuzzleDifficulty};
 
 // Connect to test accounts
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
@@ -47,6 +47,47 @@ async fn puzzle_show() {
     assert!(
         result.is_ok(),
         "Failed to get puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
+async fn puzzle_next() {
+    // Run some test cases
+    let result = LI.puzzle_next(None, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get next puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI
+        .puzzle_next(Some("rookEndgame"), Some(PuzzleDifficulty::Normal))
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to get next puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.puzzle_next(Some("mix"), None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get next puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.puzzle_next(None, Some(PuzzleDifficulty::Hardest)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get next puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().puzzle_next(None, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get next puzzle: {:?}",
         result.unwrap_err().source().unwrap()
     );
 }

@@ -2,6 +2,7 @@ use futures_util::Stream;
 
 use crate::{
     client::Licheszter,
+    config::puzzles::PuzzleDifficulty,
     error::Result,
     models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard, PuzzleRace, PuzzleStormDashboard},
 };
@@ -22,6 +23,23 @@ impl Licheszter {
         let path = format!("api/puzzle/{id}");
         url.set_path(&path);
         let builder = self.client.get(url);
+
+        self.into::<Puzzle>(builder).await
+    }
+
+    /// Get a random puzzle.
+    /// If authenticated, only returns puzzles the user has never seen before.
+    pub async fn puzzle_next(
+        &self,
+        angle: Option<&str>,
+        difficulty: Option<PuzzleDifficulty>,
+    ) -> Result<Puzzle> {
+        let mut url = self.base_url();
+        url.set_path("api/puzzle/next");
+        let builder = self
+            .client
+            .get(url)
+            .query(&(("angle", angle), ("difficulty", difficulty)));
 
         self.into::<Puzzle>(builder).await
     }
