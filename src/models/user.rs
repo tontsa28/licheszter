@@ -504,3 +504,43 @@ impl Default for RealtimeUserPlaying {
         Self::Playing(false)
     }
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct TopUsers {
+    pub bullet: Vec<TopUser>,
+    pub blitz: Vec<TopUser>,
+    pub rapid: Vec<TopUser>,
+    pub classical: Vec<TopUser>,
+    pub ultra_bullet: Vec<TopUser>,
+    pub chess960: Vec<TopUser>,
+    pub crazyhouse: Vec<TopUser>,
+    pub antichess: Vec<TopUser>,
+    pub atomic: Vec<TopUser>,
+    pub horde: Vec<TopUser>,
+    pub king_of_the_hill: Vec<TopUser>,
+    pub racing_kings: Vec<TopUser>,
+    pub three_check: Vec<TopUser>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TopUser {
+    pub id: String,
+    pub username: String,
+    pub perfs: BTreeMap<String, TopUserPerf>,
+    pub title: Option<Title>,
+    #[serde(default)]
+    pub online: bool,
+    #[serde(default)]
+    pub patron: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TopUserPerf {
+    pub rating: u16,
+    pub progress: i16,
+}

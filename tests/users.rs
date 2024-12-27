@@ -12,7 +12,7 @@ static LI: LazyLock<Licheszter> = LazyLock::new(|| {
 });
 
 #[tokio::test]
-async fn user_status() {
+async fn users_status() {
     // Create options for testing
     let options = UserStatusOptions::new()
         .signal(true)
@@ -20,7 +20,7 @@ async fn user_status() {
         .game_metas(true);
 
     // Run some test cases
-    let result = LI.user_status(vec!["adriana", "ana", "bot0"], None).await;
+    let result = LI.users_status(vec!["adriana", "ana", "bot0"], None).await;
     assert!(
         result.is_ok(),
         "Failed to get user statuses: {:?}",
@@ -28,11 +28,29 @@ async fn user_status() {
     );
 
     let result = LI
-        .user_status(vec!["adriana", "ana", "bot0"], Some(&options))
+        .users_status(vec!["adriana", "ana", "bot0"], Some(&options))
         .await;
     assert!(
         result.is_ok(),
         "Failed to get user statuses: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
+async fn users_top10() {
+    // Run some test cases
+    let result = LI.users_top10().await;
+    assert!(
+        result.is_ok(),
+        "Failed to get top 10 lists: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().users_top10().await;
+    assert!(
+        result.is_ok(),
+        "Failed to get top 10 lists: {:?}",
         result.unwrap_err().source().unwrap()
     );
 }
