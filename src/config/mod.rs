@@ -1,5 +1,6 @@
 pub mod challenges;
 pub mod puzzles;
+pub mod users;
 
 #[cfg(feature = "board")]
 pub mod board;

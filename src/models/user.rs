@@ -463,3 +463,44 @@ pub enum TimelineEventData {
         title: String,
     },
 }
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct RealtimeUser {
+    pub id: String,
+    pub name: String,
+    pub title: Option<Title>,
+    pub flair: Option<String>,
+    #[serde(rename = "playingId")]
+    pub playing_id: Option<String>,
+    #[serde(default)]
+    pub online: bool,
+    #[serde(default)]
+    pub playing: RealtimeUserPlaying,
+    #[serde(default)]
+    pub streaming: bool,
+    #[serde(default)]
+    pub patron: bool,
+    #[serde(default)]
+    pub signal: Option<u8>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(untagged)]
+pub enum RealtimeUserPlaying {
+    Playing(bool),
+    PlayingDetails {
+        id: String,
+        clock: Option<String>,
+        variant: Option<String>,
+    },
+}
+
+impl Default for RealtimeUserPlaying {
+    fn default() -> Self {
+        Self::Playing(false)
+    }
+}
