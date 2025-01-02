@@ -54,10 +54,17 @@ impl Licheszter {
     }
 
     /// Get the timeline events of the logged in user.
-    pub async fn account_timeline(&self, since: Option<u64>, nb: Option<u8>) -> Result<Timeline> {
+    pub async fn account_timeline(
+        &self,
+        since: Option<u64>,
+        amount: Option<u8>,
+    ) -> Result<Timeline> {
         let mut url = self.base_url();
         url.set_path("api/timeline");
-        let builder = self.client.get(url).query(&(("since", since), ("nb", nb)));
+        let builder = self
+            .client
+            .get(url)
+            .query(&(("since", since), ("nb", amount)));
 
         self.into::<Timeline>(builder).await
     }

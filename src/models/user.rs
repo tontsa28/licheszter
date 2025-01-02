@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, fmt::Display};
 
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
@@ -117,6 +117,28 @@ pub enum PerfType {
     ThreeCheck,
     Puzzle,
     Correspondence,
+}
+
+impl Display for PerfType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::UltraBullet => write!(f, "ultraBullet"),
+            Self::Bullet => write!(f, "bullet"),
+            Self::Blitz => write!(f, "blitz"),
+            Self::Rapid => write!(f, "rapid"),
+            Self::Classical => write!(f, "classical"),
+            Self::Chess960 => write!(f, "chess960"),
+            Self::Crazyhouse => write!(f, "crazyhouse"),
+            Self::Antichess => write!(f, "antichess"),
+            Self::Atomic => write!(f, "atomic"),
+            Self::Horde => write!(f, "horde"),
+            Self::KingOfTheHill => write!(f, "kingOfTheHill"),
+            Self::RacingKings => write!(f, "racingKings"),
+            Self::ThreeCheck => write!(f, "threeCheck"),
+            Self::Puzzle => write!(f, "puzzle"),
+            Self::Correspondence => write!(f, "correspondence"),
+        }
+    }
 }
 
 #[skip_serializing_none]
@@ -543,4 +565,10 @@ pub struct TopUser {
 pub struct TopUserPerf {
     pub rating: u16,
     pub progress: i16,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TopUserLeaderboard {
+    pub users: Vec<TopUser>,
 }
