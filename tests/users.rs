@@ -88,3 +88,49 @@ async fn users_leaderboard() {
         result.unwrap_err().source().unwrap()
     );
 }
+
+#[tokio::test]
+async fn users_profile() {
+    // Run some test cases
+    let result = LI.users_profile("Li", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user profile: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_profile("Adriana", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user profile: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_profile("Ana", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user profile: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_profile("Bot0", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user profile: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().users_profile("Bot0", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user profile: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_profile("NoSuchUser", true).await;
+    assert!(
+        result.is_err(),
+        "Getting user profile did not fail: {:?}",
+        result.unwrap()
+    );
+}

@@ -35,6 +35,8 @@ pub struct User {
     pub playing: Option<String>,
     pub count: Option<GameCount>,
     #[serde(default)]
+    pub trophies: Vec<Trophy>,
+    #[serde(default)]
     pub streaming: bool,
     pub streamer: Option<Streamer>,
     #[serde(default)]
@@ -571,4 +573,55 @@ pub struct TopUserPerf {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct TopUserLeaderboard {
     pub users: Vec<TopUser>,
+}
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "type")]
+pub enum Trophy {
+    PerfTop {
+        perf: String,
+        top: u8,
+        name: String,
+    },
+    Moderator {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+        url: String,
+    },
+    Developer {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+        url: String,
+    },
+    Verified {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+    },
+    ContentTeam {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+    },
+    #[serde(
+        alias = "marathonWinner",
+        alias = "marathonTopTen",
+        alias = "marathonTopFifty",
+        alias = "marathonTopHundred"
+    )]
+    MarathonTop {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+    },
 }

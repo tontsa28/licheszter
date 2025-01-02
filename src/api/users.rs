@@ -2,7 +2,7 @@ use crate::{
     client::Licheszter,
     config::users::UserStatusOptions,
     error::Result,
-    models::user::{PerfType, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers},
+    models::user::{PerfType, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers, User},
 };
 
 impl Licheszter {
@@ -44,5 +44,15 @@ impl Licheszter {
         let builder = self.client().get(url);
 
         Ok(self.into::<TopUserLeaderboard>(builder).await?.users)
+    }
+
+    /// Read public data of a user.
+    pub async fn users_profile(&self, username: &str, trophies: bool) -> Result<User> {
+        let mut url = self.base_url();
+        let path = format!("api/user/{username}");
+        url.set_path(&path);
+        let builder = self.client.get(url).query(&[("trophies", trophies)]);
+
+        self.into::<User>(builder).await
     }
 }
