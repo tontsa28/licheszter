@@ -632,3 +632,14 @@ pub struct RatingHistory {
     pub name: String,
     pub points: Vec<(u16, u8, u8, u16)>,
 }
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct UserNote {
+    pub from: MinimalUser,
+    pub to: MinimalUser,
+    pub text: String,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub date: PrimitiveDateTime,
+}

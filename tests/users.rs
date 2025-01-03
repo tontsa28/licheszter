@@ -206,3 +206,35 @@ async fn users_notes_write() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn users_notes_read() {
+    // Run some test cases
+    let result = LI.users_notes_read("Li").await;
+    assert!(
+        result.is_ok(),
+        "Failed to read private notes: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_notes_read("Adriana").await;
+    assert!(
+        result.is_ok(),
+        "Failed to read private notes: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_notes_read("NoSuchUser").await;
+    assert!(
+        result.is_err(),
+        "Reading private notes did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = Licheszter::new().users_notes_read("Bot0").await;
+    assert!(
+        result.is_err(),
+        "Reading private notes did not fail: {:?}",
+        result.unwrap()
+    );
+}

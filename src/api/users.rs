@@ -6,6 +6,7 @@ use crate::{
         common::OkResponse,
         user::{
             PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers, User,
+            UserNote,
         },
     },
 };
@@ -83,5 +84,15 @@ impl Licheszter {
 
         self.into::<OkResponse>(builder).await?;
         Ok(())
+    }
+
+    /// Get the private notes that you have added for a user.
+    pub async fn users_notes_read(&self, username: &str) -> Result<Vec<UserNote>> {
+        let mut url = self.base_url();
+        let path = format!("api/user/{username}/note");
+        url.set_path(&path);
+        let builder = self.client.get(url);
+
+        self.into::<Vec<UserNote>>(builder).await
     }
 }
