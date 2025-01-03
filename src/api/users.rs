@@ -2,8 +2,11 @@ use crate::{
     client::Licheszter,
     config::users::UserStatusOptions,
     error::Result,
-    models::user::{
-        PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers, User,
+    models::{
+        common::OkResponse,
+        user::{
+            PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers, User,
+        },
     },
 };
 
@@ -68,5 +71,17 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<Vec<RatingHistory>>(builder).await
+    }
+
+    /// Add a private note about the given account.
+    /// This note is only visible to the logged in user.
+    pub async fn users_notes_write(&self, username: &str, text: &str) -> Result<()> {
+        let mut url = self.base_url();
+        let path = format!("api/user/{username}/note");
+        url.set_path(&path);
+        let builder = self.client.post(url).form(&[("text", text)]);
+
+        self.into::<OkResponse>(builder).await?;
+        Ok(())
     }
 }

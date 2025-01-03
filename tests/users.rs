@@ -166,3 +166,43 @@ async fn users_rating_history() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn users_notes_write() {
+    // Run some test cases
+    let result = LI
+        .users_notes_write("Li", "This is a private test note")
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to write to private notes: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI
+        .users_notes_write("Adriana", "This is a private test note")
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to write to private notes: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI
+        .users_notes_write("NoSuchUser", "This is a private test note")
+        .await;
+    assert!(
+        result.is_err(),
+        "Writing to private notes did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = Licheszter::new()
+        .users_notes_write("Bot0", "This is a private test note")
+        .await;
+    assert!(
+        result.is_err(),
+        "Writing to private notes did not fail: {:?}",
+        result.unwrap()
+    );
+}
