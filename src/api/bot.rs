@@ -15,7 +15,7 @@ impl Licheszter {
         &self,
         game_id: &str,
     ) -> Result<impl Stream<Item = Result<BoardState>>> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/stream/{game_id}");
         url.set_path(&path);
         let builder = self.client.get(url);
@@ -31,7 +31,7 @@ impl Licheszter {
         uci_move: &str,
         draw_offer: bool,
     ) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/{game_id}/move/{uci_move}");
         url.set_path(&path);
         let builder = self.client.post(url).query(&[("offeringDraw", draw_offer)]);
@@ -42,7 +42,7 @@ impl Licheszter {
 
     /// Post a message to the player or spectator chat using the Bot API.
     pub async fn bot_chat_write(&self, game_id: &str, room: ChatRoom, text: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/{game_id}/chat");
         url.set_path(&path);
         let builder = self
@@ -56,7 +56,7 @@ impl Licheszter {
 
     /// Fetch the messages posted in the game chat using the Bot API.
     pub async fn bot_chat_read(&self, game_id: &str) -> Result<Vec<ChatMessage>> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/{game_id}/chat");
         url.set_path(&path);
         let builder = self.client.get(url);
@@ -66,7 +66,7 @@ impl Licheszter {
 
     /// Abort a bot game using the Bot API.
     pub async fn bot_game_abort(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/{game_id}/abort");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -77,7 +77,7 @@ impl Licheszter {
 
     /// Resign a bot game using the Bot API.
     pub async fn bot_game_resign(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/{game_id}/resign");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -88,7 +88,7 @@ impl Licheszter {
 
     /// Create, accept or decline draw offers using the Bot API.
     pub async fn bot_handle_draws(&self, game_id: &str, accept: bool) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/{game_id}/draw/{accept}");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -99,7 +99,7 @@ impl Licheszter {
 
     /// Create, accept or decline takeback proposals using the Bot API.
     pub async fn bot_handle_takebacks(&self, game_id: &str, accept: bool) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/bot/game/{game_id}/takeback/{accept}");
         url.set_path(&path);
         let builder = self.client.post(url);

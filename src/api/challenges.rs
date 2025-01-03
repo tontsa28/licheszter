@@ -18,7 +18,7 @@ use crate::{
 impl Licheszter {
     /// Get a list of challenges created by targeted at you.
     pub async fn challenge_list(&self) -> Result<Challenges> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/challenge");
         let builder = self.client.get(url);
 
@@ -33,7 +33,7 @@ impl Licheszter {
         username: &str,
         options: Option<&ChallengeOptions>,
     ) -> Result<Challenge> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/challenge/{username}");
         url.set_path(&path);
         let mut builder = self.client.post(url);
@@ -58,7 +58,7 @@ impl Licheszter {
         username: &str,
         options: Option<&ChallengeOptions>,
     ) -> Result<impl Stream<Item = Result<ChallengeComplete>>> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/challenge/{username}");
         url.set_path(&path);
         let mut builder = self.client.post(url).form(&[("keepAliveStream", true)]);
@@ -77,7 +77,7 @@ impl Licheszter {
 
     /// Get details about a specific challenge, even if it has been recently accepted, canceled or declined.
     pub async fn challenge_show(&self, challenge_id: &str) -> Result<Challenge> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/challenge/{challenge_id}/show");
         url.set_path(&path);
         let builder = self.client.get(url);
@@ -87,7 +87,7 @@ impl Licheszter {
 
     /// Accept an incoming challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/challenge/{challenge_id}/accept");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -102,7 +102,7 @@ impl Licheszter {
         challenge_id: &str,
         reason: Option<ChallengeDeclineReason>,
     ) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/challenge/{challenge_id}/decline");
         url.set_path(&path);
         let builder = self
@@ -121,7 +121,7 @@ impl Licheszter {
         challenge_id: &str,
         opponent_token: Option<&str>,
     ) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/challenge/{challenge_id}/cancel");
         url.set_path(&path);
         let mut builder = self.client.post(url);
@@ -141,7 +141,7 @@ impl Licheszter {
         level: AILevel,
         options: Option<&AIChallengeOptions>,
     ) -> Result<AIChallenge> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/challenge/ai");
         let mut builder = self.client.post(url).form(&[("level", level as u8)]);
 
@@ -162,7 +162,7 @@ impl Licheszter {
         &self,
         options: Option<&OpenChallengeOptions>,
     ) -> Result<OpenChallenge> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/challenge/open");
         let mut builder = self.client.post(url);
 
@@ -187,7 +187,7 @@ impl Licheszter {
         token1: &str,
         token2: &str,
     ) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/challenge/{game_id}/start-clocks");
         url.set_path(&path);
         let builder = self
@@ -206,7 +206,7 @@ impl Licheszter {
         game_id: &str,
         seconds: u32,
     ) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/round/{game_id}/add-time/{seconds}");
         url.set_path(&path);
         let builder = self.client.post(url);

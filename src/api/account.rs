@@ -10,7 +10,7 @@ use crate::{
 impl Licheszter {
     /// Public information about the logged in user.
     pub async fn account_profile(&self) -> Result<User> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/account");
         let builder = self.client.get(url);
 
@@ -19,7 +19,7 @@ impl Licheszter {
 
     /// Read the email address of the logged in user.
     pub async fn account_email(&self) -> Result<Email> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/account/email");
         let builder = self.client.get(url);
 
@@ -28,7 +28,7 @@ impl Licheszter {
 
     /// Read the preferences of the logged in user.
     pub async fn account_preferences(&self) -> Result<Preferences> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/account/preferences");
         let builder = self.client.get(url);
 
@@ -37,7 +37,7 @@ impl Licheszter {
 
     /// Read the kid mode status of the logged in user.
     pub async fn account_kid_mode(&self) -> Result<KidMode> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/account/kid");
         let builder = self.client.get(url);
 
@@ -46,7 +46,7 @@ impl Licheszter {
 
     /// Set the kid mode status of the logged in user.
     pub async fn account_kid_mode_set(&self, kid: bool) -> Result<OkResponse> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/account/kid");
         let builder = self.client.post(url).query(&[("v", kid)]);
 
@@ -59,7 +59,7 @@ impl Licheszter {
         since: Option<u64>,
         amount: Option<u8>,
     ) -> Result<Timeline> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/timeline");
         let builder = self
             .client

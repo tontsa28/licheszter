@@ -26,11 +26,11 @@ const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
 #[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
-    base_url: Url,
+    pub(crate) base_url: Url,
     #[cfg(feature = "openings")]
-    openings_url: Url,
+    pub(crate) openings_url: Url,
     #[cfg(feature = "tablebase")]
-    tablebase_url: Url,
+    pub(crate) tablebase_url: Url,
 }
 
 impl Licheszter {

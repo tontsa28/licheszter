@@ -17,7 +17,7 @@ impl Licheszter {
         &self,
         options: Option<&SeekOptions>,
     ) -> Result<impl Stream<Item = Result<()>>> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         url.set_path("api/board/seek");
         let mut builder = self.client.post(url);
 
@@ -37,7 +37,7 @@ impl Licheszter {
         &self,
         game_id: &str,
     ) -> Result<impl Stream<Item = Result<BoardState>>> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/stream/{game_id}");
         url.set_path(&path);
         let builder = self.client.get(url);
@@ -53,7 +53,7 @@ impl Licheszter {
         uci_move: &str,
         draw_offer: bool,
     ) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/move/{uci_move}");
         url.set_path(&path);
         let builder = self.client.post(url).query(&[("offeringDraw", draw_offer)]);
@@ -64,7 +64,7 @@ impl Licheszter {
 
     /// Post a message to the player or spectator chat using the Board API.
     pub async fn board_chat_write(&self, game_id: &str, room: ChatRoom, text: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/chat");
         url.set_path(&path);
         let builder = self
@@ -78,7 +78,7 @@ impl Licheszter {
 
     /// Fetch the messages posted in the game chat using the Board API.
     pub async fn board_chat_read(&self, game_id: &str) -> Result<Vec<ChatMessage>> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/chat");
         url.set_path(&path);
         let builder = self.client.get(url);
@@ -88,7 +88,7 @@ impl Licheszter {
 
     /// Abort a bot game using the Board API.
     pub async fn board_game_abort(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/abort");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -99,7 +99,7 @@ impl Licheszter {
 
     /// Resign a bot game using the Board API.
     pub async fn board_game_resign(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/resign");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -110,7 +110,7 @@ impl Licheszter {
 
     /// Create, accept or decline draw offers using the Board API.
     pub async fn board_handle_draws(&self, game_id: &str, accept: bool) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/draw/{accept}");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -121,7 +121,7 @@ impl Licheszter {
 
     /// Create, accept or decline takeback proposals using the Board API.
     pub async fn board_handle_takebacks(&self, game_id: &str, accept: bool) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/takeback/{accept}");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -132,7 +132,7 @@ impl Licheszter {
 
     /// Claim victory when the opponent has left the game for a while using the Board API.
     pub async fn board_claim_victory(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/claim-victory");
         url.set_path(&path);
         let builder = self.client.post(url);
@@ -145,7 +145,7 @@ impl Licheszter {
     /// Halves the clock time while granting an extra point upon winning.
     /// Only available in arena tournaments that allow berserk, and before each player has made a move.
     pub async fn board_berserk(&self, game_id: &str) -> Result<()> {
-        let mut url = self.base_url();
+        let mut url = self.base_url.clone();
         let path = format!("api/board/game/{game_id}/berserk");
         url.set_path(&path);
         let builder = self.client.post(url);
