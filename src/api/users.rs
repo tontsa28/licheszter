@@ -2,7 +2,9 @@ use crate::{
     client::Licheszter,
     config::users::UserStatusOptions,
     error::Result,
-    models::user::{PerfType, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers, User},
+    models::user::{
+        PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers, User,
+    },
 };
 
 impl Licheszter {
@@ -54,5 +56,17 @@ impl Licheszter {
         let builder = self.client.get(url).query(&[("trophies", trophies)]);
 
         self.into::<User>(builder).await
+    }
+
+    /// Read rating history of a user, for all perf types.
+    /// There is at most one entry per day.
+    /// Format of an entry is `(year, month, day, rating)` - `month` starts at zero.
+    pub async fn users_rating_history(&self, username: &str) -> Result<Vec<RatingHistory>> {
+        let mut url = self.base_url();
+        let path = format!("api/user/{username}/rating-history");
+        url.set_path(&path);
+        let builder = self.client.get(url);
+
+        self.into::<Vec<RatingHistory>>(builder).await
     }
 }

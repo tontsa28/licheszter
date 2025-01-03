@@ -625,3 +625,10 @@ pub enum Trophy {
         icon: String,
     },
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct RatingHistory {
+    pub name: String,
+    pub points: Vec<(u16, u8, u8, u16)>,
+}

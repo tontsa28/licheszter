@@ -134,3 +134,35 @@ async fn users_profile() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn users_rating_history() {
+    // Run some test cases
+    let result = LI.users_rating_history("Li").await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user rating history: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_rating_history("Adriana").await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user rating history: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_rating_history("Bot0").await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user rating history: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_rating_history("NoSuchUser").await;
+    assert!(
+        result.is_err(),
+        "Getting user rating history did not fail: {:?}",
+        result.unwrap()
+    );
+}
