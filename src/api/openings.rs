@@ -1,5 +1,5 @@
 use crate::{
-    client::Licheszter,
+    client::{Licheszter, UrlBase},
     config::openings::{LichessOpeningsOptions, MastersOpeningsOptions, PlayerOpeningsOptions},
     error::Result,
     models::{
@@ -15,8 +15,7 @@ impl Licheszter {
         &self,
         options: Option<&MastersOpeningsOptions>,
     ) -> Result<Opening> {
-        let mut url = self.openings_url.clone();
-        url.set_path("masters");
+        let mut url = self.request_url(UrlBase::Openings, "masters");
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -33,8 +32,7 @@ impl Licheszter {
         &self,
         options: Option<&LichessOpeningsOptions>,
     ) -> Result<Opening> {
-        let mut url = self.openings_url.clone();
-        url.set_path("lichess");
+        let mut url = self.request_url(UrlBase::Openings, "lichess");
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -53,9 +51,8 @@ impl Licheszter {
         color: Color,
         options: Option<&PlayerOpeningsOptions>,
     ) -> Result<impl Stream<Item = Result<PlayerOpening>>> {
-        let mut url = self.openings_url.clone();
-        url.set_path("player");
-        let encoded = comma_serde_urlencoded::to_string(&(("player", player), ("color", color)))?;
+        let mut url = self.request_url(UrlBase::Openings, "player");
+        let encoded = comma_serde_urlencoded::to_string((("player", player), ("color", color)))?;
         url.set_query(Some(&encoded));
 
         // Add the options to the request if they are present

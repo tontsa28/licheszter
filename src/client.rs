@@ -4,7 +4,7 @@ use reqwest::{
     header::{self, HeaderMap, HeaderValue},
     Client, IntoUrl, RequestBuilder, Url,
 };
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Serialize};
 use std::{
     fmt::Display,
     io::{Error as StdIoError, ErrorKind as StdIoErrorKind},
@@ -131,6 +131,16 @@ impl Licheszter {
 
         Ok(Box::pin(lines))
     }
+
+    pub(crate) fn request_url(&self, url: UrlBase, path: &str) -> Url {
+        let mut base = match url {
+            UrlBase::Lichess => self.base_url.clone(),
+            UrlBase::Openings => self.openings_url.clone(),
+            UrlBase::Tablebase => self.tablebase_url.clone(),
+        };
+        base.set_path(path);
+        base
+    }
 }
 
 impl Default for Licheszter {
@@ -141,7 +151,7 @@ impl Default for Licheszter {
 }
 
 /// A [`LicheszterBuilder`] can be used to create a new instance of [`Licheszter`] with custom configuration.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LicheszterBuilder {
     client: Client,
     base_url: Url,
@@ -247,4 +257,11 @@ impl Default for LicheszterBuilder {
             tablebase_url: Url::parse(TABLEBASE_URL).unwrap(),
         }
     }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub(crate) enum UrlBase {
+    Lichess,
+    Openings,
+    Tablebase,
 }

@@ -2,7 +2,7 @@ use futures_util::Stream;
 use reqwest::header;
 
 use crate::{
-    client::Licheszter,
+    client::{Licheszter, UrlBase},
     config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     error::Result,
     models::{
@@ -18,8 +18,7 @@ use crate::{
 impl Licheszter {
     /// Get a list of challenges created by targeted at you.
     pub async fn challenge_list(&self) -> Result<Challenges> {
-        let mut url = self.base_url.clone();
-        url.set_path("api/challenge");
+        let url = self.request_url(UrlBase::Lichess, "api/challenge");
         let builder = self.client.get(url);
 
         self.into::<Challenges>(builder).await
@@ -33,9 +32,7 @@ impl Licheszter {
         username: &str,
         options: Option<&ChallengeOptions>,
     ) -> Result<Challenge> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/challenge/{username}");
-        url.set_path(&path);
+        let url = self.request_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
         let mut builder = self.client.post(url);
 
         // Add the options to the request if they are present
@@ -58,9 +55,7 @@ impl Licheszter {
         username: &str,
         options: Option<&ChallengeOptions>,
     ) -> Result<impl Stream<Item = Result<ChallengeComplete>>> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/challenge/{username}");
-        url.set_path(&path);
+        let url = self.request_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
         let mut builder = self.client.post(url).form(&[("keepAliveStream", true)]);
 
         // Add the options to the request if they are present
@@ -77,9 +72,10 @@ impl Licheszter {
 
     /// Get details about a specific challenge, even if it has been recently accepted, canceled or declined.
     pub async fn challenge_show(&self, challenge_id: &str) -> Result<Challenge> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/challenge/{challenge_id}/show");
-        url.set_path(&path);
+        let url = self.request_url(
+            UrlBase::Lichess,
+            &format!("api/challenge/{challenge_id}/show"),
+        );
         let builder = self.client.get(url);
 
         self.into::<Challenge>(builder).await
@@ -87,9 +83,10 @@ impl Licheszter {
 
     /// Accept an incoming challenge.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/challenge/{challenge_id}/accept");
-        url.set_path(&path);
+        let url = self.request_url(
+            UrlBase::Lichess,
+            &format!("api/challenge/{challenge_id}/accept"),
+        );
         let builder = self.client.post(url);
 
         self.into::<OkResponse>(builder).await?;
@@ -102,9 +99,10 @@ impl Licheszter {
         challenge_id: &str,
         reason: Option<ChallengeDeclineReason>,
     ) -> Result<()> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/challenge/{challenge_id}/decline");
-        url.set_path(&path);
+        let url = self.request_url(
+            UrlBase::Lichess,
+            &format!("api/challenge/{challenge_id}/decline"),
+        );
         let builder = self
             .client
             .post(url)
@@ -121,9 +119,10 @@ impl Licheszter {
         challenge_id: &str,
         opponent_token: Option<&str>,
     ) -> Result<()> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/challenge/{challenge_id}/cancel");
-        url.set_path(&path);
+        let url = self.request_url(
+            UrlBase::Lichess,
+            &format!("api/challenge/{challenge_id}/cancel"),
+        );
         let mut builder = self.client.post(url);
 
         // Add the opponent token as a query parameter if it's present
@@ -141,8 +140,7 @@ impl Licheszter {
         level: AILevel,
         options: Option<&AIChallengeOptions>,
     ) -> Result<AIChallenge> {
-        let mut url = self.base_url.clone();
-        url.set_path("api/challenge/ai");
+        let url = self.request_url(UrlBase::Lichess, "api/challenge/ai");
         let mut builder = self.client.post(url).form(&[("level", level as u8)]);
 
         // Add the options to the request if they are present
@@ -162,8 +160,7 @@ impl Licheszter {
         &self,
         options: Option<&OpenChallengeOptions>,
     ) -> Result<OpenChallenge> {
-        let mut url = self.base_url.clone();
-        url.set_path("api/challenge/open");
+        let url = self.request_url(UrlBase::Lichess, "api/challenge/open");
         let mut builder = self.client.post(url);
 
         // Add the options to the request if they are present
@@ -187,9 +184,10 @@ impl Licheszter {
         token1: &str,
         token2: &str,
     ) -> Result<()> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/challenge/{game_id}/start-clocks");
-        url.set_path(&path);
+        let url = self.request_url(
+            UrlBase::Lichess,
+            &format!("api/challenge/{game_id}/start-clocks"),
+        );
         let builder = self
             .client
             .post(url)
@@ -206,9 +204,10 @@ impl Licheszter {
         game_id: &str,
         seconds: u32,
     ) -> Result<()> {
-        let mut url = self.base_url.clone();
-        let path = format!("api/round/{game_id}/add-time/{seconds}");
-        url.set_path(&path);
+        let url = self.request_url(
+            UrlBase::Lichess,
+            &format!("api/round/{game_id}/add-time/{seconds}"),
+        );
         let builder = self.client.post(url);
 
         self.into::<OkResponse>(builder).await?;
