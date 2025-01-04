@@ -132,14 +132,14 @@ async fn puzzle_activity() {
 #[tokio::test]
 async fn puzzle_dashboard() {
     // Run some test cases
-    let result = LI.puzzle_dashboard(10).await;
+    let result = LI.puzzle_dashboard(30).await;
     assert!(
         result.is_ok(),
         "Failed to get puzzle dashboard: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().puzzle_dashboard(30).await;
+    let result = Licheszter::new().puzzle_dashboard(60).await;
     assert!(
         result.is_err(),
         "Getting puzzle dashboard did not fail: {:?}",

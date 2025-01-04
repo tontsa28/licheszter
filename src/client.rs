@@ -4,7 +4,7 @@ use reqwest::{
     header::{self, HeaderMap, HeaderValue},
     Client, IntoUrl, RequestBuilder, Url,
 };
-use serde::{de::DeserializeOwned, Serialize};
+use serde::de::DeserializeOwned;
 use std::{
     fmt::Display,
     io::{Error as StdIoError, ErrorKind as StdIoErrorKind},

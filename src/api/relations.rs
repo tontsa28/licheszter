@@ -1,5 +1,4 @@
 use futures_util::Stream;
-use serde_json::Value;
 
 use crate::{
     client::{Licheszter, UrlBase},
@@ -39,8 +38,7 @@ impl Licheszter {
         let url = self.request_url(UrlBase::Lichess, &format!("api/rel/block/{username}"));
         let builder = self.client.post(url);
 
-        // TODO: Temporary solution, waiting for Lichess developers' comments on the returned data
-        self.into::<Value>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -49,8 +47,7 @@ impl Licheszter {
         let url = self.request_url(UrlBase::Lichess, &format!("api/rel/unblock/{username}"));
         let builder = self.client.post(url);
 
-        // TODO: Temporary solution, waiting for Lichess developers' comments on the returned data
-        self.into::<Value>(builder).await?;
+        self.into::<OkResponse>(builder).await?;
         Ok(())
     }
 }
