@@ -11,11 +11,8 @@ impl Licheszter {
         multi_pv: Option<u8>,
         variant: Option<VariantMode>,
     ) -> Result<CloudAnalysis> {
-        let url = self.request_url(UrlBase::Lichess, "api/cloud-eval");
-        let mut builder = self
-            .client
-            .get(url)
-            .query(&[("fen", fen.replace(" ", "_"))]);
+        let url = self.req_url(UrlBase::Lichess, "api/cloud-eval");
+        let mut builder = self.client.get(url).query(&[("fen", fen.replace(" ", "_"))]);
 
         // Add the multiPv amount as a query parameter if it's present
         if let Some(multi_pv) = multi_pv {

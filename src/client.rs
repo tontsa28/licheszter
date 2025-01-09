@@ -132,7 +132,8 @@ impl Licheszter {
         Ok(Box::pin(lines))
     }
 
-    pub(crate) fn request_url(&self, url: UrlBase, path: &str) -> Url {
+    // Construct the full URL of a request with given path
+    pub(crate) fn req_url(&self, url: UrlBase, path: &str) -> Url {
         let mut base = match url {
             UrlBase::Lichess => self.base_url.clone(),
             UrlBase::Openings => self.openings_url.clone(),

@@ -29,11 +29,7 @@ async fn tablebase_standard() {
     );
 
     let result = TABLEBASE.tablebase_standard("invalidfen").await;
-    assert!(
-        result.is_err(),
-        "Fetching tablebase did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching tablebase did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -58,11 +54,7 @@ async fn tablebase_atomic() {
     );
 
     let result = TABLEBASE.tablebase_atomic("invalidfen").await;
-    assert!(
-        result.is_err(),
-        "Fetching tablebase did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching tablebase did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -87,9 +79,5 @@ async fn tablebase_antichess() {
     );
 
     let result = TABLEBASE.tablebase_antichess("invalidfen").await;
-    assert!(
-        result.is_err(),
-        "Fetching tablebase did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching tablebase did not fail: {:?}", result.unwrap());
 }

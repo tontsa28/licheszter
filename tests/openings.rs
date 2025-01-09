@@ -44,11 +44,7 @@ async fn openings_masters() {
 
     let options = options.play(vec!["d1d3"]);
     let result = EXPLORER.openings_masters(Some(&options)).await;
-    assert!(
-        result.is_err(),
-        "Fetching masters openings did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching masters openings did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -84,11 +80,7 @@ async fn openings_lichess() {
 
     let options = options.since("invalid-month");
     let result = EXPLORER.openings_lichess(Some(&options)).await;
-    assert!(
-        result.is_err(),
-        "Fetching Lichess openings did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching Lichess openings did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]

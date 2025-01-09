@@ -15,7 +15,7 @@ impl Licheszter {
         &self,
         game_id: &str,
     ) -> Result<impl Stream<Item = Result<BoardState>>> {
-        let url = self.request_url(UrlBase::Lichess, &format!("api/bot/game/stream/{game_id}"));
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/stream/{game_id}"));
         let builder = self.client.get(url);
 
         self.into_stream::<BoardState>(builder).await
@@ -23,16 +23,8 @@ impl Licheszter {
 
     /// Make a move in a game using the Bot API.
     /// The move can also contain a draw offer/agreement.
-    pub async fn bot_play_move(
-        &self,
-        game_id: &str,
-        uci_move: &str,
-        draw_offer: bool,
-    ) -> Result<()> {
-        let url = self.request_url(
-            UrlBase::Lichess,
-            &format!("api/bot/game/{game_id}/move/{uci_move}"),
-        );
+    pub async fn bot_play_move(&self, game_id: &str, uci_move: &str, draw_offer: bool) -> Result<()> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/move/{uci_move}"));
         let builder = self.client.post(url).query(&[("offeringDraw", draw_offer)]);
 
         self.into::<OkResponse>(builder).await?;
@@ -41,11 +33,8 @@ impl Licheszter {
 
     /// Post a message to the player or spectator chat using the Bot API.
     pub async fn bot_chat_write(&self, game_id: &str, room: ChatRoom, text: &str) -> Result<()> {
-        let url = self.request_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/chat"));
-        let builder = self
-            .client
-            .post(url)
-            .form(&(("room", room), ("text", text)));
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/chat"));
+        let builder = self.client.post(url).form(&(("room", room), ("text", text)));
 
         self.into::<OkResponse>(builder).await?;
         Ok(())
@@ -53,7 +42,7 @@ impl Licheszter {
 
     /// Fetch the messages posted in the game chat using the Bot API.
     pub async fn bot_chat_read(&self, game_id: &str) -> Result<Vec<ChatMessage>> {
-        let url = self.request_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/chat"));
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/chat"));
         let builder = self.client.get(url);
 
         self.into::<Vec<ChatMessage>>(builder).await
@@ -61,7 +50,7 @@ impl Licheszter {
 
     /// Abort a bot game using the Bot API.
     pub async fn bot_game_abort(&self, game_id: &str) -> Result<()> {
-        let url = self.request_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/abort"));
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/abort"));
         let builder = self.client.post(url);
 
         self.into::<OkResponse>(builder).await?;
@@ -70,7 +59,7 @@ impl Licheszter {
 
     /// Resign a bot game using the Bot API.
     pub async fn bot_game_resign(&self, game_id: &str) -> Result<()> {
-        let url = self.request_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/resign"));
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/resign"));
         let builder = self.client.post(url);
 
         self.into::<OkResponse>(builder).await?;
@@ -79,10 +68,7 @@ impl Licheszter {
 
     /// Create, accept or decline draw offers using the Bot API.
     pub async fn bot_handle_draws(&self, game_id: &str, accept: bool) -> Result<()> {
-        let url = self.request_url(
-            UrlBase::Lichess,
-            &format!("api/bot/game/{game_id}/draw/{accept}"),
-        );
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/draw/{accept}"));
         let builder = self.client.post(url);
 
         self.into::<OkResponse>(builder).await?;
@@ -91,10 +77,7 @@ impl Licheszter {
 
     /// Create, accept or decline takeback proposals using the Bot API.
     pub async fn bot_handle_takebacks(&self, game_id: &str, accept: bool) -> Result<()> {
-        let url = self.request_url(
-            UrlBase::Lichess,
-            &format!("api/bot/game/{game_id}/takeback/{accept}"),
-        );
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/takeback/{accept}"));
         let builder = self.client.post(url);
 
         self.into::<OkResponse>(builder).await?;

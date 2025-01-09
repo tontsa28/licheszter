@@ -10,7 +10,7 @@ use crate::{
 impl Licheszter {
     /// Public information about the logged in user.
     pub async fn account_profile(&self) -> Result<User> {
-        let url = self.request_url(UrlBase::Lichess, "api/account");
+        let url = self.req_url(UrlBase::Lichess, "api/account");
         let builder = self.client.get(url);
 
         self.into::<User>(builder).await
@@ -18,7 +18,7 @@ impl Licheszter {
 
     /// Read the email address of the logged in user.
     pub async fn account_email(&self) -> Result<Email> {
-        let url = self.request_url(UrlBase::Lichess, "api/account/email");
+        let url = self.req_url(UrlBase::Lichess, "api/account/email");
         let builder = self.client.get(url);
 
         self.into::<Email>(builder).await
@@ -26,7 +26,7 @@ impl Licheszter {
 
     /// Read the preferences of the logged in user.
     pub async fn account_preferences(&self) -> Result<Preferences> {
-        let url = self.request_url(UrlBase::Lichess, "api/account/preferences");
+        let url = self.req_url(UrlBase::Lichess, "api/account/preferences");
         let builder = self.client.get(url);
 
         self.into::<Preferences>(builder).await
@@ -34,7 +34,7 @@ impl Licheszter {
 
     /// Read the kid mode status of the logged in user.
     pub async fn account_kid_mode(&self) -> Result<KidMode> {
-        let url = self.request_url(UrlBase::Lichess, "api/account/kid");
+        let url = self.req_url(UrlBase::Lichess, "api/account/kid");
         let builder = self.client.get(url);
 
         self.into::<KidMode>(builder).await
@@ -42,7 +42,7 @@ impl Licheszter {
 
     /// Set the kid mode status of the logged in user.
     pub async fn account_kid_mode_set(&self, kid: bool) -> Result<()> {
-        let url = self.request_url(UrlBase::Lichess, "api/account/kid");
+        let url = self.req_url(UrlBase::Lichess, "api/account/kid");
         let builder = self.client.post(url).query(&[("v", kid)]);
 
         self.into::<OkResponse>(builder).await?;
@@ -50,16 +50,9 @@ impl Licheszter {
     }
 
     /// Get the timeline events of the logged in user.
-    pub async fn account_timeline(
-        &self,
-        since: Option<u64>,
-        amount: Option<u8>,
-    ) -> Result<Timeline> {
-        let url = self.request_url(UrlBase::Lichess, "api/timeline");
-        let builder = self
-            .client
-            .get(url)
-            .query(&(("since", since), ("nb", amount)));
+    pub async fn account_timeline(&self, since: Option<u64>, amount: Option<u8>) -> Result<Timeline> {
+        let url = self.req_url(UrlBase::Lichess, "api/timeline");
+        let builder = self.client.get(url).query(&(("since", since), ("nb", amount)));
 
         self.into::<Timeline>(builder).await
     }

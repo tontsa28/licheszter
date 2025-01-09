@@ -79,9 +79,7 @@ async fn users_leaderboard() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new()
-        .users_leaderboard(20, PerfType::Blitz)
-        .await;
+    let result = Licheszter::new().users_leaderboard(20, PerfType::Blitz).await;
     assert!(
         result.is_ok(),
         "Failed to get leaderboard: {:?}",
@@ -128,11 +126,7 @@ async fn users_profile() {
     );
 
     let result = LI.users_profile("NoSuchUser", true).await;
-    assert!(
-        result.is_err(),
-        "Getting user profile did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Getting user profile did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -170,9 +164,7 @@ async fn users_rating_history() {
 #[tokio::test]
 async fn users_notes_write() {
     // Run some test cases
-    let result = LI
-        .users_notes_write("Li", "This is a private test note")
-        .await;
+    let result = LI.users_notes_write("Li", "This is a private test note").await;
     assert!(
         result.is_ok(),
         "Failed to write to private notes: {:?}",
@@ -191,20 +183,12 @@ async fn users_notes_write() {
     let result = LI
         .users_notes_write("NoSuchUser", "This is a private test note")
         .await;
-    assert!(
-        result.is_err(),
-        "Writing to private notes did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Writing to private notes did not fail: {:?}", result.unwrap());
 
     let result = Licheszter::new()
         .users_notes_write("Bot0", "This is a private test note")
         .await;
-    assert!(
-        result.is_err(),
-        "Writing to private notes did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Writing to private notes did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -225,16 +209,8 @@ async fn users_notes_read() {
     );
 
     let result = LI.users_notes_read("NoSuchUser").await;
-    assert!(
-        result.is_err(),
-        "Reading private notes did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Reading private notes did not fail: {:?}", result.unwrap());
 
     let result = Licheszter::new().users_notes_read("Bot0").await;
-    assert!(
-        result.is_err(),
-        "Reading private notes did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Reading private notes did not fail: {:?}", result.unwrap());
 }

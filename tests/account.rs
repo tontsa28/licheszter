@@ -62,11 +62,7 @@ async fn account_email() {
     );
 
     let result = Licheszter::new().account_email().await;
-    assert!(
-        result.is_err(),
-        "Fetching account email did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching account email did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -112,11 +108,7 @@ async fn account_kid_mode() {
     );
 
     let result = Licheszter::new().account_kid_mode().await;
-    assert!(
-        result.is_err(),
-        "Checking account kid mode did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Checking account kid mode did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -137,11 +129,7 @@ async fn account_kid_mode_set() {
     );
 
     let result = Licheszter::new().account_kid_mode_set(true).await;
-    assert!(
-        result.is_err(),
-        "Setting account kid mode did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Setting account kid mode did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -169,9 +157,5 @@ async fn account_timeline() {
     );
 
     let result = Licheszter::new().account_timeline(None, None).await;
-    assert!(
-        result.is_err(),
-        "Fetching account timeline did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching account timeline did not fail: {:?}", result.unwrap());
 }

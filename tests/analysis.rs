@@ -15,11 +15,7 @@ static LI: LazyLock<Licheszter> = LazyLock::new(|| {
 async fn analysis_cloud() {
     // Run some test cases
     let result = LI
-        .analysis_cloud(
-            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-            None,
-            None,
-        )
+        .analysis_cloud("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", None, None)
         .await;
     assert!(
         result.is_ok(),
@@ -47,9 +43,5 @@ async fn analysis_cloud() {
             Some(VariantMode::Atomic),
         )
         .await;
-    assert!(
-        result.is_err(),
-        "Getting cloud analysis did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Getting cloud analysis did not fail: {:?}", result.unwrap());
 }

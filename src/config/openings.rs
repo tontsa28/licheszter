@@ -129,12 +129,7 @@ impl LichessOpeningsOptions {
     /// Each group ranges from its value to the next higher group.
     #[must_use]
     pub fn ratings(mut self, ratings: Vec<OpeningRatings>) -> Self {
-        self.ratings = Some(
-            ratings
-                .iter()
-                .map(|r| r.to_owned() as u16)
-                .collect::<Vec<u16>>(),
-        );
+        self.ratings = Some(ratings.iter().map(|r| r.to_owned() as u16).collect::<Vec<u16>>());
         self
     }
 
