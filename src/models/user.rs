@@ -222,6 +222,8 @@ pub struct MinimalUser {
     pub title: Option<Title>,
     #[serde(default)]
     pub patron: bool,
+    #[serde(default)]
+    pub online: bool,
     pub flair: Option<String>,
 }
 
@@ -631,6 +633,12 @@ pub enum Trophy {
 pub struct RatingHistory {
     pub name: String,
     pub points: Vec<(u16, u8, u8, u16)>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct UserAutocomplete {
+    pub result: Vec<MinimalUser>,
 }
 
 #[serde_as]

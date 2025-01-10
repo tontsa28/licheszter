@@ -5,7 +5,8 @@ use crate::{
     models::{
         common::OkResponse,
         user::{
-            PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers, User, UserNote,
+            MinimalUser, PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers,
+            User, UserAutocomplete, UserNote,
         },
     },
 };
@@ -63,6 +64,30 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<Vec<RatingHistory>>(builder).await
+    }
+
+    /// Provides autocompletion options for an incomplete username.
+    pub async fn users_autocomplete(&self, term: &str, friend: bool) -> Result<Vec<String>> {
+        let url = self.req_url(UrlBase::Lichess, "api/player/autocomplete");
+        let builder = self.client.get(url).query(&(("term", term), ("friend", friend)));
+
+        self.into::<Vec<String>>(builder).await
+    }
+
+    /// Provides detailed autocompletion options for an incomplete username.
+    /// Each result contains some basic information about the user in question.
+    pub async fn users_autocomplete_details(
+        &self,
+        term: &str,
+        friend: bool,
+    ) -> Result<Vec<MinimalUser>> {
+        let url = self.req_url(UrlBase::Lichess, "api/player/autocomplete");
+        let builder =
+            self.client
+                .get(url)
+                .query(&(("term", term), ("object", true), ("friend", friend)));
+
+        Ok(self.into::<UserAutocomplete>(builder).await?.result)
     }
 
     /// Add a private note about the given account.

@@ -162,6 +162,70 @@ async fn users_rating_history() {
 }
 
 #[tokio::test]
+async fn users_autocomplete() {
+    // Run some test cases
+    let result = LI.users_autocomplete("bot", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_autocomplete("bot", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_autocomplete("NoSuch", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().users_autocomplete("bot", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
+async fn users_autocomplete_details() {
+    // Run some test cases
+    let result = LI.users_autocomplete_details("bot", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_autocomplete_details("bot", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_autocomplete_details("NoSuch", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().users_autocomplete_details("bot", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get autocompletion for name: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
 async fn users_notes_write() {
     // Run some test cases
     let result = LI.users_notes_write("Li", "This is a private test note").await;
