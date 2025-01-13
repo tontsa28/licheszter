@@ -5,8 +5,8 @@ use crate::{
     models::{
         common::OkResponse,
         user::{
-            MinimalUser, PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard, TopUsers,
-            User, UserAutocomplete, UserNote,
+            Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard,
+            TopUsers, User, UserAutocomplete, UserNote,
         },
     },
 };
@@ -64,6 +64,15 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<Vec<RatingHistory>>(builder).await
+    }
+
+    /// Get total number of games, and current score, of any two users.
+    /// If `matchup` is set to `true` and the users are currently playing, then this method also gets the current match game number and scores.
+    pub async fn users_crosstable(&self, user1: &str, user2: &str, matchup: bool) -> Result<Crosstable> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/crosstable/{user1}/{user2}"));
+        let builder = self.client.get(url).query(&[("matchup", matchup)]);
+
+        self.into::<Crosstable>(builder).await
     }
 
     /// Provides autocompletion options for an incomplete username.

@@ -651,3 +651,21 @@ pub struct UserNote {
     #[serde_as(as = "TimestampMilliSeconds")]
     pub date: PrimitiveDateTime,
 }
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Crosstable {
+    pub users: BTreeMap<String, f32>,
+    #[serde(rename = "nbGames")]
+    pub nb_games: u32,
+    pub matchup: Option<CrosstableMatchup>,
+}
+
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct CrosstableMatchup {
+    pub users: BTreeMap<String, f32>,
+    #[serde(rename = "nbGames")]
+    pub nb_games: u32,
+}

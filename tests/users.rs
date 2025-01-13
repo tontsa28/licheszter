@@ -162,6 +162,38 @@ async fn users_rating_history() {
 }
 
 #[tokio::test]
+async fn users_crosstable() {
+    // Run some test cases
+    let result = LI.users_crosstable("Li", "Adriana", false).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get crosstable between users: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_crosstable("Li", "Adriana", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get crosstable between users: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().users_crosstable("Li", "Adriana", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get crosstable between users: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_crosstable("NoSuchUser1", "NoSuchUser2", true).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get crosstable between users: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
 async fn users_autocomplete() {
     // Run some test cases
     let result = LI.users_autocomplete("bot", false).await;
