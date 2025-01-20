@@ -5,8 +5,8 @@ use crate::{
     models::{
         common::OkResponse,
         user::{
-            Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, TopUser, TopUserLeaderboard,
-            TopUsers, User, UserAutocomplete, UserNote,
+            Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser, TopUser,
+            TopUserLeaderboard, TopUsers, User, UserAutocomplete, UserNote,
         },
     },
 };
@@ -64,6 +64,14 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<Vec<RatingHistory>>(builder).await
+    }
+
+    /// Get basic information about currently streaming users.
+    pub async fn users_streamers_live(&self) -> Result<Vec<StreamingUser>> {
+        let url = self.req_url(UrlBase::Lichess, "api/streamer/live");
+        let builder = self.client.get(url);
+
+        self.into::<Vec<StreamingUser>>(builder).await
     }
 
     /// Get total number of games, and current score, of any two users.

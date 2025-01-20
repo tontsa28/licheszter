@@ -162,6 +162,24 @@ async fn users_rating_history() {
 }
 
 #[tokio::test]
+async fn users_streamers_live() {
+    // Run some test cases
+    let result = LI.users_streamers_live().await;
+    assert!(
+        result.is_ok(),
+        "Failed to get live streamers: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().users_streamers_live().await;
+    assert!(
+        result.is_ok(),
+        "Failed to get live streamers: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
 async fn users_crosstable() {
     // Run some test cases
     let result = LI.users_crosstable("Li", "Adriana", false).await;

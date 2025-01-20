@@ -669,3 +669,38 @@ pub struct CrosstableMatchup {
     #[serde(rename = "nbGames")]
     pub nb_games: u32,
 }
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamingUser {
+    pub id: String,
+    pub name: String,
+    pub title: Option<Title>,
+    #[serde(default)]
+    pub patron: bool,
+    pub flair: Option<String>,
+    pub stream: StreamDetails,
+    pub streamer: StreamerDetails,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamDetails {
+    pub service: String,
+    pub status: String,
+    pub lang: String,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamerDetails {
+    pub name: String,
+    pub headline: String,
+    pub description: Option<String>,
+    pub twitch: Option<String>,
+    #[serde(rename = "youTube")]
+    pub youtube: Option<String>,
+    pub image: String,
+}
