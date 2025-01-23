@@ -12,6 +12,13 @@ static LI: LazyLock<Licheszter> = LazyLock::new(|| {
         .build()
 });
 
+static DEFAULT: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
+        .with_base_url("http://localhost:8080")
+        .unwrap()
+        .build()
+});
+
 #[tokio::test]
 async fn puzzle_daily() {
     // Run some test cases
@@ -22,7 +29,7 @@ async fn puzzle_daily() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().puzzle_daily().await;
+    let result = DEFAULT.puzzle_daily().await;
     assert!(
         result.is_ok(),
         "Failed to get daily puzzle: {:?}",
@@ -43,7 +50,7 @@ async fn puzzle_show() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().puzzle_show(&id).await;
+    let result = DEFAULT.puzzle_show(&id).await;
     assert!(
         result.is_ok(),
         "Failed to get puzzle: {:?}",
@@ -84,7 +91,7 @@ async fn puzzle_next() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().puzzle_next(None, None).await;
+    let result = DEFAULT.puzzle_next(None, None).await;
     assert!(
         result.is_ok(),
         "Failed to get next puzzle: {:?}",
@@ -122,21 +129,21 @@ async fn puzzle_activity() {
         );
     }
 
-    let result = Licheszter::new().puzzle_activity(None, None).await;
+    let result = DEFAULT.puzzle_activity(None, None).await;
     assert!(result.is_err(), "Getting puzzle activity did not fail");
 }
 
 #[tokio::test]
 async fn puzzle_dashboard() {
     // Run some test cases
-    let result = LI.puzzle_dashboard(30).await;
+    let result = LI.puzzle_dashboard(90).await;
     assert!(
         result.is_ok(),
         "Failed to get puzzle dashboard: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().puzzle_dashboard(60).await;
+    let result = DEFAULT.puzzle_dashboard(120).await;
     assert!(result.is_err(), "Getting puzzle dashboard did not fail: {:?}", result.unwrap());
 }
 
@@ -175,6 +182,6 @@ async fn puzzle_race_create() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().puzzle_race_create().await;
+    let result = DEFAULT.puzzle_race_create().await;
     assert!(result.is_err(), "Creating puzzle race did not fail: {:?}", result.unwrap());
 }

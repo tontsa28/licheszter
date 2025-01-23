@@ -11,6 +11,13 @@ static LI: LazyLock<Licheszter> = LazyLock::new(|| {
         .build()
 });
 
+static DEFAULT: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
+        .with_base_url("http://localhost:8080")
+        .unwrap()
+        .build()
+});
+
 #[tokio::test]
 async fn users_status() {
     // Create options for testing
@@ -47,7 +54,7 @@ async fn users_top10() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_top10().await;
+    let result = DEFAULT.users_top10().await;
     assert!(
         result.is_ok(),
         "Failed to get top 10 lists: {:?}",
@@ -79,7 +86,7 @@ async fn users_leaderboard() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_leaderboard(20, PerfType::Blitz).await;
+    let result = DEFAULT.users_leaderboard(20, PerfType::Blitz).await;
     assert!(
         result.is_ok(),
         "Failed to get leaderboard: {:?}",
@@ -118,7 +125,7 @@ async fn users_profile() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_profile("Bot0", false).await;
+    let result = DEFAULT.users_profile("Bot0", false).await;
     assert!(
         result.is_ok(),
         "Failed to get user profile: {:?}",
@@ -171,7 +178,7 @@ async fn users_list() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_list(vec!["Ana", "Adriana", "Bot0"]).await;
+    let result = DEFAULT.users_list(vec!["Ana", "Adriana", "Bot0"]).await;
     assert!(
         result.is_ok(),
         "Failed to get list of users: {:?}",
@@ -189,7 +196,7 @@ async fn users_streamers_live() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_streamers_live().await;
+    let result = DEFAULT.users_streamers_live().await;
     assert!(
         result.is_ok(),
         "Failed to get live streamers: {:?}",
@@ -214,7 +221,7 @@ async fn users_crosstable() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_crosstable("Li", "Adriana", true).await;
+    let result = DEFAULT.users_crosstable("Li", "Adriana", true).await;
     assert!(
         result.is_ok(),
         "Failed to get crosstable between users: {:?}",
@@ -253,7 +260,7 @@ async fn users_autocomplete() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_autocomplete("bot", false).await;
+    let result = DEFAULT.users_autocomplete("bot", false).await;
     assert!(
         result.is_ok(),
         "Failed to get autocompletion for name: {:?}",
@@ -285,7 +292,7 @@ async fn users_autocomplete_details() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = Licheszter::new().users_autocomplete_details("bot", false).await;
+    let result = DEFAULT.users_autocomplete_details("bot", false).await;
     assert!(
         result.is_ok(),
         "Failed to get autocompletion for name: {:?}",
@@ -317,7 +324,7 @@ async fn users_notes_write() {
         .await;
     assert!(result.is_err(), "Writing to private notes did not fail: {:?}", result.unwrap());
 
-    let result = Licheszter::new()
+    let result = DEFAULT
         .users_notes_write("Bot0", "This is a private test note")
         .await;
     assert!(result.is_err(), "Writing to private notes did not fail: {:?}", result.unwrap());
@@ -343,6 +350,6 @@ async fn users_notes_read() {
     let result = LI.users_notes_read("NoSuchUser").await;
     assert!(result.is_err(), "Reading private notes did not fail: {:?}", result.unwrap());
 
-    let result = Licheszter::new().users_notes_read("Bot0").await;
+    let result = DEFAULT.users_notes_read("Bot0").await;
     assert!(result.is_err(), "Reading private notes did not fail: {:?}", result.unwrap());
 }

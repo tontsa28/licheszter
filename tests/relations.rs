@@ -20,6 +20,13 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
         .build()
 });
 
+static DEFAULT: LazyLock<Licheszter> = LazyLock::new(|| {
+    Licheszter::builder()
+        .with_base_url("http://localhost:8080")
+        .unwrap()
+        .build()
+});
+
 #[tokio::test]
 async fn relations_followed_users_list() {
     // Run some test cases
@@ -41,7 +48,7 @@ async fn relations_followed_users_list() {
         );
     }
 
-    let result = Licheszter::new().relations_followed_users_list().await;
+    let result = DEFAULT.relations_followed_users_list().await;
     assert!(result.is_err(), "Fetching followers did not fail");
 }
 
