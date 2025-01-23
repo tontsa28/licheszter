@@ -250,17 +250,17 @@ pub struct ChallengeUser {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct BotUser {
+pub struct BasicUser {
     pub id: String,
     pub username: String,
-    pub perfs: BotPerfs,
+    pub perfs: UserPerfs,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
     #[serde(default)]
     pub disabled: bool,
     #[serde(default)]
     pub tos_violation: bool,
-    pub profile: Profile,
+    pub profile: Option<Profile>,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
@@ -269,29 +269,8 @@ pub struct BotUser {
     pub verified: bool,
     #[serde(default)]
     pub play_time: PlayTime,
-    pub title: Title,
+    pub title: Option<Title>,
     pub flair: Option<String>,
-}
-
-#[skip_serializing_none]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-#[serde(rename_all = "camelCase")]
-pub struct BotPerfs {
-    pub bullet: Option<UserPerf>,
-    pub blitz: Option<UserPerf>,
-    pub rapid: Option<UserPerf>,
-    pub classical: Option<UserPerf>,
-    pub correspondence: Option<UserPerf>,
-    pub chess960: Option<UserPerf>,
-    pub antichess: Option<UserPerf>,
-    pub atomic: Option<UserPerf>,
-    pub king_of_the_hill: Option<UserPerf>,
-    pub crazyhouse: Option<UserPerf>,
-    pub three_check: Option<UserPerf>,
-    pub racing_kings: Option<UserPerf>,
-    pub horde: Option<UserPerf>,
-    pub puzzle: Option<UserPerf>,
 }
 
 #[skip_serializing_none]
@@ -697,10 +676,10 @@ pub struct StreamDetails {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct StreamerDetails {
     pub name: String,
-    pub headline: String,
+    pub headline: Option<String>,
     pub description: Option<String>,
     pub twitch: Option<String>,
     #[serde(rename = "youTube")]
     pub youtube: Option<String>,
-    pub image: String,
+    pub image: Option<String>,
 }

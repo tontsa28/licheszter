@@ -5,8 +5,8 @@ use crate::{
     models::{
         common::OkResponse,
         user::{
-            Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser, TopUser,
-            TopUserLeaderboard, TopUsers, User, UserAutocomplete, UserNote,
+            BasicUser, Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser,
+            TopUser, TopUserLeaderboard, TopUsers, User, UserAutocomplete, UserNote,
         },
     },
 };
@@ -64,6 +64,15 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<Vec<RatingHistory>>(builder).await
+    }
+
+    /// Get up to 300 users by their IDs.
+    /// This endpoint is limited to 8 000 users every 10 minutes and 120 000 every day.
+    pub async fn users_list(&self, ids: Vec<&str>) -> Result<Vec<BasicUser>> {
+        let url = self.req_url(UrlBase::Lichess, "api/users");
+        let builder = self.client.post(url).body(ids.join(","));
+
+        self.into::<Vec<BasicUser>>(builder).await
     }
 
     /// Get basic information about currently streaming users.

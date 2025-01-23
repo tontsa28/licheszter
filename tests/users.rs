@@ -162,6 +162,24 @@ async fn users_rating_history() {
 }
 
 #[tokio::test]
+async fn users_list() {
+    // Run some test cases
+    let result = LI.users_list(vec!["Ana", "Adriana", "Bot0"]).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get list of users: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = Licheszter::new().users_list(vec!["Ana", "Adriana", "Bot0"]).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get list of users: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
 async fn users_streamers_live() {
     // Run some test cases
     let result = LI.users_streamers_live().await;

@@ -5,7 +5,7 @@ use crate::{
         board::Event,
         common::OkResponse,
         game::{UserGame, UserGames},
-        user::BotUser,
+        user::BasicUser,
     },
 };
 use futures_util::Stream;
@@ -31,11 +31,11 @@ impl Licheszter {
     }
 
     /// Get online bots.
-    pub async fn bots_online(&self, bots: u8) -> Result<impl Stream<Item = Result<BotUser>>> {
+    pub async fn bots_online(&self, bots: u8) -> Result<impl Stream<Item = Result<BasicUser>>> {
         let url = self.req_url(UrlBase::Lichess, "api/bot/online");
         let builder = self.client.get(url).query(&[("nb", bots)]);
 
-        self.into_stream::<BotUser>(builder).await
+        self.into_stream::<BasicUser>(builder).await
     }
 
     /// Upgrade a Lichess player account into a bot account.
