@@ -20,7 +20,7 @@ jobs:
         image: ghcr.io/lichess-org/lila-docker:main
         options: --restart=always --name lila
         ports:
-          - 8080:9663
+          - 8080:8080
       lila-bots:
         image: python:latest
         options: -t --name lila-bots --entrypoint "/bin/sh"
