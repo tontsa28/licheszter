@@ -169,6 +169,38 @@ async fn users_rating_history() {
 }
 
 #[tokio::test]
+async fn users_performance() {
+    // Run some test cases
+    let result = LI.users_performance("Li", PerfType::Blitz).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user performance statistics: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_performance("Bot0", PerfType::Blitz).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user performance statistics: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_performance("Ana", PerfType::Rapid).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user performance statistics: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_performance("NoSuchUser", PerfType::Bullet).await;
+    assert!(
+        result.is_err(),
+        "Getting user performance statistics did not fail: {:?}",
+        result.unwrap()
+    );
+}
+
+#[tokio::test]
 async fn users_list() {
     // Run some test cases
     let result = LI.users_list(vec!["Ana", "Adriana", "Bot0"]).await;

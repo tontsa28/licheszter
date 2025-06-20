@@ -6,7 +6,7 @@ use crate::{
         common::OkResponse,
         user::{
             BasicUser, Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser,
-            TopUser, TopUserLeaderboard, TopUsers, User, UserAutocomplete, UserNote,
+            TopUser, TopUserLeaderboard, TopUsers, User, UserAutocomplete, UserNote, UserPerformance,
         },
     },
 };
@@ -64,6 +64,14 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<Vec<RatingHistory>>(builder).await
+    }
+
+    /// Read performance statistics of a user, for a single performance.
+    pub async fn users_performance(&self, username: &str, perf: PerfType) -> Result<UserPerformance> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/perf/{perf}"));
+        let builder = self.client.get(url);
+
+        self.into::<UserPerformance>(builder).await
     }
 
     /// Get up to 300 users by their IDs.
