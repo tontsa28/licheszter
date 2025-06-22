@@ -6,7 +6,8 @@ use crate::{
         common::OkResponse,
         user::{
             BasicUser, Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser,
-            TopUser, TopUserLeaderboard, TopUsers, User, UserAutocomplete, UserNote, UserPerformance,
+            TopUser, TopUserLeaderboard, TopUsers, User, UserActivity, UserAutocomplete, UserNote,
+            UserPerformance,
         },
     },
 };
@@ -72,6 +73,14 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<UserPerformance>(builder).await
+    }
+
+    /// Read data to generate the activity feed of a user.
+    pub async fn users_activity(&self, username: &str) -> Result<Vec<UserActivity>> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/activity"));
+        let builder = self.client.get(url);
+
+        self.into::<Vec<UserActivity>>(builder).await
     }
 
     /// Get up to 300 users by their IDs.

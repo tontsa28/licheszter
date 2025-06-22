@@ -201,6 +201,38 @@ async fn users_performance() {
 }
 
 #[tokio::test]
+async fn users_activity() {
+    // Run some test cases
+    let result = LI.users_activity("Li").await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user activity feed: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_activity("Bot0").await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user activity feed: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_activity("Ana").await;
+    assert!(
+        result.is_ok(),
+        "Failed to get user activity feed: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.users_activity("NoSuchUser").await;
+    assert!(
+        result.as_ref().is_ok_and(|vec| vec.is_empty()),
+        "Getting user activity feed did not fail: {:?}",
+        result.unwrap()
+    );
+}
+
+#[tokio::test]
 async fn users_list() {
     // Run some test cases
     let result = LI.users_list(vec!["Ana", "Adriana", "Bot0"]).await;
