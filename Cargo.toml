@@ -1,6 +1,6 @@
 [package]
 name = "licheszter"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["tontsa28 <miika@tontsa.fi>"]
 license = "MIT OR Apache-2.0"
 description = "An API wrapper for the Lichess API"

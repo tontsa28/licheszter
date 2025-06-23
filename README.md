@@ -55,7 +55,7 @@ Below is a list of supported API endpoints as of the last release:
 | Category          | Supported |
 | --------          | --------- |
 | Account           | ✅        |
-| Users             | ❌        |
+| Users             | ✅        |
 | Relations         | ✅        |
 | Games             | ❌        |
 | TV                | ❌        |
