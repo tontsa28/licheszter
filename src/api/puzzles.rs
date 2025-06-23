@@ -1,7 +1,7 @@
 use futures_util::Stream;
 
 use crate::{
-    client::Licheszter,
+    client::{Licheszter, UrlBase},
     config::puzzles::PuzzleDifficulty,
     error::Result,
     models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard, PuzzleRace, PuzzleStormDashboard},
@@ -10,8 +10,7 @@ use crate::{
 impl Licheszter {
     /// Get the daily puzzle.
     pub async fn puzzle_daily(&self) -> Result<Puzzle> {
-        let mut url = self.base_url();
-        url.set_path("api/puzzle/daily");
+        let url = self.req_url(UrlBase::Lichess, "api/puzzle/daily");
         let builder = self.client.get(url);
 
         self.into::<Puzzle>(builder).await
@@ -19,9 +18,7 @@ impl Licheszter {
 
     /// Get a single puzzle by ID.
     pub async fn puzzle_show(&self, id: &str) -> Result<Puzzle> {
-        let mut url = self.base_url();
-        let path = format!("api/puzzle/{id}");
-        url.set_path(&path);
+        let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/{id}"));
         let builder = self.client.get(url);
 
         self.into::<Puzzle>(builder).await
@@ -34,8 +31,7 @@ impl Licheszter {
         angle: Option<&str>,
         difficulty: Option<PuzzleDifficulty>,
     ) -> Result<Puzzle> {
-        let mut url = self.base_url();
-        url.set_path("api/puzzle/next");
+        let url = self.req_url(UrlBase::Lichess, "api/puzzle/next");
         let builder = self
             .client
             .get(url)
@@ -50,12 +46,8 @@ impl Licheszter {
         max: Option<u16>,
         before: Option<u64>,
     ) -> Result<impl Stream<Item = Result<PuzzleActivity>>> {
-        let mut url = self.base_url();
-        url.set_path("api/puzzle/activity");
-        let builder = self
-            .client
-            .get(url)
-            .query(&(("max", max), ("before", before)));
+        let url = self.req_url(UrlBase::Lichess, "api/puzzle/activity");
+        let builder = self.client.get(url).query(&(("max", max), ("before", before)));
 
         self.into_stream::<PuzzleActivity>(builder).await
     }
@@ -63,9 +55,7 @@ impl Licheszter {
     /// Get the puzzle dashboard of the logged in user.
     /// Includes all puzzle themes played, with aggregated results.
     pub async fn puzzle_dashboard(&self, days: u8) -> Result<PuzzleDashboard> {
-        let mut url = self.base_url();
-        let path = format!("api/puzzle/dashboard/{days}");
-        url.set_path(&path);
+        let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
         let builder = self.client.get(url);
 
         self.into::<PuzzleDashboard>(builder).await
@@ -79,9 +69,7 @@ impl Licheszter {
         username: &str,
         days: Option<u16>,
     ) -> Result<PuzzleStormDashboard> {
-        let mut url = self.base_url();
-        let path = format!("api/storm/dashboard/{username}");
-        url.set_path(&path);
+        let url = self.req_url(UrlBase::Lichess, &format!("api/storm/dashboard/{username}"));
         let builder = self.client.get(url).query(&[("days", days)]);
 
         self.into::<PuzzleStormDashboard>(builder).await
@@ -90,8 +78,7 @@ impl Licheszter {
     /// Create a new private puzzle race.
     /// Once the puzzle race has been created, the creator must join the page and manually start the race when enough players have joined.
     pub async fn puzzle_race_create(&self) -> Result<PuzzleRace> {
-        let mut url = self.base_url();
-        url.set_path("api/racer");
+        let url = self.req_url(UrlBase::Lichess, "api/racer");
         let builder = self.client.post(url);
 
         self.into::<PuzzleRace>(builder).await

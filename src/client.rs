@@ -26,11 +26,11 @@ const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
 #[derive(Debug)]
 pub struct Licheszter {
     pub(crate) client: Client,
-    base_url: Url,
+    pub(crate) base_url: Url,
     #[cfg(feature = "openings")]
-    openings_url: Url,
+    pub(crate) openings_url: Url,
     #[cfg(feature = "tablebase")]
-    tablebase_url: Url,
+    pub(crate) tablebase_url: Url,
 }
 
 impl Licheszter {
@@ -131,6 +131,17 @@ impl Licheszter {
 
         Ok(Box::pin(lines))
     }
+
+    // Construct the full URL of a request with given path
+    pub(crate) fn req_url(&self, url: UrlBase, path: &str) -> Url {
+        let mut base = match url {
+            UrlBase::Lichess => self.base_url.clone(),
+            UrlBase::Openings => self.openings_url.clone(),
+            UrlBase::Tablebase => self.tablebase_url.clone(),
+        };
+        base.set_path(path);
+        base
+    }
 }
 
 impl Default for Licheszter {
@@ -141,7 +152,7 @@ impl Default for Licheszter {
 }
 
 /// A [`LicheszterBuilder`] can be used to create a new instance of [`Licheszter`] with custom configuration.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LicheszterBuilder {
     client: Client,
     base_url: Url,
@@ -247,4 +258,11 @@ impl Default for LicheszterBuilder {
             tablebase_url: Url::parse(TABLEBASE_URL).unwrap(),
         }
     }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub(crate) enum UrlBase {
+    Lichess,
+    Openings,
+    Tablebase,
 }

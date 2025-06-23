@@ -54,7 +54,7 @@ async fn challenge_list() {
 async fn challenge_create() {
     // Create options for testing
     let options = ChallengeOptions::new()
-        .rated(true)
+        .rated(false)
         .clock(24897, 255)
         .days(CorrespondenceDays::Seven)
         .color(Color::Black)
@@ -78,25 +78,17 @@ async fn challenge_create() {
     );
 
     let result = LI.challenge_create("Bot0", Some(&options)).await;
-    assert!(
-        result.is_err(),
-        "Creating a challenge did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Creating a challenge did not fail: {:?}", result.unwrap());
 
     let result = LI.challenge_create("NoSuchUser", None).await;
-    assert!(
-        result.is_err(),
-        "Creating a challenge did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Creating a challenge did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
 async fn challenge_create_connect() {
     // Create options for testing
     let options = ChallengeOptions::new()
-        .rated(true)
+        .rated(false)
         .clock(24897, 255)
         .days(CorrespondenceDays::Seven)
         .color(Color::Black)
@@ -117,10 +109,7 @@ async fn challenge_create_connect() {
         }
     }
 
-    let mut result = LI
-        .challenge_create_connect("Bot0", Some(&options))
-        .await
-        .unwrap();
+    let mut result = LI.challenge_create_connect("Bot0", Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -134,16 +123,10 @@ async fn challenge_create_connect() {
     }
 
     let result = LI.challenge_create_connect("Li", None).await;
-    assert!(
-        result.is_err(),
-        "Creating a streamed challenge did not fail"
-    );
+    assert!(result.is_err(), "Creating a streamed challenge did not fail");
 
     let result = LI.challenge_create_connect("NoSuchUser", None).await;
-    assert!(
-        result.is_err(),
-        "Creating a streamed challenge did not fail"
-    );
+    assert!(result.is_err(), "Creating a streamed challenge did not fail");
 }
 
 #[tokio::test]
@@ -160,11 +143,7 @@ async fn challenge_show() {
     );
 
     let result = LI.challenge_show("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Fetching challenge did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Fetching challenge did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -181,11 +160,7 @@ async fn challenge_accept() {
     );
 
     let result = BOT0.challenge_accept("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Accepting challenge did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Accepting challenge did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -204,11 +179,7 @@ async fn challenge_decline() {
     );
 
     let result = BOT0.challenge_decline("notvalid", None).await;
-    assert!(
-        result.is_err(),
-        "Declining challenge did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Declining challenge did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -236,11 +207,7 @@ async fn challenge_cancel() {
     );
 
     let result = BOT0.challenge_cancel("notvalid", Some("notvalid")).await;
-    assert!(
-        result.is_err(),
-        "Cancelling challenge did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Cancelling challenge did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -326,20 +293,12 @@ async fn challenge_game_clocks_start() {
     let result = BOT0
         .challenge_game_clocks_start("notvalid", "notvalid", "notvalid")
         .await;
-    assert!(
-        result.is_err(),
-        "Starting game clocks did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Starting game clocks did not fail: {:?}", result.unwrap());
 
     let result = BOT0
         .challenge_game_clocks_start("notvalid", "lip_li", "lip_bot0")
         .await;
-    assert!(
-        result.is_err(),
-        "Starting game clocks did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Starting game clocks did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -350,27 +309,21 @@ async fn challenge_opponent_clock_increment() {
     BOT0.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = LI
-        .challenge_opponent_clock_increment(&challenge.id, 30)
-        .await;
+    let result = LI.challenge_opponent_clock_increment(&challenge.id, 30).await;
     assert!(
         result.is_ok(),
         "Failed to add time to opponent clock: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0
-        .challenge_opponent_clock_increment(&challenge.id, 30)
-        .await;
+    let result = BOT0.challenge_opponent_clock_increment(&challenge.id, 30).await;
     assert!(
         result.is_ok(),
         "Failed to add time to opponent clock: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI
-        .challenge_opponent_clock_increment(&challenge.id, 100000)
-        .await;
+    let result = LI.challenge_opponent_clock_increment(&challenge.id, 100000).await;
     assert!(
         result.is_ok(),
         "Failed to add time to opponent clock: {:?}",

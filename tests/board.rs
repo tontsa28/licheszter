@@ -82,10 +82,7 @@ async fn board_seek_create() {
 async fn board_game_connect() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = LI
-        .challenge_create("Adriana", Some(&options))
-        .await
-        .unwrap();
+    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run a test case
@@ -101,16 +98,12 @@ async fn board_game_connect() {
     });
 
     // Play the game
-    LI.board_play_move(&challenge.id, "e2e4", true)
-        .await
-        .unwrap();
+    LI.board_play_move(&challenge.id, "e2e4", true).await.unwrap();
     ADRIANA
         .board_play_move(&challenge.id, "e7e5", true)
         .await
         .unwrap();
-    LI.board_play_move(&challenge.id, "g1f3", true)
-        .await
-        .unwrap();
+    LI.board_play_move(&challenge.id, "g1f3", true).await.unwrap();
     ADRIANA
         .board_play_move(&challenge.id, "b1c3", true)
         .await
@@ -136,10 +129,7 @@ async fn board_game_connect() {
 async fn board_play_move() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = LI
-        .challenge_create("Adriana", Some(&options))
-        .await
-        .unwrap();
+    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
@@ -158,11 +148,7 @@ async fn board_play_move() {
     );
 
     let result = LI.board_play_move(&challenge.id, "d1d3", true).await;
-    assert!(
-        result.is_err(),
-        "Playing a move did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Playing a move did not fail: {:?}", result.unwrap());
 
     let result = LI.board_play_move(&challenge.id, "g1f3", true).await;
     assert!(
@@ -179,11 +165,7 @@ async fn board_play_move() {
     );
 
     let result = LI.board_play_move("notvalid", "a1a3", false).await;
-    assert!(
-        result.is_err(),
-        "Playing a move did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Playing a move did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -193,9 +175,7 @@ async fn board_chat_write() {
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = LI
-        .board_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
-        .await;
+    let result = LI.board_chat_write(&challenge.id, ChatRoom::Player, "GLHF").await;
     assert!(
         result.is_ok(),
         "Failed to write to chat: {:?}",
@@ -211,14 +191,8 @@ async fn board_chat_write() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI
-        .board_chat_write("notvalid", ChatRoom::Player, "GLHF!")
-        .await;
-    assert!(
-        result.is_err(),
-        "Writing to chat did not fail: {:?}",
-        result.unwrap()
-    );
+    let result = LI.board_chat_write("notvalid", ChatRoom::Player, "GLHF!").await;
+    assert!(result.is_err(), "Writing to chat did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -245,11 +219,7 @@ async fn board_chat_read() {
     );
 
     let result = LI.board_chat_read("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Reading chat messages did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Reading chat messages did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -267,11 +237,7 @@ async fn board_game_abort() {
     );
 
     let result = ADRIANA.board_game_abort(&challenge.id).await;
-    assert!(
-        result.is_err(),
-        "Aborting game did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
     let challenge = LI.challenge_create("Adriana", None).await.unwrap();
@@ -286,11 +252,7 @@ async fn board_game_abort() {
     );
 
     let result = LI.board_game_abort("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Aborting game did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -308,11 +270,7 @@ async fn board_game_resign() {
     );
 
     let result = ADRIANA.board_game_resign(&challenge.id).await;
-    assert!(
-        result.is_err(),
-        "Resigning game did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
     let challenge = LI.challenge_create("Adriana", None).await.unwrap();
@@ -327,11 +285,7 @@ async fn board_game_resign() {
     );
 
     let result = LI.board_game_resign("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Resigning game did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -361,11 +315,7 @@ async fn board_handle_draws() {
     );
 
     let result = LI.board_handle_draws("notvalid", true).await;
-    assert!(
-        result.is_err(),
-        "Handling draws did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Handling draws did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -395,11 +345,7 @@ async fn board_handle_takebacks() {
     );
 
     let result = LI.board_handle_takebacks("notvalid", true).await;
-    assert!(
-        result.is_err(),
-        "Handling takebacks did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Handling takebacks did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -447,9 +393,5 @@ async fn board_berserk() {
     );
 
     let result = LI.board_berserk("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Berserking a game did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Berserking a game did not fail: {:?}", result.unwrap());
 }

@@ -1,5 +1,5 @@
 use crate::{
-    client::Licheszter,
+    client::{Licheszter, UrlBase},
     error::Result,
     models::{analysis::CloudAnalysis, game::VariantMode},
 };
@@ -11,12 +11,8 @@ impl Licheszter {
         multi_pv: Option<u8>,
         variant: Option<VariantMode>,
     ) -> Result<CloudAnalysis> {
-        let mut url = self.base_url();
-        url.set_path("api/cloud-eval");
-        let mut builder = self
-            .client()
-            .get(url)
-            .query(&[("fen", fen.replace(" ", "_"))]);
+        let url = self.req_url(UrlBase::Lichess, "api/cloud-eval");
+        let mut builder = self.client.get(url).query(&[("fen", fen.replace(" ", "_"))]);
 
         // Add the multiPv amount as a query parameter if it's present
         if let Some(multi_pv) = multi_pv {

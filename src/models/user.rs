@@ -1,10 +1,12 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, fmt::Display};
 
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
-use time::PrimitiveDateTime;
+use time::{OffsetDateTime, PrimitiveDateTime};
 
-use super::game::GameCount;
+use crate::models::game::{FinalColor, Speed, VariantMode};
+
+use super::game::{GameCount, Perf};
 
 #[skip_serializing_none]
 #[serde_as]
@@ -34,6 +36,8 @@ pub struct User {
     pub url: String,
     pub playing: Option<String>,
     pub count: Option<GameCount>,
+    #[serde(default)]
+    pub trophies: Vec<Trophy>,
     #[serde(default)]
     pub streaming: bool,
     pub streamer: Option<Streamer>,
@@ -119,6 +123,28 @@ pub enum PerfType {
     Correspondence,
 }
 
+impl Display for PerfType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::UltraBullet => write!(f, "ultraBullet"),
+            Self::Bullet => write!(f, "bullet"),
+            Self::Blitz => write!(f, "blitz"),
+            Self::Rapid => write!(f, "rapid"),
+            Self::Classical => write!(f, "classical"),
+            Self::Chess960 => write!(f, "chess960"),
+            Self::Crazyhouse => write!(f, "crazyhouse"),
+            Self::Antichess => write!(f, "antichess"),
+            Self::Atomic => write!(f, "atomic"),
+            Self::Horde => write!(f, "horde"),
+            Self::KingOfTheHill => write!(f, "kingOfTheHill"),
+            Self::RacingKings => write!(f, "racingKings"),
+            Self::ThreeCheck => write!(f, "threeCheck"),
+            Self::Puzzle => write!(f, "puzzle"),
+            Self::Correspondence => write!(f, "correspondence"),
+        }
+    }
+}
+
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -198,6 +224,8 @@ pub struct MinimalUser {
     pub title: Option<Title>,
     #[serde(default)]
     pub patron: bool,
+    #[serde(default)]
+    pub online: bool,
     pub flair: Option<String>,
 }
 
@@ -224,17 +252,17 @@ pub struct ChallengeUser {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct BotUser {
+pub struct BasicUser {
     pub id: String,
     pub username: String,
-    pub perfs: BotPerfs,
+    pub perfs: UserPerfs,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
     #[serde(default)]
     pub disabled: bool,
     #[serde(default)]
     pub tos_violation: bool,
-    pub profile: Profile,
+    pub profile: Option<Profile>,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
@@ -243,29 +271,8 @@ pub struct BotUser {
     pub verified: bool,
     #[serde(default)]
     pub play_time: PlayTime,
-    pub title: Title,
+    pub title: Option<Title>,
     pub flair: Option<String>,
-}
-
-#[skip_serializing_none]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-#[serde(rename_all = "camelCase")]
-pub struct BotPerfs {
-    pub bullet: Option<UserPerf>,
-    pub blitz: Option<UserPerf>,
-    pub rapid: Option<UserPerf>,
-    pub classical: Option<UserPerf>,
-    pub correspondence: Option<UserPerf>,
-    pub chess960: Option<UserPerf>,
-    pub antichess: Option<UserPerf>,
-    pub atomic: Option<UserPerf>,
-    pub king_of_the_hill: Option<UserPerf>,
-    pub crazyhouse: Option<UserPerf>,
-    pub three_check: Option<UserPerf>,
-    pub racing_kings: Option<UserPerf>,
-    pub horde: Option<UserPerf>,
-    pub puzzle: Option<UserPerf>,
 }
 
 #[skip_serializing_none]
@@ -462,4 +469,577 @@ pub enum TimelineEventData {
         user_id: String,
         title: String,
     },
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct RealtimeUser {
+    pub id: String,
+    pub name: String,
+    pub title: Option<Title>,
+    pub flair: Option<String>,
+    #[serde(rename = "playingId")]
+    pub playing_id: Option<String>,
+    #[serde(default)]
+    pub online: bool,
+    #[serde(default)]
+    pub playing: RealtimeUserPlaying,
+    #[serde(default)]
+    pub streaming: bool,
+    #[serde(default)]
+    pub patron: bool,
+    #[serde(default)]
+    pub signal: Option<u8>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(untagged)]
+pub enum RealtimeUserPlaying {
+    Playing(bool),
+    PlayingDetails {
+        id: String,
+        clock: Option<String>,
+        variant: Option<String>,
+    },
+}
+
+impl Default for RealtimeUserPlaying {
+    fn default() -> Self {
+        Self::Playing(false)
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct TopUsers {
+    pub bullet: Vec<TopUser>,
+    pub blitz: Vec<TopUser>,
+    pub rapid: Vec<TopUser>,
+    pub classical: Vec<TopUser>,
+    pub ultra_bullet: Vec<TopUser>,
+    pub chess960: Vec<TopUser>,
+    pub crazyhouse: Vec<TopUser>,
+    pub antichess: Vec<TopUser>,
+    pub atomic: Vec<TopUser>,
+    pub horde: Vec<TopUser>,
+    pub king_of_the_hill: Vec<TopUser>,
+    pub racing_kings: Vec<TopUser>,
+    pub three_check: Vec<TopUser>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TopUser {
+    pub id: String,
+    pub username: String,
+    pub perfs: BTreeMap<String, TopUserPerf>,
+    pub title: Option<Title>,
+    #[serde(default)]
+    pub online: bool,
+    #[serde(default)]
+    pub patron: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TopUserPerf {
+    pub rating: u16,
+    pub progress: i16,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TopUserLeaderboard {
+    pub users: Vec<TopUser>,
+}
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "type")]
+pub enum Trophy {
+    PerfTop {
+        perf: String,
+        top: u8,
+        name: String,
+    },
+    Moderator {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+        url: String,
+    },
+    Developer {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+        url: String,
+    },
+    Verified {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+    },
+    ContentTeam {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+    },
+    #[serde(
+        alias = "marathonWinner",
+        alias = "marathonTopTen",
+        alias = "marathonTopFifty",
+        alias = "marathonTopHundred"
+    )]
+    MarathonTop {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        icon: String,
+    },
+    ZugMiracle {
+        name: String,
+        #[serde_as(as = "TimestampMilliSeconds")]
+        date: PrimitiveDateTime,
+        url: String,
+    },
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct RatingHistory {
+    pub name: String,
+    pub points: Vec<(u16, u8, u8, u16)>,
+}
+
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct UserPerformance {
+    pub user: UserName,
+    pub perf: PerfDetails,
+    pub rank: Option<u32>,
+    pub percentile: Option<f32>,
+    pub stat: PerfStats,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct UserName {
+    pub name: String,
+}
+
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfDetails {
+    pub glicko: PerfGlicko,
+    pub nb: u32,
+    pub progress: i16,
+}
+
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfGlicko {
+    pub rating: f32,
+    pub deviation: f32,
+    #[serde(default)]
+    pub provisional: bool,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct PerfStats {
+    pub perf_type: Perf,
+    pub highest: Option<PerfPoint>,
+    pub lowest: Option<PerfPoint>,
+    pub id: String,
+    pub count: PerfCount,
+    pub result_streak: Option<PerfResultStreak>,
+    pub worst_losses: PerfRecords,
+    pub play_streak: PerfPlayStreak,
+    pub best_wins: PerfRecords,
+    pub user_id: MinimalUser,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfPoint {
+    pub int: u16,
+    #[serde(with = "time::serde::iso8601")]
+    pub at: OffsetDateTime,
+    #[serde(rename = "gameId")]
+    pub game_id: String,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfCount {
+    pub all: u32,
+    pub rated: u32,
+    pub win: u32,
+    pub loss: u32,
+    pub draw: u32,
+    pub tour: u32,
+    pub berserk: u32,
+    #[serde(rename = "opAvg")]
+    pub op_avg: f32,
+    pub seconds: u32,
+    pub disconnects: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfResultStreak {
+    pub win: PerfStreak,
+    pub loss: PerfStreak,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfRecords {
+    pub results: Vec<PerfRecord>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct PerfRecord {
+    pub op_rating: u16,
+    pub op_id: MinimalUser,
+    pub at: String,
+    pub game_id: String,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfPlayStreak {
+    pub nb: PerfStreak,
+    pub time: PerfStreak,
+    #[serde(rename = "lastDate")]
+    #[serde(default)]
+    #[serde(with = "time::serde::iso8601::option")]
+    pub last_date: Option<OffsetDateTime>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfStreak {
+    pub cur: PerfStreakRecord,
+    pub max: PerfStreakRecord,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PerfStreakRecord {
+    pub v: u32,
+    pub from: Option<PerfStreakDate>,
+    pub to: Option<PerfStreakDate>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct PerfStreakDate {
+    #[serde(with = "time::serde::iso8601")]
+    pub at: OffsetDateTime,
+    pub game_id: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct UserAutocomplete {
+    pub result: Vec<MinimalUser>,
+}
+
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct UserNote {
+    pub from: MinimalUser,
+    pub to: MinimalUser,
+    pub text: String,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub date: PrimitiveDateTime,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Crosstable {
+    pub users: BTreeMap<String, f32>,
+    #[serde(rename = "nbGames")]
+    pub nb_games: u32,
+    pub matchup: Option<CrosstableMatchup>,
+}
+
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct CrosstableMatchup {
+    pub users: BTreeMap<String, f32>,
+    #[serde(rename = "nbGames")]
+    pub nb_games: u32,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamingUser {
+    pub id: String,
+    pub name: String,
+    pub title: Option<Title>,
+    #[serde(default)]
+    pub patron: bool,
+    pub flair: Option<String>,
+    pub stream: StreamDetails,
+    pub streamer: StreamerDetails,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamDetails {
+    pub service: String,
+    pub status: String,
+    pub lang: String,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamerDetails {
+    pub name: String,
+    pub headline: Option<String>,
+    pub description: Option<String>,
+    pub twitch: Option<String>,
+    #[serde(rename = "youTube")]
+    pub youtube: Option<String>,
+    pub image: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct UserActivity {
+    pub interval: ActivityInterval,
+    pub games: Option<GamesActivity>,
+    pub correspondence_moves: Option<CorrespondenceMovesActivity>,
+    pub correspondence_ends: Option<CorrespondenceEndsActivity>,
+    #[serde(default)]
+    pub teams: Vec<TeamActivity>,
+    pub puzzles: Option<PuzzlesActivity>,
+    pub tournaments: Option<TournamentsActivity>,
+    #[serde(default)]
+    pub practice: Vec<PracticeActivity>,
+    pub follows: Option<FollowsActivity>,
+    pub racer: Option<UserPuzzleModePerf>,
+    pub storm: Option<UserPuzzleModePerf>,
+    pub streak: Option<UserPuzzleModePerf>,
+    #[serde(default)]
+    pub simuls: Vec<String>,
+    #[serde(default)]
+    pub studies: Vec<StudyActivity>,
+    #[serde(default)]
+    pub posts: Vec<PostActivity>,
+    pub patron: Option<Patron>,
+    #[serde(default)]
+    pub stream: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct CorrespondenceEndsActivity {
+    pub correspondence: CorrespondenceActivity,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct CorrespondenceActivity {
+    pub score: ScoreActivity,
+    pub games: Vec<GameActivity>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct GameActivity {
+    pub id: String,
+    pub color: FinalColor,
+    pub url: String,
+    pub variant: Option<VariantMode>,
+    pub speed: Option<Speed>,
+    pub perf: Option<PerfType>,
+    #[serde(default)]
+    pub rated: bool,
+    pub opponent: OpponentActivity,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct OpponentActivity {
+    pub user: String,
+    pub rating: u16,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ScoreActivity {
+    pub win: u16,
+    pub loss: u16,
+    pub draw: u16,
+    pub rp: RpActivity,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct RpActivity {
+    pub before: u16,
+    pub after: u16,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct CorrespondenceMovesActivity {
+    #[serde(rename = "nb")]
+    pub amount: u32,
+    pub games: Vec<GameActivity>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct FollowsActivity {
+    pub r#in: Option<FollowsActivityList>,
+    pub out: Option<FollowsActivityList>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct FollowsActivityList {
+    pub ids: Vec<String>,
+    #[serde(default)]
+    #[serde(rename = "nb")]
+    pub amount: u32,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct GamesActivity {
+    pub blitz: Option<ScoreActivity>,
+    pub standard: Option<ScoreActivity>,
+    pub bullet: Option<ScoreActivity>,
+    pub rapid: Option<ScoreActivity>,
+    pub chess960: Option<ScoreActivity>,
+    pub atomic: Option<ScoreActivity>,
+    pub racing_kings: Option<ScoreActivity>,
+    pub ultra_bullet: Option<ScoreActivity>,
+    pub king_of_the_hill: Option<ScoreActivity>,
+    pub correspondence: Option<ScoreActivity>,
+    pub horde: Option<ScoreActivity>,
+    pub puzzle: Option<ScoreActivity>,
+    pub three_check: Option<ScoreActivity>,
+    pub crazyhouse: Option<ScoreActivity>,
+}
+
+#[serde_as]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ActivityInterval {
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub start: PrimitiveDateTime,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub end: PrimitiveDateTime,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzlesActivity {
+    pub score: ScoreActivity,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TeamActivity {
+    pub url: String,
+    pub name: String,
+    pub flair: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct TournamentsActivity {
+    #[serde(default)]
+    #[serde(rename = "nb")]
+    pub amount: u32,
+    #[serde(default)]
+    pub best: Vec<BestTournament>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct BestTournament {
+    pub tournament: Tournament,
+    pub nb_games: i64,
+    pub score: i64,
+    pub rank: i64,
+    pub rank_percent: i64,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Tournament {
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Patron {
+    pub months: u16,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct PostActivity {
+    pub topic_url: String,
+    pub topic_name: String,
+    pub posts: Vec<Post>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Post {
+    pub url: String,
+    pub text: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PracticeActivity {
+    pub url: String,
+    pub name: String,
+    #[serde(rename = "nbPositions")]
+    pub positions_amount: u16,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StudyActivity {
+    pub id: String,
+    pub name: String,
 }

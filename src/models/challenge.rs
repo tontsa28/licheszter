@@ -47,6 +47,7 @@ pub struct Challenges {
 #[serde(rename_all = "camelCase")]
 pub struct AIChallenge {
     pub id: String,
+    pub full_id: String,
     pub variant: Variant,
     pub speed: Speed,
     pub perf: PerfType,
