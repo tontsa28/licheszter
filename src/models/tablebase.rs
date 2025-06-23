@@ -9,12 +9,13 @@ pub struct Endgame {
     pub precise_dtz: Option<i16>,
     pub dtm: Option<i16>,
     pub dtw: Option<i16>,
+    pub dtc: Option<i16>,
     pub checkmate: bool,
     pub stalemate: bool,
     pub variant_win: bool,
     pub variant_loss: bool,
     pub insufficient_material: bool,
-    pub category: String,
+    pub category: EndgameCategory,
     pub moves: Vec<EndgameMove>,
 }
 
@@ -28,11 +29,27 @@ pub struct EndgameMove {
     pub precise_dtz: Option<i16>,
     pub dtm: Option<i16>,
     pub dtw: Option<i16>,
+    pub dtc: Option<i16>,
     pub zeroing: bool,
     pub checkmate: bool,
     pub stalemate: bool,
     pub variant_win: bool,
     pub variant_loss: bool,
     pub insufficient_material: bool,
-    pub category: String,
+    pub category: EndgameCategory,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum EndgameCategory {
+    Win,
+    Unknown,
+    SyzygyWin,
+    MaybeWin,
+    CursedWin,
+    Draw,
+    BlessedLoss,
+    MaybeLoss,
+    SyzygyLoss,
+    Loss,
 }
