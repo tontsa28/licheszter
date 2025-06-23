@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use futures_util::Stream;
 
 use crate::{
@@ -8,7 +10,9 @@ use crate::{
 
 impl Licheszter {
     /// Get a list of users followed by the logged in user.
-    pub async fn relations_followed_users_list(&self) -> Result<impl Stream<Item = Result<User>>> {
+    pub async fn relations_followed_users_list(
+        &self,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<User>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/rel/following");
         let builder = self.client.get(url);
 

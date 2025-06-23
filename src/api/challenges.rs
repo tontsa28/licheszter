@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use futures_util::Stream;
 use reqwest::header;
 
@@ -53,7 +55,7 @@ impl Licheszter {
         &self,
         username: &str,
         options: Option<&ChallengeOptions>,
-    ) -> Result<impl Stream<Item = Result<ChallengeComplete>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<ChallengeComplete>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
         let mut builder = self.client.post(url).form(&[("keepAliveStream", true)]);
 

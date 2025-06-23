@@ -5,7 +5,7 @@ use std::{error::Error, sync::LazyLock};
 use licheszter::client::Licheszter;
 
 // Connect to a test client
-static TABLEBASE: LazyLock<Licheszter> = LazyLock::new(|| Licheszter::new());
+static TABLEBASE: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);
 
 #[tokio::test]
 async fn tablebase_standard() {

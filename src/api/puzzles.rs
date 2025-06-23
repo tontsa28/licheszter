@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use futures_util::Stream;
 
 use crate::{
@@ -45,7 +47,7 @@ impl Licheszter {
         &self,
         max: Option<u16>,
         before: Option<u64>,
-    ) -> Result<impl Stream<Item = Result<PuzzleActivity>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<PuzzleActivity>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/puzzle/activity");
         let builder = self.client.get(url).query(&(("max", max), ("before", before)));
 

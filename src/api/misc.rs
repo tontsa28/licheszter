@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
@@ -13,7 +15,7 @@ use futures_util::Stream;
 impl Licheszter {
     /// Stream the events reaching a Lichess user in real time.
     /// When the stream opens, all current challenges and games are sent.
-    pub async fn connect(&self) -> Result<impl Stream<Item = Result<Event>>> {
+    pub async fn connect(&self) -> Result<Pin<Box<dyn Stream<Item = Result<Event>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/stream/event");
         let builder = self.client.get(url);
 
@@ -31,7 +33,10 @@ impl Licheszter {
     }
 
     /// Get online bots.
-    pub async fn bots_online(&self, bots: u8) -> Result<impl Stream<Item = Result<BasicUser>>> {
+    pub async fn bots_online(
+        &self,
+        bots: u8,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<BasicUser>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/bot/online");
         let builder = self.client.get(url).query(&[("nb", bots)]);
 
