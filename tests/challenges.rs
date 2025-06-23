@@ -54,7 +54,7 @@ async fn challenge_list() {
 async fn challenge_create() {
     // Create options for testing
     let options = ChallengeOptions::new()
-        .rated(true)
+        .rated(false)
         .clock(24897, 255)
         .days(CorrespondenceDays::Seven)
         .color(Color::Black)
@@ -88,7 +88,7 @@ async fn challenge_create() {
 async fn challenge_create_connect() {
     // Create options for testing
     let options = ChallengeOptions::new()
-        .rated(true)
+        .rated(false)
         .clock(24897, 255)
         .days(CorrespondenceDays::Seven)
         .color(Color::Black)
