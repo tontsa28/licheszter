@@ -131,7 +131,9 @@ impl Licheszter {
     pub(crate) fn req_url(&self, url: UrlBase, path: &str) -> Url {
         let mut base = match url {
             UrlBase::Lichess => self.base_url.clone(),
+            #[cfg(feature = "openings")]
             UrlBase::Openings => self.openings_url.clone(),
+            #[cfg(feature = "tablebase")]
             UrlBase::Tablebase => self.tablebase_url.clone(),
         };
         base.set_path(path);
@@ -258,6 +260,8 @@ impl Default for LicheszterBuilder {
 #[derive(Debug, Copy, Clone)]
 pub(crate) enum UrlBase {
     Lichess,
+    #[cfg(feature = "openings")]
     Openings,
+    #[cfg(feature = "tablebase")]
     Tablebase,
 }
