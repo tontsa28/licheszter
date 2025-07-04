@@ -14,7 +14,7 @@ use licheszter::{
 use tokio::time::{sleep, Duration};
 
 // Connect to a test client
-static EXPLORER: LazyLock<Licheszter> = LazyLock::new(|| Licheszter::new());
+static EXPLORER: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);
 
 #[tokio::test]
 async fn openings_masters() {

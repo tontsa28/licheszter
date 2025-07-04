@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use crate::{
     client::{Licheszter, UrlBase},
     config::openings::{LichessOpeningsOptions, MastersOpeningsOptions, PlayerOpeningsOptions},
@@ -44,7 +46,7 @@ impl Licheszter {
         player: &str,
         color: Color,
         options: Option<&PlayerOpeningsOptions>,
-    ) -> Result<impl Stream<Item = Result<PlayerOpening>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<PlayerOpening>> + Send>>> {
         let mut url = self.req_url(UrlBase::Openings, "player");
         let encoded = comma_serde_urlencoded::to_string((("player", player), ("color", color)))?;
         url.set_query(Some(&encoded));

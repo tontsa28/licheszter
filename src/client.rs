@@ -1,14 +1,11 @@
 use crate::error::{LichessError, Result};
 use futures_util::{Stream, StreamExt, TryStreamExt};
 use reqwest::{
-    header::{self, HeaderMap, HeaderValue},
     Client, IntoUrl, RequestBuilder, Url,
+    header::{self, HeaderMap, HeaderValue},
 };
 use serde::de::DeserializeOwned;
-use std::{
-    fmt::Display,
-    io::{Error as StdIoError, ErrorKind as StdIoErrorKind},
-};
+use std::{fmt::Display, io::Error as StdIoError, pin::Pin};
 use tokio::io::AsyncBufReadExt;
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::io::StreamReader;
@@ -94,10 +91,10 @@ impl Licheszter {
     }
 
     // Convert API response into a deserialized stream model
-    pub(crate) async fn into_stream<'de, T>(
+    pub(crate) async fn into_stream<T>(
         &self,
         builder: RequestBuilder,
-    ) -> Result<impl Stream<Item = Result<T>>>
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<T>> + Send>>>
     where
         T: DeserializeOwned,
     {
@@ -110,9 +107,7 @@ impl Licheszter {
         }
 
         // Get the byte stream returned by the response
-        let stream = response
-            .bytes_stream()
-            .map_err(|err| StdIoError::new(StdIoErrorKind::Other, err));
+        let stream = response.bytes_stream().map_err(StdIoError::other);
 
         // Create a reader over the lines
         let reader = LinesStream::new(StreamReader::new(stream).lines());
@@ -136,7 +131,9 @@ impl Licheszter {
     pub(crate) fn req_url(&self, url: UrlBase, path: &str) -> Url {
         let mut base = match url {
             UrlBase::Lichess => self.base_url.clone(),
+            #[cfg(feature = "openings")]
             UrlBase::Openings => self.openings_url.clone(),
+            #[cfg(feature = "tablebase")]
             UrlBase::Tablebase => self.tablebase_url.clone(),
         };
         base.set_path(path);
@@ -263,6 +260,8 @@ impl Default for LicheszterBuilder {
 #[derive(Debug, Copy, Clone)]
 pub(crate) enum UrlBase {
     Lichess,
+    #[cfg(feature = "openings")]
     Openings,
+    #[cfg(feature = "tablebase")]
     Tablebase,
 }

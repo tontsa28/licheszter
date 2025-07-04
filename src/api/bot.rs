@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
@@ -14,7 +16,7 @@ impl Licheszter {
     pub async fn bot_game_connect(
         &self,
         game_id: &str,
-    ) -> Result<impl Stream<Item = Result<BoardState>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<BoardState>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/stream/{game_id}"));
         let builder = self.client.get(url);
 

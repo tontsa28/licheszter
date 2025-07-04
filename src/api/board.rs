@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use crate::{
     client::{Licheszter, UrlBase},
     config::board::SeekOptions,
@@ -16,7 +18,7 @@ impl Licheszter {
     pub async fn board_seek_create(
         &self,
         options: Option<&SeekOptions>,
-    ) -> Result<impl Stream<Item = Result<()>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<()>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/board/seek");
         let mut builder = self.client.post(url);
 
@@ -35,7 +37,7 @@ impl Licheszter {
     pub async fn board_game_connect(
         &self,
         game_id: &str,
-    ) -> Result<impl Stream<Item = Result<BoardState>>> {
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<BoardState>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/stream/{game_id}"));
         let builder = self.client.get(url);
 
