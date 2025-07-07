@@ -8,9 +8,9 @@ use tokio::time::{Duration, sleep};
 static LICHESS: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);
 
 #[tokio::test]
-async fn tv_current_games() {
+async fn tv_games() {
     // Run a test case
-    let result = LICHESS.tv_current_games().await;
+    let result = LICHESS.tv_games().await;
     assert!(
         result.is_ok(),
         "Failed to get current TV games: {:?}",
