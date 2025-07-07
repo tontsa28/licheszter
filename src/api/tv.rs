@@ -4,6 +4,7 @@ use futures_util::Stream;
 
 use crate::{
     client::{Licheszter, UrlBase},
+    config::tv::TvChannel,
     error::Result,
     models::tv::{TvGameEvent, TvGames},
 };
@@ -22,6 +23,17 @@ impl Licheszter {
         &self,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<TvGameEvent>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/tv/feed");
+        let builder = self.client.get(url);
+
+        self.into_stream::<TvGameEvent>(builder).await
+    }
+
+    /// Stream positions and moves of a current TV channel's game.
+    pub async fn tv_channel_connect(
+        &self,
+        channel: TvChannel,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<TvGameEvent>> + Send>>> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/tv/{channel}/feed"));
         let builder = self.client.get(url);
 
         self.into_stream::<TvGameEvent>(builder).await
