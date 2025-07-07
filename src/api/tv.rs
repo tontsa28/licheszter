@@ -1,7 +1,11 @@
+use std::pin::Pin;
+
+use futures_util::Stream;
+
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
-    models::tv::TvGames,
+    models::tv::{TvGameEvent, TvGames},
 };
 
 impl Licheszter {
@@ -11,5 +15,15 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into::<TvGames>(builder).await
+    }
+
+    /// Stream positions and moves of the current TV game.
+    pub async fn tv_game_connect(
+        &self,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<TvGameEvent>> + Send>>> {
+        let url = self.req_url(UrlBase::Lichess, "api/tv/feed");
+        let builder = self.client.get(url);
+
+        self.into_stream::<TvGameEvent>(builder).await
     }
 }
