@@ -19,9 +19,7 @@ impl Licheszter {
     }
 
     /// Stream positions and moves of the current TV game.
-    pub async fn tv_game_connect(
-        &self,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<TvGameEvent>> + Send>>> {
+    pub async fn tv_connect(&self) -> Result<Pin<Box<dyn Stream<Item = Result<TvGameEvent>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/tv/feed");
         let builder = self.client.get(url);
 

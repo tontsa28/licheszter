@@ -19,10 +19,10 @@ async fn tv_games() {
 }
 
 #[tokio::test]
-async fn tv_game_connect() {
+async fn tv_connect() {
     // Run a test case
     let thread = tokio::spawn(async move {
-        let mut result = LICHESS.tv_game_connect().await.unwrap();
+        let mut result = LICHESS.tv_connect().await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
