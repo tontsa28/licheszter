@@ -1,10 +1,11 @@
-use crate::models::user::{LightUser, PerfType};
+use crate::models::user::{LightUser, MinimalUser, PerfType};
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
+use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::PrimitiveDateTime;
 
 use super::{challenge::ChallengeSource, user::Title};
 
+#[skip_serializing_none]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct PlayerAnalysis {
@@ -12,6 +13,7 @@ pub struct PlayerAnalysis {
     pub mistake: u16,
     pub blunder: u16,
     pub acpl: u16,
+    pub accuracy: Option<u16>,
 }
 
 #[skip_serializing_none]
@@ -19,12 +21,14 @@ pub struct PlayerAnalysis {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Entity {
-    pub user: Option<LightUser>,
-    pub user_id: Option<String>,
+    pub user: MinimalUser,
     pub rating: u16,
     pub rating_diff: Option<i16>,
-    pub provisional: Option<bool>,
+    pub name: Option<String>,
+    #[serde(default)]
+    pub provisional: bool,
     pub analysis: Option<PlayerAnalysis>,
+    pub team: Option<String>,
 }
 
 #[skip_serializing_none]
@@ -81,6 +85,8 @@ pub enum TimeControl {
 pub struct Clock {
     pub initial: u32,
     pub increment: u32,
+    #[serde(rename = "totalTime")]
+    pub total_time: u32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -97,8 +103,16 @@ pub enum Speed {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Judgement {
-    pub name: String,
+    pub name: JudgementTier,
     pub comment: String,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub enum JudgementTier {
+    Inaccuracy,
+    Mistake,
+    Blunder,
 }
 
 #[skip_serializing_none]
@@ -112,6 +126,14 @@ pub struct MoveAnalysis {
     pub judgment: Option<Judgement>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Division {
+    pub middle: u16,
+    pub end: u16,
+}
+
+#[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
@@ -119,22 +141,29 @@ pub struct MoveAnalysis {
 pub struct Game {
     pub id: String,
     pub rated: bool,
-    pub variant: String,
-    pub speed: String,
+    pub variant: VariantMode,
+    pub speed: Speed,
     pub perf: PerfType,
+    #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
-    pub last_move_at: Option<PrimitiveDateTime>,
-    pub status: String,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub last_move_at: PrimitiveDateTime,
+    pub status: GameStatus,
+    pub source: Option<String>,
     pub players: Players,
     pub initial_fen: Option<String>,
-    pub winner: Option<String>,
+    pub winner: Option<FinalColor>,
     pub opening: Option<Opening>,
     pub moves: Option<String>,
-    pub pgn: Option<String>,
     pub days_per_turn: Option<u8>,
+    #[serde(default)]
     pub analysis: Vec<MoveAnalysis>,
     pub tournament: Option<String>,
-    pub clock: Option<TimeControl>,
+    pub swiss: Option<String>,
+    pub clock: Option<Clock>,
+    #[serde(default)]
+    pub clocks: Vec<u16>,
+    pub division: Option<Division>,
 }
 
 #[skip_serializing_none]
