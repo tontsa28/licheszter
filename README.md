@@ -34,7 +34,7 @@ use futures_util::StreamExt;
 
 #[tokio::main]
 async fn main() {
-    // Create a new Licheszter with your account token
+    // Create a new instance of Licheszter with your account token
     let client = Licheszter::builder()
         .with_authentication("lip_exampletoken")
         .build();
@@ -58,7 +58,7 @@ Below is a list of supported API endpoints as of the last release:
 | Users             | ✅        |
 | Relations         | ✅        |
 | Games             | ❌        |
-| TV                | ❌        |
+| TV                | ✅        |
 | Puzzles           | ✅        |
 | Teams             | ❌        |
 | Bot               | ✅        |
@@ -71,6 +71,7 @@ Below is a list of supported API endpoints as of the last release:
 | Studies           | ❌        |
 | Messaging         | ✅        |
 | Broadcasts        | ❌        |
+| FIDE              | ❌        |
 | Analysis          | ✅        |
 | External engine   | ❌        |
 | Opening explorer  | ✅        |

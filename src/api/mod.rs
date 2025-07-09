@@ -6,6 +6,7 @@ pub mod misc;
 pub mod puzzles;
 pub mod relations;
 pub mod simuls;
+pub mod tv;
 pub mod users;
 
 #[cfg(feature = "openings")]
