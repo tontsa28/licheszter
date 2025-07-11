@@ -12,4 +12,12 @@ impl Licheszter {
 
         self.into::<FidePlayer>(builder).await
     }
+
+    /// Search for FIDE players. Only player names can be searched for.
+    pub async fn fide_search(&self, query: &str) -> Result<Vec<FidePlayer>> {
+        let url = self.req_url(UrlBase::Lichess, "api/fide/player");
+        let builder = self.client.get(url).query(&[("q", query)]);
+
+        self.into::<Vec<FidePlayer>>(builder).await
+    }
 }

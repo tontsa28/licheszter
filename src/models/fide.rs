@@ -12,7 +12,8 @@ pub struct FidePlayer {
     pub title: Option<Title>,
     pub federation: String,
     pub year: Option<u16>,
-    pub inactive: Option<u16>,
+    #[serde(default)]
+    pub inactive: bool,
     pub standard: Option<u16>,
     pub rapid: Option<u16>,
     pub blitz: Option<u16>,
