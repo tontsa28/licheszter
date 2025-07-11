@@ -4,7 +4,7 @@ use futures_util::StreamExt;
 use licheszter::client::Licheszter;
 use tokio::time::{Duration, sleep};
 
-// Connect to test accounts
+// Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
     Licheszter::builder()
         .with_base_url("http://localhost:8080")

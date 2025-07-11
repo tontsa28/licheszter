@@ -1,6 +1,7 @@
 pub mod account;
 pub mod analysis;
 pub mod challenges;
+pub mod fide;
 pub mod messaging;
 pub mod misc;
 pub mod puzzles;
