@@ -2,7 +2,7 @@ use std::{error::Error, sync::LazyLock};
 
 use licheszter::{client::Licheszter, models::game::VariantMode};
 
-// Connect to test accounts
+// Connect to a test account
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
     Licheszter::builder()
         .with_base_url("http://localhost:8080")

@@ -8,9 +8,9 @@ use licheszter::{
     config::challenges::ChallengeOptions,
     models::{chat::ChatRoom, game::Color},
 };
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
-// Connect to test accounts
+// Connect to test clients
 static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
     Licheszter::builder()
         .with_base_url("http://localhost:8080")

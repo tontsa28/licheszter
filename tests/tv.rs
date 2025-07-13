@@ -7,7 +7,7 @@ use licheszter::{
 };
 use tokio::time::{Duration, sleep};
 
-// Connect to test account
+// Connect to a test client
 static LICHESS: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);
 
 #[tokio::test]
