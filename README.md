@@ -71,7 +71,7 @@ Below is a list of supported API endpoints as of the last release:
 | Studies           | ❌        |
 | Messaging         | ✅        |
 | Broadcasts        | ❌        |
-| FIDE              | ❌        |
+| FIDE              | ✅        |
 | Analysis          | ✅        |
 | External engine   | ❌        |
 | Opening explorer  | ✅        |
