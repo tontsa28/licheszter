@@ -9,14 +9,14 @@ pub type Result<T> = StdResult<T, Error>;
 #[derive(Debug)]
 pub struct Error {
     kind: ErrorKind,
-    source: Box<dyn StdError>,
+    source: Box<dyn StdError + Send + Sync + 'static>,
 }
 
 impl Error {
     // Creates a new instance of `Error`.
     pub(crate) fn new<E>(kind: ErrorKind, source: E) -> Self
     where
-        E: Into<Box<dyn StdError>>,
+        E: Into<Box<dyn StdError + Send + Sync + 'static>>,
     {
         Error {
             kind,
