@@ -4,7 +4,7 @@ use super::{
     user::{ChallengeUser, LightUser, PerfType},
 };
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
+use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::PrimitiveDateTime;
 
 #[skip_serializing_none]
@@ -107,7 +107,7 @@ pub enum ChallengeStatus {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "lowercase")]
 pub enum ChallengeDeclineReason {
     Generic,
     Later,
