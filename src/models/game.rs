@@ -396,6 +396,7 @@ pub enum GameStatus {
     Cheat,
     NoStart,
     UnknownFinish,
+    InsufficientMaterialClaim,
     VariantEnd,
 }
 
