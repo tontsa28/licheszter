@@ -290,3 +290,32 @@ async fn bot_handle_takebacks() {
     let result = BOT0.bot_handle_takebacks("notvalid", true).await;
     assert!(result.is_err(), "Handling takebacks did not fail: {:?}", result.unwrap());
 }
+
+#[tokio::test]
+async fn bot_claim_victory() {
+    // Create some games for testing
+    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
+    BOT1.challenge_accept(&challenge.id).await.unwrap();
+
+    // Run some test cases
+    let result = BOT0.bot_claim_victory(&challenge.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to claim victory of a game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT1.bot_claim_victory(&challenge.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to claim victory of a game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.bot_claim_victory("notvalid").await;
+    assert!(
+        result.is_err(),
+        "Claiming victory of a game did not fail: {:?}",
+        result.unwrap()
+    );
+}
