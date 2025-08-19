@@ -94,4 +94,13 @@ impl Licheszter {
         self.into::<OkResponse>(builder).await?;
         Ok(())
     }
+
+    /// Claim draw when the opponent has left the game for a while using the Bot API.
+    pub async fn bot_claim_draw(&self, game_id: &str) -> Result<()> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/claim-draw"));
+        let builder = self.client.post(url);
+
+        self.into::<OkResponse>(builder).await?;
+        Ok(())
+    }
 }
