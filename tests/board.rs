@@ -377,6 +377,31 @@ async fn board_claim_victory() {
     );
 }
 
+#[tokio::test]
+async fn board_claim_draw() {
+    // Create some games for testing
+    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+
+    // Run some test cases
+    let result = LI.board_claim_draw(&challenge.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to claim draw of a game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = ADRIANA.board_claim_draw(&challenge.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to claim draw of a game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.board_claim_draw("notvalid").await;
+    assert!(result.is_err(), "Claiming draw of a game did not fail: {:?}", result.unwrap());
+}
+
 // TODO: Needs more test cases when tournament functionality is implemented
 #[tokio::test]
 async fn board_berserk() {

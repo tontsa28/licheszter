@@ -116,6 +116,15 @@ impl Licheszter {
         Ok(())
     }
 
+    /// Claim draw when the opponent has left the game for a while using the Board API.
+    pub async fn board_claim_draw(&self, game_id: &str) -> Result<()> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/claim-draw"));
+        let builder = self.client.post(url);
+
+        self.into::<OkResponse>(builder).await?;
+        Ok(())
+    }
+
     /// Go berserk on an arena tournament game using the Board API.
     /// Halves the clock time while granting an extra point upon winning.
     /// Only available in arena tournaments that allow berserk, and before each player has made a move.
