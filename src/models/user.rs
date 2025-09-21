@@ -196,6 +196,7 @@ pub struct UserPuzzleModePerf {
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
 pub struct LightUser {
     pub id: Option<String>,
     #[serde(alias = "name")]
@@ -211,11 +212,11 @@ pub struct LightUser {
     pub streaming: bool,
     #[serde(default)]
     pub patron: bool,
+    pub patron_tier: Option<String>,
     pub rating: Option<u16>,
     #[serde(default)]
     pub provisional: bool,
     pub lag: Option<u16>,
-    #[serde(rename = "gameId")]
     pub game_id: Option<String>,
 }
 
@@ -553,6 +554,8 @@ pub struct TopUser {
     pub online: bool,
     #[serde(default)]
     pub patron: bool,
+    #[serde(rename = "patronTier")]
+    pub patron_tier: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -812,6 +815,8 @@ pub struct StreamingUser {
     pub title: Option<Title>,
     #[serde(default)]
     pub patron: bool,
+    #[serde(rename = "patronTier")]
+    pub patron_tier: Option<String>,
     pub flair: Option<String>,
     pub stream: StreamDetails,
     pub streamer: StreamerDetails,
