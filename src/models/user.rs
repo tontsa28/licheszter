@@ -1,7 +1,7 @@
 use std::{collections::BTreeMap, fmt::Display};
 
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
+use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::{OffsetDateTime, PrimitiveDateTime};
 
 use crate::models::game::{FinalColor, Speed, VariantMode};
@@ -29,6 +29,7 @@ pub struct User {
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
     pub patron: bool,
+    pub patron_tier: Option<String>,
     #[serde(default)]
     pub verified: bool,
     pub play_time: PlayTime,
@@ -94,6 +95,9 @@ pub struct UserPreferences {
     pub ratings: u8,
     pub move_event: u8,
     pub rook_castle: u8,
+    pub flairs: bool,
+    #[serde(rename = "sayGG")]
+    pub say_gg: u32,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -192,6 +196,7 @@ pub struct UserPuzzleModePerf {
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
 pub struct LightUser {
     pub id: Option<String>,
     #[serde(alias = "name")]
@@ -207,11 +212,11 @@ pub struct LightUser {
     pub streaming: bool,
     #[serde(default)]
     pub patron: bool,
+    pub patron_tier: Option<String>,
     pub rating: Option<u16>,
     #[serde(default)]
     pub provisional: bool,
     pub lag: Option<u16>,
-    #[serde(rename = "gameId")]
     pub game_id: Option<String>,
 }
 
@@ -224,6 +229,8 @@ pub struct MinimalUser {
     pub title: Option<Title>,
     #[serde(default)]
     pub patron: bool,
+    #[serde(rename = "patronTier")]
+    pub patron_tier: Option<String>,
     #[serde(default)]
     pub online: bool,
     pub flair: Option<String>,
@@ -243,6 +250,8 @@ pub struct ChallengeUser {
     pub title: Option<Title>,
     #[serde(default)]
     pub patron: bool,
+    #[serde(rename = "patronTier")]
+    pub patron_tier: Option<String>,
     pub flair: Option<String>,
     pub lag: Option<u16>,
 }
@@ -267,6 +276,7 @@ pub struct BasicUser {
     pub seen_at: PrimitiveDateTime,
     #[serde(default)]
     pub patron: bool,
+    pub patron_tier: Option<String>,
     #[serde(default)]
     pub verified: bool,
     #[serde(default)]
@@ -474,12 +484,12 @@ pub enum TimelineEventData {
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
 pub struct RealtimeUser {
     pub id: String,
     pub name: String,
     pub title: Option<Title>,
     pub flair: Option<String>,
-    #[serde(rename = "playingId")]
     pub playing_id: Option<String>,
     #[serde(default)]
     pub online: bool,
@@ -489,6 +499,7 @@ pub struct RealtimeUser {
     pub streaming: bool,
     #[serde(default)]
     pub patron: bool,
+    pub patron_tier: Option<String>,
     #[serde(default)]
     pub signal: Option<u8>,
 }
@@ -543,6 +554,8 @@ pub struct TopUser {
     pub online: bool,
     #[serde(default)]
     pub patron: bool,
+    #[serde(rename = "patronTier")]
+    pub patron_tier: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -802,6 +815,8 @@ pub struct StreamingUser {
     pub title: Option<Title>,
     #[serde(default)]
     pub patron: bool,
+    #[serde(rename = "patronTier")]
+    pub patron_tier: Option<String>,
     pub flair: Option<String>,
     pub stream: StreamDetails,
     pub streamer: StreamerDetails,

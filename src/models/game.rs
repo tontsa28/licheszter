@@ -80,13 +80,14 @@ pub enum TimeControl {
     Unlimited,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Clock {
     pub initial: u32,
     pub increment: u32,
     #[serde(rename = "totalTime")]
-    pub total_time: u32,
+    pub total_time: Option<u32>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -212,12 +213,13 @@ pub struct GameFull {
     pub tournament_id: Option<String>,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct OpponentGone {
     pub gone: bool,
     #[serde(rename = "claimWinInSeconds")]
-    pub claim_win_in_seconds: u8,
+    pub claim_win_in_seconds: Option<u8>,
 }
 
 #[skip_serializing_none]
@@ -395,6 +397,7 @@ pub enum GameStatus {
     Cheat,
     NoStart,
     UnknownFinish,
+    InsufficientMaterialClaim,
     VariantEnd,
 }
 

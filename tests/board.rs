@@ -2,11 +2,12 @@
 
 use std::{error::Error, panic, sync::LazyLock};
 
-use futures_util::StreamExt;
+use futures_util::{StreamExt, TryStreamExt};
 use licheszter::{
     client::Licheszter,
     config::{board::SeekOptions, challenges::ChallengeOptions},
     models::{
+        board::BoardState,
         chat::ChatRoom,
         game::{Color, VariantMode},
     },
@@ -63,7 +64,7 @@ async fn board_seek_create() {
         }
     });
 
-    sleep(Duration::from_secs(10)).await;
+    sleep(Duration::from_secs(5)).await;
 
     thread1.abort();
     let result = thread1.await;
@@ -350,23 +351,40 @@ async fn board_handle_takebacks() {
 
 #[tokio::test]
 async fn board_claim_victory() {
-    // Create some games for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
+    // Create a game for testing
+    let options = ChallengeOptions::new().color(Color::Black).clock(180, 0);
+    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
+    // Play some moves to get the game going
+    ADRIANA
+        .board_play_move(&challenge.id, "e2e4", false)
+        .await
+        .unwrap();
+    LI.board_play_move(&challenge.id, "e7e5", false).await.unwrap();
+
     // Run some test cases
-    let result = LI.board_claim_victory(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to claim victory of a game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    let mut stream = LI.board_game_connect(&challenge.id).await.unwrap();
+    while let Some(event) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = event {
+            if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
+                sleep(Duration::from_secs(3)).await;
+
+                let result = LI.board_claim_victory(&challenge.id).await;
+                assert!(
+                    result.is_ok(),
+                    "Failed to claim victory of a game: {:?}",
+                    result.unwrap_err().source().unwrap()
+                );
+            }
+        }
+    }
 
     let result = ADRIANA.board_claim_victory(&challenge.id).await;
     assert!(
-        result.is_ok(),
-        "Failed to claim victory of a game: {:?}",
-        result.unwrap_err().source().unwrap()
+        result.is_err(),
+        "Claiming victory of a game did not fail: {:?}",
+        result.unwrap()
     );
 
     let result = LI.board_claim_victory("notvalid").await;
@@ -377,10 +395,52 @@ async fn board_claim_victory() {
     );
 }
 
+#[tokio::test]
+async fn board_claim_draw() {
+    // Create a game for testing
+    let options = ChallengeOptions::new().color(Color::Black).clock(180, 0);
+    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
+    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+
+    // Play some moves to get the game going
+    ADRIANA
+        .board_play_move(&challenge.id, "e2e4", false)
+        .await
+        .unwrap();
+    LI.board_play_move(&challenge.id, "e7e5", false).await.unwrap();
+
+    // Run some test cases
+    let mut stream = LI.board_game_connect(&challenge.id).await.unwrap();
+    while let Some(event) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = event {
+            if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
+                sleep(Duration::from_secs(3)).await;
+
+                let result = LI.board_claim_draw(&challenge.id).await;
+                assert!(
+                    result.is_ok(),
+                    "Failed to claim victory of a game: {:?}",
+                    result.unwrap_err().source().unwrap()
+                );
+            }
+        }
+    }
+
+    let result = ADRIANA.board_claim_draw(&challenge.id).await;
+    assert!(
+        result.is_err(),
+        "Claiming draw of a game did not fail: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.board_claim_draw("notvalid").await;
+    assert!(result.is_err(), "Claiming draw of a game did not fail: {:?}", result.unwrap());
+}
+
 // TODO: Needs more test cases when tournament functionality is implemented
 #[tokio::test]
 async fn board_berserk() {
-    // Create some games for testing
+    // Create a game for testing
     let challenge = LI.challenge_create("Adriana", None).await.unwrap();
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
