@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
+use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::PrimitiveDateTime;
 
 use super::{game::Perf, user::Title};
@@ -57,4 +57,5 @@ pub struct SimulHost {
     pub flair: Option<String>,
     #[serde(default)]
     pub patron: bool,
+    pub patron_tier: Option<String>,
 }
