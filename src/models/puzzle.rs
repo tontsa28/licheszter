@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
+use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::PrimitiveDateTime;
 
 use super::{
@@ -58,6 +58,8 @@ pub struct PuzzleUser {
     pub flair: Option<String>,
     #[serde(default)]
     pub patron: bool,
+    #[serde(rename = "patronTier")]
+    pub patron_tier: Option<String>,
     pub rating: u16,
     pub title: Option<Title>,
 }
@@ -67,6 +69,8 @@ pub struct PuzzleUser {
 pub struct PuzzleAuthUser {
     pub id: String,
     pub rating: u16,
+    #[serde(default)]
+    pub provisional: bool,
 }
 
 #[serde_as]

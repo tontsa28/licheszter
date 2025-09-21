@@ -2,11 +2,11 @@
 
 use std::{error::Error, panic, sync::LazyLock};
 
-use futures_util::StreamExt;
+use futures_util::{StreamExt, TryStreamExt};
 use licheszter::{
     client::Licheszter,
     config::challenges::ChallengeOptions,
-    models::{chat::ChatRoom, game::Color},
+    models::{board::BoardState, chat::ChatRoom, game::Color},
 };
 use tokio::time::{Duration, sleep};
 
@@ -293,23 +293,36 @@ async fn bot_handle_takebacks() {
 
 #[tokio::test]
 async fn bot_claim_victory() {
-    // Create some games for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
+    // Create a game for testing
+    let options = ChallengeOptions::new().color(Color::Black).clock(30, 0);
+    let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
     BOT1.challenge_accept(&challenge.id).await.unwrap();
 
+    // Play some moves to get the game going
+    BOT1.bot_play_move(&challenge.id, "e2e4", false).await.unwrap();
+    BOT0.bot_play_move(&challenge.id, "e7e5", false).await.unwrap();
+
     // Run some test cases
-    let result = BOT0.bot_claim_victory(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to claim victory of a game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    let mut stream = BOT0.bot_game_connect(&challenge.id).await.unwrap();
+    while let Some(event) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = event {
+            if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
+                let result = BOT0.bot_claim_draw(&challenge.id).await;
+                assert!(
+                    result.is_ok(),
+                    "Failed to claim draw of a game: {:?}",
+                    result.unwrap_err().source().unwrap()
+                );
+                break;
+            }
+        }
+    }
 
     let result = BOT1.bot_claim_victory(&challenge.id).await;
     assert!(
-        result.is_ok(),
-        "Failed to claim victory of a game: {:?}",
-        result.unwrap_err().source().unwrap()
+        result.is_err(),
+        "Claiming victory of a game did not fail: {:?}",
+        result.unwrap()
     );
 
     let result = BOT0.bot_claim_victory("notvalid").await;
@@ -322,24 +335,33 @@ async fn bot_claim_victory() {
 
 #[tokio::test]
 async fn bot_claim_draw() {
-    // Create some games for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
+    // Create a game for testing
+    let options = ChallengeOptions::new().color(Color::Black).clock(30, 0);
+    let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
     BOT1.challenge_accept(&challenge.id).await.unwrap();
 
+    // Play some moves to get the game going
+    BOT1.bot_play_move(&challenge.id, "e2e4", false).await.unwrap();
+    BOT0.bot_play_move(&challenge.id, "e7e5", false).await.unwrap();
+
     // Run some test cases
-    let result = BOT0.bot_claim_draw(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to claim draw of a game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    let mut stream = BOT0.bot_game_connect(&challenge.id).await.unwrap();
+    while let Some(event) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = event {
+            if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
+                let result = BOT0.bot_claim_draw(&challenge.id).await;
+                assert!(
+                    result.is_ok(),
+                    "Failed to claim draw of a game: {:?}",
+                    result.unwrap_err().source().unwrap()
+                );
+                break;
+            }
+        }
+    }
 
     let result = BOT1.bot_claim_draw(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to claim draw of a game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_err(), "Claiming draw of a game did not fail: {:?}", result.unwrap());
 
     let result = BOT0.bot_claim_draw("notvalid").await;
     assert!(result.is_err(), "Claiming draw of a game did not fail: {:?}", result.unwrap());
