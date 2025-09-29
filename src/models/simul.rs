@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::PrimitiveDateTime;
 
+use crate::models::user::PatronTier;
+
 use super::{game::Perf, user::Title};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -57,5 +59,6 @@ pub struct SimulHost {
     pub flair: Option<String>,
     #[serde(default)]
     pub patron: bool,
-    pub patron_tier: Option<String>,
+    pub patron_tier: Option<PatronTier>,
+    pub patron_color: Option<u8>,
 }

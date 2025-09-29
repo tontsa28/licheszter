@@ -421,12 +421,16 @@ pub struct GameCompatibility {
 pub struct GameCount {
     pub all: u32,
     pub rated: u32,
+    #[serde(default)]
     pub ai: u32,
     pub draw: u32,
+    #[serde(default)]
     pub draw_h: u32,
     pub loss: u32,
+    #[serde(default)]
     pub loss_h: u32,
     pub win: u32,
+    #[serde(default)]
     pub win_h: u32,
     pub bookmark: u32,
     pub playing: u32,
