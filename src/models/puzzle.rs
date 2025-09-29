@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::PrimitiveDateTime;
 
+use crate::models::user::PatronTier;
+
 use super::{
     game::Color,
     user::{PerfType, Title},
@@ -51,6 +53,7 @@ pub struct PuzzlePerf {
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
 pub struct PuzzleUser {
     pub id: String,
     pub name: String,
@@ -58,8 +61,8 @@ pub struct PuzzleUser {
     pub flair: Option<String>,
     #[serde(default)]
     pub patron: bool,
-    #[serde(rename = "patronTier")]
-    pub patron_tier: Option<String>,
+    pub patron_tier: Option<PatronTier>,
+    pub patron_color: Option<u8>,
     pub rating: u16,
     pub title: Option<Title>,
 }
