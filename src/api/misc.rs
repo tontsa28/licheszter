@@ -3,12 +3,7 @@ use std::pin::Pin;
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
-    models::{
-        board::Event,
-        common::OkResponse,
-        game::{UserGame, UserGames},
-        user::BasicUser,
-    },
+    models::{board::Event, common::OkResponse, user::BasicUser},
 };
 use futures_util::Stream;
 
@@ -20,16 +15,6 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into_stream::<Event>(builder).await
-    }
-
-    /// Get the ongoing games of the current user.
-    /// The most urgent games are listed first.
-    // TODO: Move elsewhere when the whole endpoint group is implemented
-    pub async fn games_ongoing(&self, games: u8) -> Result<Vec<UserGame>> {
-        let url = self.req_url(UrlBase::Lichess, "api/account/playing");
-        let builder = self.client.get(url).query(&[("nb", games)]);
-
-        Ok(self.into::<UserGames>(builder).await?.now_playing)
     }
 
     /// Get online bots.

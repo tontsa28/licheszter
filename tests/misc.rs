@@ -60,24 +60,6 @@ async fn connect() {
 }
 
 #[tokio::test]
-async fn games_ongoing() {
-    // Run some test cases
-    let result = LI.games_ongoing(10).await;
-    assert!(
-        result.is_ok(),
-        "Failed to get ongoing games: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-
-    let result = BOT0.games_ongoing(10).await;
-    assert!(
-        result.is_ok(),
-        "Failed to get ongoing games: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-}
-
-#[tokio::test]
 async fn bots_online() {
     // Run some test cases
     let mut result = LI.bots_online(10).await.unwrap();
