@@ -56,7 +56,7 @@ pub struct TvChannelOptions {
 }
 
 impl TvChannelOptions {
-    /// Create a new instance of [`UserStatusOptions`] with default configuration.
+    /// Create a new instance of [`TvChannelOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()

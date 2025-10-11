@@ -1,10 +1,34 @@
+use std::pin::Pin;
+
+use futures_util::Stream;
+
 use crate::{
     client::{Licheszter, UrlBase},
+    config::games::GameOptions,
     error::Result,
-    models::game::{UserGame, UserGames},
+    models::game::{Game, UserGame, UserGames},
 };
 
 impl Licheszter {
+    // Download one game.
+    // Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    pub async fn games_export_one(
+        &self,
+        game_id: &str,
+        options: Option<&GameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self.req_url(UrlBase::Lichess, &format!("api/game/export/{game_id}"));
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self.client.get(url);
+        self.into_stream::<Game>(builder).await
+    }
+
     /// Get the ongoing games of the current user.
     /// The most urgent games are listed first.
     pub async fn games_ongoing(&self, games: u8) -> Result<Vec<UserGame>> {

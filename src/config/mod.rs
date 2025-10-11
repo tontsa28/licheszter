@@ -1,4 +1,5 @@
 pub mod challenges;
+pub mod games;
 pub mod puzzles;
 pub mod tv;
 pub mod users;

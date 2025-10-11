@@ -20,6 +20,13 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
 });
 
 #[tokio::test]
+async fn games_export_one() {
+    // Run some test cases
+    let result = LI.games_export_one("notvalid", None).await;
+    assert!(result.is_err(), "Exporting one game did not fail");
+}
+
+#[tokio::test]
 async fn games_ongoing() {
     // Run some test cases
     let result = LI.games_ongoing(10).await;
