@@ -86,8 +86,6 @@ pub enum TimeControl {
 pub struct Clock {
     pub initial: u32,
     pub increment: u32,
-    #[serde(rename = "totalTime")]
-    pub total_time: Option<u32>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
