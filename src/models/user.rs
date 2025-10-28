@@ -6,7 +6,7 @@ use time::{OffsetDateTime, PrimitiveDateTime};
 
 use crate::models::game::{FinalColor, Speed, VariantMode};
 
-use super::game::{GameCount, Perf};
+use super::game::GameCount;
 
 #[skip_serializing_none]
 #[serde_as]
@@ -682,16 +682,13 @@ pub struct PerfGlicko {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct PerfStats {
-    pub perf_type: Perf,
     pub highest: Option<PerfPoint>,
     pub lowest: Option<PerfPoint>,
-    pub id: String,
     pub count: PerfCount,
     pub result_streak: Option<PerfResultStreak>,
     pub worst_losses: PerfRecords,
     pub play_streak: PerfPlayStreak,
     pub best_wins: PerfRecords,
-    pub user_id: MinimalUser,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
