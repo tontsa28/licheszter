@@ -31,6 +31,7 @@ pub struct EndgameMove {
     pub dtw: Option<i16>,
     pub dtc: Option<i16>,
     pub zeroing: bool,
+    pub conversion: bool,
     pub checkmate: bool,
     pub stalemate: bool,
     pub variant_win: bool,
