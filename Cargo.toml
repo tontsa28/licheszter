@@ -20,7 +20,6 @@ path = "src/lib.rs"
 
 [dependencies]
 tokio = { version = "1.48.0", features = ["bytes"] }
-tokio-stream = { version = "0.1.17", default-features = false, features = ["io-util"] }
 tokio-util = "0.7.17"
 reqwest = { version = "0.12.24", default-features = false, features = ["stream", "rustls-tls"] }
 time = { version = "0.3.44", features = ["parsing", "serde"]}
