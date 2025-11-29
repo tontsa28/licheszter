@@ -1,6 +1,11 @@
 use std::{error::Error, sync::LazyLock};
 
-use licheszter::{client::Licheszter, config::games::GameOptions};
+use futures_util::StreamExt;
+use licheszter::{
+    client::Licheszter,
+    config::games::{ExtendedGameOptions, GameOptions, GameSortOrder},
+    models::{game::FinalColor, user::PerfType},
+};
 
 // Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
@@ -62,7 +67,62 @@ async fn games_export_ongoing_user() {
     );
 
     let result = LI.games_export_ongoing_user("NoSuchUser", None).await;
-    assert!(result.is_err(), "Getting ongoing game did not fail: {:?}", result.unwrap());
+    assert!(result.is_err(), "Exporting ongoing game did not fail: {:?}", result.unwrap());
+}
+
+#[tokio::test]
+async fn games_export_user() {
+    // Create options for testing
+    let options = ExtendedGameOptions::new()
+        .max(10)
+        .rated(false)
+        .perf_type(vec![PerfType::Bullet, PerfType::Blitz, PerfType::Rapid])
+        .color(FinalColor::White)
+        .analysed(false)
+        .moves(true)
+        .tags(true)
+        .clocks(true)
+        .evals(true)
+        .accuracy(true)
+        .opening(true)
+        .division(true)
+        .ongoing(true)
+        .finished(true)
+        .literate(true)
+        .last_fen(true)
+        .with_bookmarked(true)
+        .sort(GameSortOrder::DateDesc);
+
+    // Run some test cases
+    let mut result = LI.games_export_user("Li", Some(&options)).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to get user games: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let mut result = LI.games_export_user("Li", None).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to get user games: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let mut result = LI.games_export_user("Adriana", Some(&options)).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to get user games: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let result = LI.games_export_user("NoSuchUser", None).await;
+    assert!(result.is_err(), "Exporting games did not fail");
 }
 
 #[tokio::test]

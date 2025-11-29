@@ -141,6 +141,7 @@ pub struct Division {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
+    pub full_id: Option<String>,
     pub id: String,
     pub rated: bool,
     pub variant: VariantMode,

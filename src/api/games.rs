@@ -5,7 +5,7 @@ use reqwest::header;
 
 use crate::{
     client::{Licheszter, UrlBase},
-    config::games::GameOptions,
+    config::games::{ExtendedGameOptions, GameOptions},
     error::Result,
     models::game::{Game, UserGame, UserGames},
 };
@@ -47,6 +47,28 @@ impl Licheszter {
 
         let builder = self.client.get(url).header(header::ACCEPT, "application/json");
         self.into::<Game>(builder).await
+    }
+
+    /// Download all games of any user.
+    /// By default, games are delivered in reverse chronological order (most recent first).
+    pub async fn games_export_user(
+        &self,
+        username: &str,
+        options: Option<&ExtendedGameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self.req_url(UrlBase::Lichess, &format!("api/games/user/{username}"));
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/x-ndjson");
+        self.into_stream::<Game>(builder).await
     }
 
     /// Get the ongoing games of the current user.
