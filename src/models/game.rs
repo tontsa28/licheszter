@@ -127,11 +127,12 @@ pub struct MoveAnalysis {
     pub judgment: Option<Judgement>,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Division {
-    pub middle: u16,
-    pub end: u16,
+    pub middle: Option<u16>,
+    pub end: Option<u16>,
 }
 
 #[serde_as]

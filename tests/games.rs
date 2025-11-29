@@ -1,6 +1,6 @@
 use std::{error::Error, sync::LazyLock};
 
-use licheszter::client::Licheszter;
+use licheszter::{client::Licheszter, config::games::GameOptions};
 
 // Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
@@ -24,6 +24,45 @@ async fn games_export_one() {
     // Run some test cases
     let result = LI.games_export_one("notvalid", None).await;
     assert!(result.is_err(), "Exporting one game did not fail");
+}
+
+#[tokio::test]
+async fn games_export_ongoing_user() {
+    // Create options for testing
+    let options = GameOptions::new()
+        .moves(true)
+        .tags(true)
+        .clocks(true)
+        .evals(true)
+        .accuracy(true)
+        .opening(true)
+        .division(true)
+        .literate(true);
+
+    // Run some test cases
+    let result = LI.games_export_ongoing_user("Li", Some(&options)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get ongoing game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_export_ongoing_user("Li", None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get ongoing game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_export_ongoing_user("Adriana", Some(&options)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get ongoing game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_export_ongoing_user("NoSuchUser", None).await;
+    assert!(result.is_err(), "Getting ongoing game did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]

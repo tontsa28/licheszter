@@ -1,6 +1,7 @@
 use std::pin::Pin;
 
 use futures_util::Stream;
+use reqwest::header;
 
 use crate::{
     client::{Licheszter, UrlBase},
@@ -10,14 +11,14 @@ use crate::{
 };
 
 impl Licheszter {
-    // Download one game.
-    // Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    /// Download one game.
+    /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
     pub async fn games_export_one(
         &self,
         game_id: &str,
         options: Option<&GameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.req_url(UrlBase::Lichess, &format!("api/game/export/{game_id}"));
+        let mut url = self.req_url(UrlBase::Lichess, &format!("game/export/{game_id}"));
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -25,8 +26,27 @@ impl Licheszter {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.client.get(url);
+        let builder = self.client.get(url).header(header::ACCEPT, "application/json");
         self.into_stream::<Game>(builder).await
+    }
+
+    /// Download the ongoing game, or the last game played, of a user.
+    /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    pub async fn games_export_ongoing_user(
+        &self,
+        username: &str,
+        options: Option<&GameOptions>,
+    ) -> Result<Game> {
+        let mut url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/current-game"));
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self.client.get(url).header(header::ACCEPT, "application/json");
+        self.into::<Game>(builder).await
     }
 
     /// Get the ongoing games of the current user.
