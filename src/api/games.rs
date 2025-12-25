@@ -13,11 +13,7 @@ use crate::{
 impl Licheszter {
     /// Download one game.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
-    pub async fn games_export_one(
-        &self,
-        game_id: &str,
-        options: Option<&GameOptions>,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+    pub async fn games_export_one(&self, game_id: &str, options: Option<&GameOptions>) -> Result<Game> {
         let mut url = self.req_url(UrlBase::Lichess, &format!("game/export/{game_id}"));
 
         // Add the options to the request if they are present
@@ -27,7 +23,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url).header(header::ACCEPT, "application/json");
-        self.into_stream::<Game>(builder).await
+        self.into::<Game>(builder).await
     }
 
     /// Download the ongoing game, or the last game played, of a user.

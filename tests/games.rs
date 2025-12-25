@@ -4,7 +4,10 @@ use futures_util::StreamExt;
 use licheszter::{
     client::Licheszter,
     config::games::{ExtendedGameOptions, GameOptions, GameSortOrder},
-    models::{game::FinalColor, user::PerfType},
+    models::{
+        game::{FinalColor, Game},
+        user::PerfType,
+    },
 };
 
 // Connect to test clients
@@ -26,9 +29,42 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
 
 #[tokio::test]
 async fn games_export_one() {
+    // Create options and games for testing
+    let games_options = ExtendedGameOptions::new().max(2);
+    let games: Vec<Game> = LI
+        .games_export_user("Li", Some(&games_options))
+        .await
+        .unwrap()
+        .map(|event| event.unwrap())
+        .collect()
+        .await;
+    let options = GameOptions::new()
+        .moves(true)
+        .tags(true)
+        .clocks(true)
+        .evals(true)
+        .accuracy(true)
+        .opening(true)
+        .division(true)
+        .literate(true);
+
     // Run some test cases
+    let result = LI.games_export_one(&games[0].id, Some(&options)).await;
+    assert!(
+        result.is_ok(),
+        "Failed to export game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_export_one(&games[1].id, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to export game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
     let result = LI.games_export_one("notvalid", None).await;
-    assert!(result.is_err(), "Exporting one game did not fail");
+    assert!(result.is_err(), "Exporting one game did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
