@@ -162,6 +162,62 @@ async fn games_export_user() {
 }
 
 #[tokio::test]
+async fn games_export() {
+    // Create options and games for testing
+    let games_options = ExtendedGameOptions::new().max(10);
+    let games: Vec<Game> = LI
+        .games_export_user("Li", Some(&games_options))
+        .await
+        .unwrap()
+        .map(|event| event.unwrap())
+        .collect()
+        .await;
+    let ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
+    let options = GameOptions::new()
+        .moves(true)
+        .tags(true)
+        .clocks(true)
+        .evals(true)
+        .accuracy(true)
+        .opening(true)
+        .division(true)
+        .literate(true);
+
+    // Run some test cases
+    let mut result = LI.games_export(ids.clone(), Some(&options)).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to get ongoing game: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let mut result = LI.games_export(ids.clone(), None).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to get ongoing game: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let mut result = LI.games_export(vec![], Some(&options)).await.unwrap();
+    assert!(
+        result.next().await.is_none(),
+        "Failed to export games: {:?}",
+        result.next().await.unwrap().unwrap_err().source().unwrap()
+    );
+
+    let mut result = LI.games_export(vec![], None).await.unwrap();
+    assert!(
+        result.next().await.is_none(),
+        "Failed to export games: {:?}",
+        result.next().await.unwrap().unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
 async fn games_ongoing() {
     // Run some test cases
     let result = LI.games_ongoing(10).await;

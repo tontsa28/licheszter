@@ -67,6 +67,31 @@ impl Licheszter {
         self.into_stream::<Game>(builder).await
     }
 
+    /// Download games by IDs.
+    /// Games are delivered in reverse chronological order (most recent first).
+    /// Up to 300 IDs can be submitted at a time.
+    /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    pub async fn games_export(
+        &self,
+        ids: Vec<&str>,
+        options: Option<&GameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self.req_url(UrlBase::Lichess, "api/games/export/_ids");
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self
+            .client
+            .post(url)
+            .header(header::ACCEPT, "application/x-ndjson")
+            .body(ids.join(","));
+        self.into_stream::<Game>(builder).await
+    }
+
     /// Get the ongoing games of the current user.
     /// The most urgent games are listed first.
     pub async fn games_ongoing(&self, games: u8) -> Result<Vec<UserGame>> {
