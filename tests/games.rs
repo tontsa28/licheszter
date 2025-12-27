@@ -9,7 +9,7 @@ use licheszter::{
         user::PerfType,
     },
 };
-use tokio::time::timeout;
+use tokio::time::{sleep, timeout};
 
 // Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
@@ -271,18 +271,15 @@ async fn games_users_connect() {
 #[tokio::test]
 async fn games_connect() {
     // Get some game IDs for testing
-    let mut buf: Vec<StreamGame> = Vec::new();
-    let mut games = LI
+    let games: Vec<StreamGame> = LI
         .games_users_connect(vec!["li", "bot0", "adriana"], true)
         .await
+        .unwrap()
+        .take(3)
+        .try_collect()
+        .await
         .unwrap();
-    while let Some(game) = games.try_next().await.unwrap() {
-        buf.push(game);
-        if buf.len() >= 3 {
-            break;
-        }
-    }
-    let game_ids = buf.iter().map(|game| game.id.as_str()).collect();
+    let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
 
     // Run some test cases
     let mut result = LI.games_connect("randomid", game_ids).await.unwrap();
@@ -313,6 +310,64 @@ async fn games_connect() {
 
     let result = LI.games_connect("", vec![]).await;
     assert!(result.is_err(), "Streaming games did not fail");
+}
+
+#[tokio::test]
+async fn games_connect_add() {
+    // Start a stream of games for testing
+    let task = tokio::spawn(async {
+        let games: Vec<StreamGame> = LI
+            .games_users_connect(vec!["li", "bot0", "adriana"], true)
+            .await
+            .unwrap()
+            .take(3)
+            .try_collect()
+            .await
+            .unwrap();
+        let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
+
+        let mut stream = LI.games_connect("someid", game_ids).await.unwrap();
+        while stream.next().await.is_some() {}
+    });
+
+    // Get some game IDs for testing
+    let games: Vec<StreamGame> = LI
+        .games_users_connect(vec!["li", "bot0", "adriana"], true)
+        .await
+        .unwrap()
+        .take(3)
+        .try_collect()
+        .await
+        .unwrap();
+    let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
+    sleep(Duration::from_millis(100)).await;
+
+    // Run some test cases
+    let result = LI.games_connect_add("someid", game_ids).await;
+    assert!(
+        result.is_ok(),
+        "Failed to add game to stream: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_connect_add("someid", vec![]).await;
+    assert!(
+        result.is_ok(),
+        "Failed to add game to stream: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_connect_add("someid", vec!["notvalid"]).await;
+    assert!(
+        result.is_ok(),
+        "Failed to add game to stream: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_connect_add("invalid", vec![]).await;
+    assert!(result.is_err(), "Adding game to stream did not fail: {:?}", result.unwrap());
+
+    task.abort();
 }
 
 #[tokio::test]

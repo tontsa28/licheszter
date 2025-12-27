@@ -7,7 +7,10 @@ use crate::{
     client::{Licheszter, UrlBase},
     config::games::{ExtendedGameOptions, GameOptions},
     error::Result,
-    models::game::{Game, StreamGame, UserGame, UserGames},
+    models::{
+        common::OkResponse,
+        game::{Game, StreamGame, UserGame, UserGames},
+    },
 };
 
 impl Licheszter {
@@ -115,7 +118,7 @@ impl Licheszter {
     /// Create a stream of games with a custom ID.
     /// The stream first outputs the games that already exist, then emits an event each time a game is started or finished.
     /// Up to 500 games for anonymous requests or 1000 games for authenticated requests can be streamed at a time.
-    /// It is possible to add new games to the stream while it is open.
+    /// It is possible to add new games to the stream while it is open using [`games_connect_add`](fn@Licheszter::games_connect_add).
     pub async fn games_connect(
         &self,
         stream_id: &str,
@@ -125,6 +128,16 @@ impl Licheszter {
         let builder = self.client.post(url).body(game_ids.join(","));
 
         self.into_stream::<StreamGame>(builder).await
+    }
+
+    /// Add new games to an existing stream.
+    /// The stream will immediately output the games that already exist, then emit an event each time a game is started or finished.
+    pub async fn games_connect_add(&self, stream_id: &str, game_ids: Vec<&str>) -> Result<()> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}/add"));
+        let builder = self.client.post(url).body(game_ids.join(","));
+
+        self.into::<OkResponse>(builder).await?;
+        Ok(())
     }
 
     /// Get the ongoing games of the current user.
