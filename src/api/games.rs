@@ -69,11 +69,11 @@ impl Licheszter {
 
     /// Download games by IDs.
     /// Games are delivered in reverse chronological order (most recent first).
-    /// Up to 300 IDs can be submitted at a time.
+    /// Up to 300 game IDs can be submitted at a time.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
     pub async fn games_export(
         &self,
-        ids: Vec<&str>,
+        game_ids: Vec<&str>,
         options: Option<&GameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
         let mut url = self.req_url(UrlBase::Lichess, "api/games/export/_ids");
@@ -88,7 +88,7 @@ impl Licheszter {
             .client
             .post(url)
             .header(header::ACCEPT, "application/x-ndjson")
-            .body(ids.join(","));
+            .body(game_ids.join(","));
         self.into_stream::<Game>(builder).await
     }
 
@@ -99,7 +99,7 @@ impl Licheszter {
     /// Up to 300 users can be listed.
     pub async fn games_users_connect(
         &self,
-        users: Vec<&str>,
+        user_ids: Vec<&str>,
         with_current_games: bool,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/stream/games-by-users");
@@ -107,7 +107,22 @@ impl Licheszter {
             .client
             .post(url)
             .query(&[("withCurrentGames", with_current_games)])
-            .body(users.join(","));
+            .body(user_ids.join(","));
+
+        self.into_stream::<StreamGame>(builder).await
+    }
+
+    /// Create a stream of games with a custom ID.
+    /// The stream first outputs the games that already exist, then emits an event each time a game is started or finished.
+    /// Up to 500 games for anonymous requests or 1000 games for authenticated requests can be streamed at a time.
+    /// It is possible to add new games to the stream while it is open.
+    pub async fn games_connect(
+        &self,
+        stream_id: &str,
+        game_ids: Vec<&str>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}"));
+        let builder = self.client.post(url).body(game_ids.join(","));
 
         self.into_stream::<StreamGame>(builder).await
     }

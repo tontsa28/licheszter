@@ -1,11 +1,11 @@
 use std::{error::Error, sync::LazyLock, time::Duration};
 
-use futures_util::StreamExt;
+use futures_util::{StreamExt, TryStreamExt};
 use licheszter::{
     client::Licheszter,
     config::games::{ExtendedGameOptions, GameOptions, GameSortOrder},
     models::{
-        game::{FinalColor, Game},
+        game::{FinalColor, Game, StreamGame},
         user::PerfType,
     },
 };
@@ -173,7 +173,7 @@ async fn games_export() {
         .map(|event| event.unwrap())
         .collect()
         .await;
-    let ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
+    let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
     let options = GameOptions::new()
         .moves(true)
         .tags(true)
@@ -185,7 +185,7 @@ async fn games_export() {
         .literate(true);
 
     // Run some test cases
-    let mut result = LI.games_export(ids.clone(), Some(&options)).await.unwrap();
+    let mut result = LI.games_export(game_ids.clone(), Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -194,7 +194,7 @@ async fn games_export() {
         );
     }
 
-    let mut result = LI.games_export(ids.clone(), None).await.unwrap();
+    let mut result = LI.games_export(game_ids.clone(), None).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -266,6 +266,53 @@ async fn games_users_connect() {
         "Streaming user games did not fail: {:?}",
         result.next().await.unwrap()
     );
+}
+
+#[tokio::test]
+async fn games_connect() {
+    // Get some game IDs for testing
+    let mut buf: Vec<StreamGame> = Vec::new();
+    let mut games = LI
+        .games_users_connect(vec!["li", "bot0", "adriana"], true)
+        .await
+        .unwrap();
+    while let Some(game) = games.try_next().await.unwrap() {
+        buf.push(game);
+        if buf.len() >= 3 {
+            break;
+        }
+    }
+    let game_ids = buf.iter().map(|game| game.id.as_str()).collect();
+
+    // Run some test cases
+    let mut result = LI.games_connect("randomid", game_ids).await.unwrap();
+    timeout(Duration::from_secs(1), async {
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to stream games: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    })
+    .await
+    .unwrap_err();
+
+    let mut result = LI.games_connect("randomid", vec![]).await.unwrap();
+    timeout(Duration::from_secs(1), async {
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to stream games: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    })
+    .await
+    .unwrap_err();
+
+    let result = LI.games_connect("", vec![]).await;
+    assert!(result.is_err(), "Streaming games did not fail");
 }
 
 #[tokio::test]
