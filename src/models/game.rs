@@ -20,7 +20,7 @@ pub struct PlayerAnalysis {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct Entity {
+pub struct Human {
     pub user: MinimalUser,
     pub rating: u16,
     pub rating_diff: Option<i16>,
@@ -29,6 +29,16 @@ pub struct Entity {
     pub provisional: bool,
     pub analysis: Option<PlayerAnalysis>,
     pub team: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct Entity {
+    #[serde(rename = "userId")]
+    pub user_id: String,
+    pub rating: u16,
+    #[serde(default)]
+    pub provisional: bool,
 }
 
 #[skip_serializing_none]
@@ -44,7 +54,7 @@ pub struct Computer {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(untagged)]
 pub enum Player {
-    Entity(Box<Entity>),
+    Human(Box<Human>),
     Computer(Computer),
 }
 
@@ -53,6 +63,13 @@ pub enum Player {
 pub struct Players {
     pub white: Player,
     pub black: Player,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamPlayers {
+    pub white: Entity,
+    pub black: Entity,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -167,6 +184,28 @@ pub struct Game {
     #[serde(default)]
     pub clocks: Vec<u16>,
     pub division: Option<Division>,
+}
+
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct StreamGame {
+    pub id: String,
+    pub rated: bool,
+    pub variant: VariantMode,
+    pub speed: Speed,
+    pub perf: PerfType,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub created_at: PrimitiveDateTime,
+    pub status: u8,
+    pub status_name: GameStatus,
+    pub players: StreamPlayers,
+    pub clock: Option<Clock>,
+    pub initial_fen: Option<String>,
+    pub winner: Option<FinalColor>,
+    pub days_per_turn: Option<u8>,
 }
 
 #[skip_serializing_none]
@@ -383,24 +422,25 @@ pub enum GameType {
     Rated,
 }
 
+#[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum GameStatus {
-    Created,
-    Started,
-    Aborted,
-    Mate,
-    Resign,
-    Stalemate,
-    Timeout,
-    Draw,
+    Created = 10,
+    Started = 20,
+    Aborted = 25,
+    Mate = 30,
+    Resign = 31,
+    Stalemate = 32,
+    Timeout = 33,
+    Draw = 34,
     #[serde(rename = "outoftime")]
-    OutOfTime,
-    Cheat,
-    NoStart,
-    UnknownFinish,
-    InsufficientMaterialClaim,
-    VariantEnd,
+    OutOfTime = 35,
+    Cheat = 36,
+    NoStart = 37,
+    UnknownFinish = 38,
+    InsufficientMaterialClaim = 39,
+    VariantEnd = 60,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

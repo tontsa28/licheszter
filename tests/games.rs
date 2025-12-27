@@ -1,4 +1,4 @@
-use std::{error::Error, sync::LazyLock};
+use std::{error::Error, sync::LazyLock, time::Duration};
 
 use futures_util::StreamExt;
 use licheszter::{
@@ -9,6 +9,7 @@ use licheszter::{
         user::PerfType,
     },
 };
+use tokio::time::timeout;
 
 // Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
@@ -84,21 +85,21 @@ async fn games_export_ongoing_user() {
     let result = LI.games_export_ongoing_user("Li", Some(&options)).await;
     assert!(
         result.is_ok(),
-        "Failed to get ongoing game: {:?}",
+        "Failed to export ongoing game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = LI.games_export_ongoing_user("Li", None).await;
     assert!(
         result.is_ok(),
-        "Failed to get ongoing game: {:?}",
+        "Failed to export ongoing game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = LI.games_export_ongoing_user("Adriana", Some(&options)).await;
     assert!(
         result.is_ok(),
-        "Failed to get ongoing game: {:?}",
+        "Failed to export ongoing game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
@@ -134,7 +135,7 @@ async fn games_export_user() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to get user games: {:?}",
+            "Failed to export user games: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }
@@ -143,7 +144,7 @@ async fn games_export_user() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to get user games: {:?}",
+            "Failed to export user games: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }
@@ -152,13 +153,13 @@ async fn games_export_user() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to get user games: {:?}",
+            "Failed to export user games: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }
 
     let result = LI.games_export_user("NoSuchUser", None).await;
-    assert!(result.is_err(), "Exporting games did not fail");
+    assert!(result.is_err(), "Exporting user games did not fail");
 }
 
 #[tokio::test]
@@ -188,7 +189,7 @@ async fn games_export() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to get ongoing game: {:?}",
+            "Failed to export games: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }
@@ -197,7 +198,7 @@ async fn games_export() {
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
-            "Failed to get ongoing game: {:?}",
+            "Failed to export games: {:?}",
             event.unwrap_err().source().unwrap()
         );
     }
@@ -205,15 +206,65 @@ async fn games_export() {
     let mut result = LI.games_export(vec![], Some(&options)).await.unwrap();
     assert!(
         result.next().await.is_none(),
-        "Failed to export games: {:?}",
-        result.next().await.unwrap().unwrap_err().source().unwrap()
+        "Exporting games did not fail: {:?}",
+        result.next().await.unwrap()
     );
 
     let mut result = LI.games_export(vec![], None).await.unwrap();
     assert!(
         result.next().await.is_none(),
-        "Failed to export games: {:?}",
-        result.next().await.unwrap().unwrap_err().source().unwrap()
+        "Exporting games did not fail: {:?}",
+        result.next().await.unwrap()
+    );
+}
+
+#[tokio::test]
+async fn games_users_connect() {
+    // Run some test cases
+    let mut result = LI.games_users_connect(vec!["li", "bot0"], true).await.unwrap();
+    timeout(Duration::from_secs(1), async {
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to stream user games: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    })
+    .await
+    .unwrap_err();
+
+    let mut result = LI.games_users_connect(vec!["li", "adriana"], true).await.unwrap();
+    timeout(Duration::from_secs(1), async {
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to stream user games: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    })
+    .await
+    .unwrap_err();
+
+    let mut result = LI.games_users_connect(vec!["li", "bot0"], false).await.unwrap();
+    timeout(Duration::from_secs(1), async {
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to stream user games: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    })
+    .await
+    .unwrap_err();
+
+    let mut result = LI.games_users_connect(vec!["li"], false).await.unwrap();
+    assert!(
+        result.next().await.is_none(),
+        "Streaming user games did not fail: {:?}",
+        result.next().await.unwrap()
     );
 }
 

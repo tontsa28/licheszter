@@ -7,7 +7,7 @@ use crate::{
     client::{Licheszter, UrlBase},
     config::games::{ExtendedGameOptions, GameOptions},
     error::Result,
-    models::game::{Game, UserGame, UserGames},
+    models::game::{Game, StreamGame, UserGame, UserGames},
 };
 
 impl Licheszter {
@@ -90,6 +90,26 @@ impl Licheszter {
             .header(header::ACCEPT, "application/x-ndjson")
             .body(ids.join(","));
         self.into_stream::<Game>(builder).await
+    }
+
+    /// Stream the games played between a list of users in real time.
+    /// Only games where both players are part of the list are included.
+    /// The stream emits an event each time a game is started or finished.
+    /// To get all current ongoing games at the beginning of the stream, use the `with_current_games` option.
+    /// Up to 300 users can be listed.
+    pub async fn games_users_connect(
+        &self,
+        users: Vec<&str>,
+        with_current_games: bool,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
+        let url = self.req_url(UrlBase::Lichess, "api/stream/games-by-users");
+        let builder = self
+            .client
+            .post(url)
+            .query(&[("withCurrentGames", with_current_games)])
+            .body(users.join(","));
+
+        self.into_stream::<StreamGame>(builder).await
     }
 
     /// Get the ongoing games of the current user.
