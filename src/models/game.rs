@@ -1,4 +1,7 @@
-use crate::models::user::{LightUser, MinimalUser, PerfType};
+use crate::models::{
+    tv::FenEvent,
+    user::{LightUser, MinimalUser, PerfType},
+};
 use serde::{Deserialize, Serialize};
 use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
 use time::PrimitiveDateTime;
@@ -169,7 +172,7 @@ pub struct Game {
     #[serde_as(as = "TimestampMilliSeconds")]
     pub last_move_at: PrimitiveDateTime,
     pub status: GameStatus,
-    pub source: Option<String>,
+    pub source: Option<ChallengeSource>,
     pub players: Players,
     pub initial_fen: Option<String>,
     pub winner: Option<FinalColor>,
@@ -206,6 +209,39 @@ pub struct StreamGame {
     pub initial_fen: Option<String>,
     pub winner: Option<FinalColor>,
     pub days_per_turn: Option<u8>,
+}
+
+#[skip_serializing_none]
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct StreamMovesGame {
+    pub id: String,
+    pub variant: Variant,
+    pub speed: Speed,
+    pub perf: PerfType,
+    pub rated: bool,
+    pub initial_fen: Option<String>,
+    pub fen: String,
+    pub player: FinalColor,
+    pub turns: u16,
+    pub started_at_turn: Option<u16>,
+    pub source: ChallengeSource,
+    pub status: FullGameStatus,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub created_at: PrimitiveDateTime,
+    pub last_move: Option<String>,
+    pub players: Players,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+#[serde(untagged)]
+pub enum StreamMoves {
+    Game(StreamMovesGame),
+    Move(FenEvent),
 }
 
 #[skip_serializing_none]
@@ -298,7 +334,7 @@ pub struct UserGame {
     pub fen: String,
     pub color: Color,
     pub last_move: String,
-    pub source: String,
+    pub source: ChallengeSource,
     pub variant: Variant,
     pub speed: String,
     pub perf: PerfType,

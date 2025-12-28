@@ -387,3 +387,40 @@ async fn games_ongoing() {
         result.unwrap_err().source().unwrap()
     );
 }
+
+#[tokio::test]
+async fn games_moves_connect() {
+    // Get some game IDs for testing
+    let games = LI.games_ongoing(2).await.unwrap();
+    let game_ids: Vec<&str> = games.iter().map(|game| game.game_id.as_str()).collect();
+
+    // Run some test cases
+    let mut result = LI.games_moves_connect(game_ids[0]).await.unwrap();
+    timeout(Duration::from_secs(1), async {
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to stream moves of a game: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    })
+    .await
+    .unwrap_err();
+
+    let mut result = LI.games_moves_connect(game_ids[1]).await.unwrap();
+    timeout(Duration::from_secs(1), async {
+        while let Some(event) = result.next().await {
+            assert!(
+                event.is_ok(),
+                "Failed to stream moves of a game: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
+        }
+    })
+    .await
+    .unwrap_err();
+
+    let result = LI.games_moves_connect("notvalid").await;
+    assert!(result.is_err(), "Streaming moves of a game did not fail");
+}

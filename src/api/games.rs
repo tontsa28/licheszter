@@ -9,7 +9,7 @@ use crate::{
     error::Result,
     models::{
         common::OkResponse,
-        game::{Game, StreamGame, UserGame, UserGames},
+        game::{Game, StreamGame, StreamMoves, UserGame, UserGames},
     },
 };
 
@@ -147,5 +147,21 @@ impl Licheszter {
         let builder = self.client.get(url).query(&[("nb", games)]);
 
         Ok(self.into::<UserGames>(builder).await?.now_playing)
+    }
+
+    /// Stream positions and moves of any ongoing game.
+    /// A description of the game is sent first.
+    /// Then, an update is sent each time a move is played.
+    /// Finally, a description is sent once the game is finished and the stream is closed.
+    /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    /// A maximum of 8 game streams can be opened from the same IP address at the same time.
+    pub async fn games_moves_connect(
+        &self,
+        game_id: &str,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamMoves>> + Send>>> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/stream/game/{game_id}"));
+        let builder = self.client.get(url);
+
+        self.into_stream::<StreamMoves>(builder).await
     }
 }
