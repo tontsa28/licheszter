@@ -515,3 +515,10 @@ pub struct GameCount {
     pub import: u32,
     pub me: u32,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ImportGame {
+    pub id: String,
+    pub url: String,
+}

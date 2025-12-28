@@ -9,7 +9,7 @@ use crate::{
     error::Result,
     models::{
         common::OkResponse,
-        game::{Game, StreamGame, StreamMoves, UserGame, UserGames},
+        game::{Game, ImportGame, StreamGame, StreamMoves, UserGame, UserGames},
     },
 };
 
@@ -117,7 +117,7 @@ impl Licheszter {
 
     /// Create a stream of games with a custom ID.
     /// The stream first outputs the games that already exist, then emits an event each time a game is started or finished.
-    /// Up to 500 games for anonymous requests or 1000 games for authenticated requests can be streamed at a time.
+    /// Up to 500 games using anonymous requests or 1000 games using authenticated requests can be streamed at a time.
     /// It is possible to add new games to the stream while it is open using [`games_connect_add`](fn@Licheszter::games_connect_add).
     pub async fn games_connect(
         &self,
@@ -163,5 +163,15 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into_stream::<StreamMoves>(builder).await
+    }
+
+    /// Import a game from PGN.
+    /// Up to 100 games using anonymous requests or 200 games using authenticated requests can be imported hourly.
+    /// To broadcast ongoing games, consider pushing to a broadcast instead.
+    pub async fn games_import_one(&self, pgn: &str) -> Result<ImportGame> {
+        let url = self.req_url(UrlBase::Lichess, "api/import");
+        let builder = self.client.post(url).form(&[("pgn", pgn)]);
+
+        self.into::<ImportGame>(builder).await
     }
 }

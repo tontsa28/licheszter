@@ -424,3 +424,49 @@ async fn games_moves_connect() {
     let result = LI.games_moves_connect("notvalid").await;
     assert!(result.is_err(), "Streaming moves of a game did not fail");
 }
+
+#[tokio::test]
+async fn games_import_one() {
+    // Use a hardcoded PGN for testing
+    let pgn = r#"[Event "Li Arena"]
+    [Site "http://localhost:8080/vj7imIJW"]
+    [Date "2025.12.27"]
+    [Round "-"]
+    [White "Bot0"]
+    [Black "Li"]
+    [Result "0-1"]
+    [GameId "vj7imIJW"]
+    [UTCDate "2025.12.27"]
+    [UTCTime "11:21:46"]
+    [WhiteElo "1500"]
+    [BlackElo "1774"]
+    [WhiteRatingDiff "-119"]
+    [BlackRatingDiff "+1"]
+    [WhiteTitle "BOT"]
+    [Variant "Standard"]
+    [TimeControl "120+0"]
+    [ECO "A00"]
+    [Opening "Barnes Opening: Fool's Mate"]
+    [Termination "Normal"]
+    [Annotator "localhost:8080"]
+
+    1. f3 e5 2. g4 Qh4# { A00 Barnes Opening: Fool's Mate } { Black wins by checkmate. } 0-1"#;
+
+    // Run some test cases
+    let result = LI.games_import_one(pgn).await;
+    assert!(
+        result.is_ok(),
+        "Failed to import game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.games_import_one(pgn).await;
+    assert!(
+        result.is_ok(),
+        "Failed to import game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.games_import_one("").await;
+    assert!(result.is_err(), "Importing game did not fail: {:?}", result.unwrap());
+}
