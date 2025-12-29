@@ -127,6 +127,19 @@ impl Licheszter {
         Ok(Box::pin(lines))
     }
 
+    // Convert the API response into a string
+    pub(crate) async fn into_str(&self, builder: RequestBuilder) -> Result<String> {
+        // Send the request & get the response
+        let response = builder.send().await?;
+
+        // Return an error if the request failed
+        if !response.status().is_success() {
+            return Err(LichessError::from_response(response).await?.into());
+        }
+
+        Ok(response.text().await?)
+    }
+
     // Construct the full URL of a request with given path
     pub(crate) fn req_url(&self, url: UrlBase, path: &str) -> Url {
         let mut base = match url {

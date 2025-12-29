@@ -470,3 +470,21 @@ async fn games_import_one() {
     let result = LI.games_import_one("").await;
     assert!(result.is_err(), "Importing game did not fail: {:?}", result.unwrap());
 }
+
+#[tokio::test]
+async fn games_export_imported() {
+    // Run some test cases
+    let result = LI.games_export_imported().await;
+    assert!(
+        result.is_ok(),
+        "Failed to export imported games: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.games_export_imported().await;
+    assert!(
+        result.is_ok(),
+        "Failed to export imported games: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}

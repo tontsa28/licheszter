@@ -174,4 +174,15 @@ impl Licheszter {
 
         self.into::<ImportGame>(builder).await
     }
+
+    /// Download all games imported by you.
+    /// Games are exported in PGN format.
+    /// # NOTE:
+    /// This method does NOT deserialize the PGN data, it must be manually parsed.
+    pub async fn games_export_imported(&self) -> Result<String> {
+        let url = self.req_url(UrlBase::Lichess, "api/games/export/imports");
+        let builder = self.client.get(url);
+
+        self.into_str(builder).await
+    }
 }
