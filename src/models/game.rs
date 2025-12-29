@@ -1,10 +1,11 @@
 use crate::models::{
+    common::date_dot,
     tv::FenEvent,
     user::{LightUser, MinimalUser, PerfType},
 };
 use serde::{Deserialize, Serialize};
 use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
-use time::PrimitiveDateTime;
+use time::{Date, PrimitiveDateTime};
 
 use super::{challenge::ChallengeSource, user::Title};
 
@@ -59,6 +60,7 @@ pub struct Computer {
 pub enum Player {
     Human(Box<Human>),
     Computer(Computer),
+    Simple { name: String, rating: u16 },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -187,6 +189,7 @@ pub struct Game {
     #[serde(default)]
     pub clocks: Vec<u16>,
     pub division: Option<Division>,
+    pub import: Option<ImportDetails>,
 }
 
 #[serde_as]
@@ -521,4 +524,12 @@ pub struct GameCount {
 pub struct ImportGame {
     pub id: String,
     pub url: String,
+}
+
+#[serde_as]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ImportDetails {
+    #[serde(with = "date_dot")]
+    pub date: Date,
 }

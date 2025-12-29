@@ -5,7 +5,7 @@ use reqwest::header;
 
 use crate::{
     client::{Licheszter, UrlBase},
-    config::games::{ExtendedGameOptions, GameOptions},
+    config::games::{BookmarkedGameOptions, ExtendedGameOptions, GameOptions},
     error::Result,
     models::{
         common::OkResponse,
@@ -184,5 +184,26 @@ impl Licheszter {
         let builder = self.client.get(url);
 
         self.into_str(builder).await
+    }
+
+    /// Download all games bookmarked by you.
+    /// By default, games are delivered in reverse chronological order (most recent first).
+    pub async fn games_export_bookmarked(
+        &self,
+        options: Option<&BookmarkedGameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self.req_url(UrlBase::Lichess, "api/games/export/bookmarks");
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/x-ndjson");
+        self.into_stream::<Game>(builder).await
     }
 }

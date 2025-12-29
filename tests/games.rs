@@ -3,7 +3,7 @@ use std::{error::Error, sync::LazyLock, time::Duration};
 use futures_util::{StreamExt, TryStreamExt};
 use licheszter::{
     client::Licheszter,
-    config::games::{ExtendedGameOptions, GameOptions, GameSortOrder},
+    config::games::{BookmarkedGameOptions, ExtendedGameOptions, GameOptions, GameSortOrder},
     models::{
         game::{FinalColor, Game, StreamGame},
         user::PerfType,
@@ -487,4 +487,40 @@ async fn games_export_imported() {
         "Failed to export imported games: {:?}",
         result.unwrap_err().source().unwrap()
     );
+}
+
+#[tokio::test]
+async fn games_export_bookmarked() {
+    // Create options for testing
+    let options = BookmarkedGameOptions::new()
+        .max(2)
+        .moves(true)
+        .tags(true)
+        .clocks(true)
+        .evals(true)
+        .accuracy(true)
+        .opening(true)
+        .division(true)
+        .literate(true)
+        .last_fen(true)
+        .sort(GameSortOrder::DateDesc);
+
+    // Run some test cases
+    let mut result = LI.games_export_bookmarked(Some(&options)).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to export bookmarked games: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let mut result = BOT0.games_export_bookmarked(None).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to export bookmarked games: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
 }

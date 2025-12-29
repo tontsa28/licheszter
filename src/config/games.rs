@@ -256,3 +256,115 @@ impl ExtendedGameOptions {
         self
     }
 }
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
+pub struct BookmarkedGameOptions {
+    since: Option<u64>,
+    until: Option<u64>,
+    max: Option<u16>,
+    moves: Option<bool>,
+    tags: Option<bool>,
+    clocks: Option<bool>,
+    evals: Option<bool>,
+    accuracy: Option<bool>,
+    opening: Option<bool>,
+    division: Option<bool>,
+    literate: Option<bool>,
+    last_fen: Option<bool>,
+    sort: Option<GameSortOrder>,
+}
+
+impl BookmarkedGameOptions {
+    /// Create a new instance of [`GameOptions`] with default configuration.
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Include games played since this timestamp.
+    pub fn since(mut self, since: u64) -> Self {
+        self.since = Some(since);
+        self
+    }
+
+    /// Include games played until this timestamp.
+    pub fn until(mut self, until: u64) -> Self {
+        self.until = Some(until);
+        self
+    }
+
+    /// How many games to download.
+    pub fn max(mut self, max: u16) -> Self {
+        self.max = Some(max);
+        self
+    }
+
+    /// Include the PGN moves.
+    #[must_use]
+    pub fn moves(mut self, moves: bool) -> Self {
+        self.moves = Some(moves);
+        self
+    }
+
+    /// Include the PGN tags.
+    #[must_use]
+    pub fn tags(mut self, tags: bool) -> Self {
+        self.tags = Some(tags);
+        self
+    }
+
+    /// Include the clock status when available.
+    #[must_use]
+    pub fn clocks(mut self, clocks: bool) -> Self {
+        self.clocks = Some(clocks);
+        self
+    }
+
+    /// Include analysis evaluations and comments when available.
+    #[must_use]
+    pub fn evals(mut self, evals: bool) -> Self {
+        self.evals = Some(evals);
+        self
+    }
+
+    /// Include accuracy percent of each player when available.
+    #[must_use]
+    pub fn accuracy(mut self, accuracy: bool) -> Self {
+        self.accuracy = Some(accuracy);
+        self
+    }
+
+    /// Include the opening name.
+    #[must_use]
+    pub fn opening(mut self, opening: bool) -> Self {
+        self.opening = Some(opening);
+        self
+    }
+
+    /// Plies which mark the beginning of the middlegame and the endgame.
+    #[must_use]
+    pub fn division(mut self, division: bool) -> Self {
+        self.division = Some(division);
+        self
+    }
+
+    /// Insert textual annotations in the PGN about the opening, analysis variations, mistakes, and game termination.
+    #[must_use]
+    pub fn literate(mut self, literate: bool) -> Self {
+        self.literate = Some(literate);
+        self
+    }
+
+    /// Include the FEN notation of the last position of the game.
+    pub fn last_fen(mut self, last_fen: bool) -> Self {
+        self.last_fen = Some(last_fen);
+        self
+    }
+
+    /// Sort order of the games.
+    pub fn sort(mut self, sort: GameSortOrder) -> Self {
+        self.sort = Some(sort);
+        self
+    }
+}
