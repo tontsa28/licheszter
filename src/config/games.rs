@@ -121,36 +121,42 @@ impl ExtendedGameOptions {
     }
 
     /// Include games played since this timestamp.
+    #[must_use]
     pub fn since(mut self, since: u64) -> Self {
         self.since = Some(since);
         self
     }
 
     /// Include games played until this timestamp.
+    #[must_use]
     pub fn until(mut self, until: u64) -> Self {
         self.until = Some(until);
         self
     }
 
     /// How many games to download.
+    #[must_use]
     pub fn max(mut self, max: u16) -> Self {
         self.max = Some(max);
         self
     }
 
     /// Include only games played against this opponent.
+    #[must_use]
     pub fn vs(mut self, vs: &str) -> Self {
         self.vs = Some(vs.to_string());
         self
     }
 
     /// Include only rated games.
+    #[must_use]
     pub fn rated(mut self, rated: bool) -> Self {
         self.rated = Some(rated);
         self
     }
 
     /// Include only games in these speeds or variants.
+    #[must_use]
     pub fn perf_type(mut self, perf_types: Vec<PerfType>) -> Self {
         let encoded = comma_serde_urlencoded::to_string(perf_types).unwrap_or_default();
         self.perf_type = Some(encoded);
@@ -158,12 +164,14 @@ impl ExtendedGameOptions {
     }
 
     /// Include only games played as this color.
+    #[must_use]
     pub fn color(mut self, color: FinalColor) -> Self {
         self.color = Some(color);
         self
     }
 
     /// Include only games with computer analysis available.
+    #[must_use]
     pub fn analysed(mut self, analysed: bool) -> Self {
         self.analysed = Some(analysed);
         self
@@ -220,12 +228,14 @@ impl ExtendedGameOptions {
 
     /// Include ongoing games.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this setting.
+    #[must_use]
     pub fn ongoing(mut self, ongoing: bool) -> Self {
         self.ongoing = Some(ongoing);
         self
     }
 
     /// Include finished games.
+    #[must_use]
     pub fn finished(mut self, finished: bool) -> Self {
         self.finished = Some(finished);
         self
@@ -239,18 +249,21 @@ impl ExtendedGameOptions {
     }
 
     /// Include the FEN notation of the last position of the game.
+    #[must_use]
     pub fn last_fen(mut self, last_fen: bool) -> Self {
         self.last_fen = Some(last_fen);
         self
     }
 
     /// Include a `bookmarked` field in the response when the logged in user has bookmarked the game.
+    #[must_use]
     pub fn with_bookmarked(mut self, bookmarked: bool) -> Self {
         self.with_bookmarked = Some(bookmarked);
         self
     }
 
     /// Sort order of the games.
+    #[must_use]
     pub fn sort(mut self, sort: GameSortOrder) -> Self {
         self.sort = Some(sort);
         self
@@ -283,18 +296,21 @@ impl BookmarkedGameOptions {
     }
 
     /// Include games played since this timestamp.
+    #[must_use]
     pub fn since(mut self, since: u64) -> Self {
         self.since = Some(since);
         self
     }
 
     /// Include games played until this timestamp.
+    #[must_use]
     pub fn until(mut self, until: u64) -> Self {
         self.until = Some(until);
         self
     }
 
     /// How many games to download.
+    #[must_use]
     pub fn max(mut self, max: u16) -> Self {
         self.max = Some(max);
         self
@@ -357,12 +373,14 @@ impl BookmarkedGameOptions {
     }
 
     /// Include the FEN notation of the last position of the game.
+    #[must_use]
     pub fn last_fen(mut self, last_fen: bool) -> Self {
         self.last_fen = Some(last_fen);
         self
     }
 
     /// Sort order of the games.
+    #[must_use]
     pub fn sort(mut self, sort: GameSortOrder) -> Self {
         self.sort = Some(sort);
         self
