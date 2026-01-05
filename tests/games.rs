@@ -204,18 +204,12 @@ async fn games_export() {
     }
 
     let mut result = LI.games_export(vec![], Some(&options)).await.unwrap();
-    assert!(
-        result.next().await.is_none(),
-        "Exporting games did not fail: {:?}",
-        result.next().await.unwrap()
-    );
+    let next = result.next().await;
+    assert!(next.is_none(), "Exporting games did not fail: {:?}", next.unwrap());
 
     let mut result = LI.games_export(vec![], None).await.unwrap();
-    assert!(
-        result.next().await.is_none(),
-        "Exporting games did not fail: {:?}",
-        result.next().await.unwrap()
-    );
+    let next = result.next().await;
+    assert!(next.is_none(), "Exporting games did not fail: {:?}", next.unwrap());
 }
 
 #[tokio::test]
@@ -261,11 +255,8 @@ async fn games_users_connect() {
     .unwrap_err();
 
     let mut result = LI.games_users_connect(vec!["li"], false).await.unwrap();
-    assert!(
-        result.next().await.is_none(),
-        "Streaming user games did not fail: {:?}",
-        result.next().await.unwrap()
-    );
+    let next = result.next().await;
+    assert!(next.is_none(), "Streaming user games did not fail: {:?}", next.unwrap());
 }
 
 #[tokio::test]
