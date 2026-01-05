@@ -187,7 +187,7 @@ pub struct Game {
     pub swiss: Option<String>,
     pub clock: Option<Clock>,
     #[serde(default)]
-    pub clocks: Vec<u16>,
+    pub clocks: Vec<u32>,
     pub division: Option<Division>,
     pub import: Option<ImportDetails>,
 }
