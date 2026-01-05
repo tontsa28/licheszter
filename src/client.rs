@@ -1,13 +1,12 @@
 use crate::error::{LichessError, Result};
-use futures_util::{Stream, StreamExt, TryStreamExt};
+use futures_util::{Stream, TryStreamExt, stream};
 use reqwest::{
     Client, IntoUrl, RequestBuilder, Url,
     header::{self, HeaderMap, HeaderValue},
 };
 use serde::de::DeserializeOwned;
 use std::{fmt::Display, io::Error as StdIoError, pin::Pin};
-use tokio::io::AsyncBufReadExt;
-use tokio_stream::wrappers::LinesStream;
+use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio_util::io::StreamReader;
 
 // Lichess default URL constants
@@ -107,24 +106,33 @@ impl Licheszter {
         }
 
         // Get the byte stream returned by the response
-        let stream = response.bytes_stream().map_err(StdIoError::other);
+        let byte_stream = response.bytes_stream();
 
         // Create a reader over the lines
-        let reader = LinesStream::new(StreamReader::new(stream).lines());
+        let reader = BufReader::new(StreamReader::new(byte_stream.map_err(StdIoError::other)));
+        let lines = reader.lines();
 
-        // Map the lines depending on their contents
-        let lines = reader.filter_map(|line| async {
-            let line = line.ok()?;
+        // Create the stream
+        let stream = stream::unfold(lines, |mut lines| async {
+            loop {
+                match lines.next_line().await {
+                    Ok(Some(line)) => {
+                        // If the line is empty, just skip it
+                        if line.is_empty() {
+                            continue;
+                        }
 
-            // Return the stream event as a ping if it's empty
-            if line.is_empty() {
-                return None;
+                        // Deserialize the line and return it
+                        let parsed = serde_json::from_str::<T>(&line).map_err(Into::into);
+                        return Some((parsed, lines));
+                    }
+                    Ok(None) => return None,
+                    Err(e) => return Some((Err(e.into()), lines)),
+                }
             }
-
-            Some(serde_json::from_str::<T>(&line).map_err(Into::into))
         });
 
-        Ok(Box::pin(lines))
+        Ok(Box::pin(stream))
     }
 
     // Convert the API response into a string
