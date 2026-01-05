@@ -81,6 +81,7 @@ impl SeekOptions {
 
     /// Determines the rating range of the potential opponent.
     /// Does not have a default value.
+    #[must_use]
     pub fn rating_range(mut self, min: u16, max: u16) -> Self {
         let range = format!("{min}-{max}");
         self.rating_range = Some(range);

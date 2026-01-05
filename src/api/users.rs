@@ -17,7 +17,7 @@ impl Licheszter {
     /// Works with up to 100 users.
     pub async fn users_status(
         &self,
-        ids: Vec<&str>,
+        user_ids: Vec<&str>,
         options: Option<&UserStatusOptions>,
     ) -> Result<Vec<RealtimeUser>> {
         let mut url = self.req_url(UrlBase::Lichess, "api/users/status");
@@ -28,7 +28,7 @@ impl Licheszter {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.client.get(url).query(&[("ids", ids.join(","))]);
+        let builder = self.client.get(url).query(&[("ids", user_ids.join(","))]);
         self.into::<Vec<RealtimeUser>>(builder).await
     }
 
@@ -85,9 +85,9 @@ impl Licheszter {
 
     /// Get up to 300 users by their IDs.
     /// This endpoint is limited to 8 000 users every 10 minutes and 120 000 every day.
-    pub async fn users_list(&self, ids: Vec<&str>) -> Result<Vec<BasicUser>> {
+    pub async fn users_list(&self, user_ids: Vec<&str>) -> Result<Vec<BasicUser>> {
         let url = self.req_url(UrlBase::Lichess, "api/users");
-        let builder = self.client.post(url).body(ids.join(","));
+        let builder = self.client.post(url).body(user_ids.join(","));
 
         self.into::<Vec<BasicUser>>(builder).await
     }

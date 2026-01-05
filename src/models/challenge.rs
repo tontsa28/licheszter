@@ -56,7 +56,7 @@ pub struct AIChallenge {
     pub fen: String,
     pub player: FinalColor,
     pub turns: u8,
-    pub source: String,
+    pub source: ChallengeSource,
     pub status: FullGameStatus,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
@@ -145,6 +145,7 @@ pub enum ChallengeSource {
     Simul,
     Relay,
     Pool,
+    Arena,
     Swiss,
 }
 

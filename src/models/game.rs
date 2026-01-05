@@ -1,7 +1,11 @@
-use crate::models::user::{LightUser, MinimalUser, PerfType};
+use crate::models::{
+    common::date_dot,
+    tv::FenEvent,
+    user::{LightUser, MinimalUser, PerfType},
+};
 use serde::{Deserialize, Serialize};
 use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
-use time::PrimitiveDateTime;
+use time::{Date, PrimitiveDateTime};
 
 use super::{challenge::ChallengeSource, user::Title};
 
@@ -20,7 +24,7 @@ pub struct PlayerAnalysis {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct Entity {
+pub struct Human {
     pub user: MinimalUser,
     pub rating: u16,
     pub rating_diff: Option<i16>,
@@ -29,6 +33,16 @@ pub struct Entity {
     pub provisional: bool,
     pub analysis: Option<PlayerAnalysis>,
     pub team: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamPlayer {
+    #[serde(rename = "userId")]
+    pub user_id: String,
+    pub rating: u16,
+    #[serde(default)]
+    pub provisional: bool,
 }
 
 #[skip_serializing_none]
@@ -44,8 +58,9 @@ pub struct Computer {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(untagged)]
 pub enum Player {
-    Entity(Box<Entity>),
+    Human(Box<Human>),
     Computer(Computer),
+    Simple { name: String, rating: u16 },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -53,6 +68,13 @@ pub enum Player {
 pub struct Players {
     pub white: Player,
     pub black: Player,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamPlayers {
+    pub white: StreamPlayer,
+    pub black: StreamPlayer,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -127,11 +149,12 @@ pub struct MoveAnalysis {
     pub judgment: Option<Judgement>,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Division {
-    pub middle: u16,
-    pub end: u16,
+    pub middle: Option<u16>,
+    pub end: Option<u16>,
 }
 
 #[serde_as]
@@ -140,6 +163,7 @@ pub struct Division {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
+    pub full_id: Option<String>,
     pub id: String,
     pub rated: bool,
     pub variant: VariantMode,
@@ -150,7 +174,7 @@ pub struct Game {
     #[serde_as(as = "TimestampMilliSeconds")]
     pub last_move_at: PrimitiveDateTime,
     pub status: GameStatus,
-    pub source: Option<String>,
+    pub source: Option<ChallengeSource>,
     pub players: Players,
     pub initial_fen: Option<String>,
     pub winner: Option<FinalColor>,
@@ -163,8 +187,64 @@ pub struct Game {
     pub swiss: Option<String>,
     pub clock: Option<Clock>,
     #[serde(default)]
-    pub clocks: Vec<u16>,
+    pub clocks: Vec<u32>,
     pub division: Option<Division>,
+    pub import: Option<ImportDetails>,
+}
+
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct StreamGame {
+    pub id: String,
+    pub rated: bool,
+    pub variant: VariantMode,
+    pub speed: Speed,
+    pub perf: PerfType,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub created_at: PrimitiveDateTime,
+    pub status: u8,
+    pub status_name: GameStatus,
+    pub players: StreamPlayers,
+    pub clock: Option<Clock>,
+    pub initial_fen: Option<String>,
+    pub winner: Option<FinalColor>,
+    pub days_per_turn: Option<u8>,
+}
+
+#[skip_serializing_none]
+#[serde_as]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct StreamMovesGame {
+    pub id: String,
+    pub variant: Variant,
+    pub speed: Speed,
+    pub perf: PerfType,
+    pub rated: bool,
+    pub initial_fen: Option<String>,
+    pub fen: String,
+    pub player: FinalColor,
+    pub turns: u16,
+    pub started_at_turn: Option<u16>,
+    pub source: ChallengeSource,
+    pub status: FullGameStatus,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub created_at: PrimitiveDateTime,
+    pub last_move: Option<String>,
+    pub players: Players,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+#[serde(untagged)]
+pub enum StreamMoves {
+    Game(StreamMovesGame),
+    Move(FenEvent),
 }
 
 #[skip_serializing_none]
@@ -257,7 +337,7 @@ pub struct UserGame {
     pub fen: String,
     pub color: Color,
     pub last_move: String,
-    pub source: String,
+    pub source: ChallengeSource,
     pub variant: Variant,
     pub speed: String,
     pub perf: PerfType,
@@ -381,24 +461,25 @@ pub enum GameType {
     Rated,
 }
 
+#[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum GameStatus {
-    Created,
-    Started,
-    Aborted,
-    Mate,
-    Resign,
-    Stalemate,
-    Timeout,
-    Draw,
+    Created = 10,
+    Started = 20,
+    Aborted = 25,
+    Mate = 30,
+    Resign = 31,
+    Stalemate = 32,
+    Timeout = 33,
+    Draw = 34,
     #[serde(rename = "outoftime")]
-    OutOfTime,
-    Cheat,
-    NoStart,
-    UnknownFinish,
-    InsufficientMaterialClaim,
-    VariantEnd,
+    OutOfTime = 35,
+    Cheat = 36,
+    NoStart = 37,
+    UnknownFinish = 38,
+    InsufficientMaterialClaim = 39,
+    VariantEnd = 60,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -436,4 +517,19 @@ pub struct GameCount {
     pub playing: u32,
     pub import: u32,
     pub me: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ImportGame {
+    pub id: String,
+    pub url: String,
+}
+
+#[serde_as]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ImportDetails {
+    #[serde(with = "date_dot")]
+    pub date: Date,
 }
