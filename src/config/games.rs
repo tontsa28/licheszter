@@ -114,7 +114,7 @@ pub struct ExtendedGameOptions {
 }
 
 impl ExtendedGameOptions {
-    /// Create a new instance of [`GameOptions`] with default configuration.
+    /// Create a new instance of [`ExtendedGameOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -289,7 +289,7 @@ pub struct BookmarkedGameOptions {
 }
 
 impl BookmarkedGameOptions {
-    /// Create a new instance of [`GameOptions`] with default configuration.
+    /// Create a new instance of [`BookmarkedGameOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()

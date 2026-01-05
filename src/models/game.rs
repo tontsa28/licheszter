@@ -37,7 +37,7 @@ pub struct Human {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-pub struct Entity {
+pub struct StreamPlayer {
     #[serde(rename = "userId")]
     pub user_id: String,
     pub rating: u16,
@@ -73,8 +73,8 @@ pub struct Players {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct StreamPlayers {
-    pub white: Entity,
-    pub black: Entity,
+    pub white: StreamPlayer,
+    pub black: StreamPlayer,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
