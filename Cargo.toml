@@ -10,7 +10,8 @@ documentation = "https://docs.rs/licheszter"
 keywords = ["lichess", "bot", "api", "wrapper", "chess"]
 categories = ["api-bindings", "asynchronous"]
 readme = "README.md"
-edition = "2024"
+edition = "2021"
+rust-version = "1.83"
 
 [lib]
 name = "licheszter"
