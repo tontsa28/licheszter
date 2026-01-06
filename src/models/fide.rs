@@ -17,4 +17,14 @@ pub struct FidePlayer {
     pub standard: Option<u16>,
     pub rapid: Option<u16>,
     pub blitz: Option<u16>,
+    pub photo: Option<FidePhoto>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct FidePhoto {
+    pub small: String,
+    pub medium: String,
+    pub credit: Option<String>,
 }
