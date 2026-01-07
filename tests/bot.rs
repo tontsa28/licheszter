@@ -8,7 +8,7 @@ use licheszter::{
     config::challenges::ChallengeOptions,
     models::{board::BoardState, chat::ChatRoom, game::Color},
 };
-use tokio::time::{Duration, sleep};
+use tokio::time::{sleep, Duration};
 
 // Connect to test clients
 static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {

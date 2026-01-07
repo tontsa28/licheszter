@@ -4,7 +4,7 @@ use crate::models::{
     user::{LightUser, MinimalUser, PerfType},
 };
 use serde::{Deserialize, Serialize};
-use serde_with::{TimestampMilliSeconds, serde_as, skip_serializing_none};
+use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::{Date, PrimitiveDateTime};
 
 use super::{challenge::ChallengeSource, user::Title};

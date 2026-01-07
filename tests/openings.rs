@@ -11,7 +11,7 @@ use licheszter::{
         openings::OpeningRatings,
     },
 };
-use tokio::time::{Duration, sleep};
+use tokio::time::{sleep, Duration};
 
 // Connect to a test client
 static EXPLORER: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);

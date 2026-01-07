@@ -5,7 +5,7 @@ use licheszter::{
     client::Licheszter,
     config::tv::{TvChannel, TvChannelOptions},
 };
-use tokio::time::{Duration, sleep};
+use tokio::time::{sleep, Duration};
 
 // Connect to a test client
 static LICHESS: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);

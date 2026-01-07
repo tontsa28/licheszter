@@ -9,7 +9,7 @@ use licheszter::{
         game::{AILevel, Color, CorrespondenceDays, Rules, VariantMode},
     },
 };
-use tokio::time::{Duration, sleep};
+use tokio::time::{sleep, Duration};
 
 // Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
