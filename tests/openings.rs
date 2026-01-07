@@ -144,3 +144,17 @@ async fn openings_player() {
         .await;
     assert!(result.is_err(), "Fetching player openings did not fail");
 }
+
+#[tokio::test]
+async fn openings_masters_otb_game() {
+    // Run some test cases
+    let result = EXPLORER.openings_masters_otb_game("aAbqI4ey").await;
+    assert!(
+        result.is_ok(),
+        "Failed to get masters OTB game: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = EXPLORER.openings_masters_otb_game("notvalid").await;
+    assert!(result.is_err(), "Getting masters OTB game did not fail: {:?}", result.unwrap());
+}
