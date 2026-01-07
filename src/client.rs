@@ -1,8 +1,8 @@
 use crate::error::{LichessError, Result};
-use futures_util::{Stream, TryStreamExt, stream};
+use futures_util::{stream, Stream, TryStreamExt};
 use reqwest::{
-    Client, IntoUrl, RequestBuilder, Url,
     header::{self, HeaderMap, HeaderValue},
+    Client, IntoUrl, RequestBuilder, Url,
 };
 use serde::de::DeserializeOwned;
 use std::{fmt::Display, io::Error as StdIoError, pin::Pin};
@@ -212,7 +212,7 @@ impl LicheszterBuilder {
 
         self.client = Client::builder()
             .default_headers(header_map)
-            .use_rustls_tls()
+            .tls_backend_rustls()
             .build()
             .unwrap();
         self
@@ -255,7 +255,7 @@ impl Default for LicheszterBuilder {
     /// Create an unauthenticated instance of Licheszter.
     fn default() -> Self {
         Self {
-            client: Client::builder().use_rustls_tls().build().unwrap(),
+            client: Client::builder().tls_backend_rustls().build().unwrap(),
             base_url: Url::parse(BASE_URL).unwrap(),
             #[cfg(feature = "openings")]
             openings_url: Url::parse(OPENINGS_URL).unwrap(),

@@ -2,7 +2,7 @@ use std::{error::Error, panic, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::client::Licheszter;
-use tokio::time::{Duration, sleep};
+use tokio::time::{sleep, Duration};
 
 // Connect to test accounts
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
