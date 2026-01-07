@@ -60,4 +60,14 @@ impl Licheszter {
         let builder = self.client.get(url);
         self.into_stream::<PlayerOpening>(builder).await
     }
+
+    /// Get an OTB (over the board) master game in PGN format.
+    /// # NOTE:
+    /// This method does NOT deserialize the PGN data, it must be manually parsed.
+    pub async fn openings_masters_otb_game(&self, game_id: &str) -> Result<String> {
+        let url = self.req_url(UrlBase::Openings, &format!("master/pgn/{game_id}"));
+        let builder = self.client.get(url);
+
+        self.into_str(builder).await
+    }
 }
