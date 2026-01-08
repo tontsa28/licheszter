@@ -18,6 +18,9 @@ const OPENINGS_URL: &str = "https://explorer.lichess.ovh";
 #[cfg(feature = "tablebase")]
 const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
 
+// Default user agent
+const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+
 /// [`Licheszter`] is used to connect to the Lichess API.
 #[derive(Debug)]
 pub struct Licheszter {
@@ -225,6 +228,7 @@ impl LicheszterBuilder {
 
         self.client = Client::builder()
             .default_headers(header_map)
+            .user_agent(USER_AGENT)
             .tls_backend_rustls()
             .build()
             .unwrap();
@@ -268,7 +272,11 @@ impl Default for LicheszterBuilder {
     /// Create an unauthenticated instance of Licheszter.
     fn default() -> Self {
         Self {
-            client: Client::builder().tls_backend_rustls().build().unwrap(),
+            client: Client::builder()
+                .user_agent(USER_AGENT)
+                .tls_backend_rustls()
+                .build()
+                .unwrap(),
             base_url: Url::parse(BASE_URL).unwrap(),
             #[cfg(feature = "openings")]
             openings_url: Url::parse(OPENINGS_URL).unwrap(),
