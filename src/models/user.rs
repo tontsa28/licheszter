@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::{OffsetDateTime, PrimitiveDateTime};
 
-use crate::models::game::{FinalColor, Speed, VariantMode};
+use crate::models::game::{FinalColor, Pace, Speed, VariantMode};
 
 use super::game::GameCount;
 
@@ -441,7 +441,7 @@ pub enum TimelineEventData {
     GameEnd {
         #[serde(rename = "fullId")]
         full_id: String,
-        perf: PerfType,
+        perf: Pace,
         opponent: String,
         win: Option<bool>,
     },
