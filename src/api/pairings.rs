@@ -48,4 +48,12 @@ impl Licheszter {
         self.into::<OkResponse>(builder).await?;
         Ok(())
     }
+
+    /// Get a single bulk pairing by its ID.
+    pub async fn bulk_pairings_show(&self, bulk_id: &str) -> Result<BulkPairing> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
+        let builder = self.client.get(url);
+
+        self.into::<BulkPairing>(builder).await
+    }
 }
