@@ -4,7 +4,10 @@ use crate::{
     client::{Licheszter, UrlBase},
     config::pairings::BulkPairingOptions,
     error::Result,
-    models::pairings::{BulkPairing, BulkPairings},
+    models::{
+        common::OkResponse,
+        pairings::{BulkPairing, BulkPairings},
+    },
 };
 
 impl Licheszter {
@@ -33,5 +36,16 @@ impl Licheszter {
             .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
 
         self.into::<BulkPairing>(builder).await
+    }
+
+    /// Immediately start all clocks of the games of a bulk pairing.
+    /// This overrides the clock start setting of an existing pairing.
+    /// If the games have not yet been created or the clocks have already started, this method does nothing.
+    pub async fn bulk_pairings_clocks_start(&self, bulk_id: &str) -> Result<()> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}/start-clocks"));
+        let builder = self.client.post(url);
+
+        self.into::<OkResponse>(builder).await?;
+        Ok(())
     }
 }
