@@ -56,4 +56,14 @@ impl Licheszter {
 
         self.into::<BulkPairing>(builder).await
     }
+
+    /// Cancel and delete a bulk pairing that is scheduled in the future.
+    /// If the games have already been created, this method does nothing.
+    pub async fn bulk_pairings_cancel(&self, bulk_id: &str) -> Result<()> {
+        let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
+        let builder = self.client.delete(url);
+
+        self.into::<OkResponse>(builder).await?;
+        Ok(())
+    }
 }

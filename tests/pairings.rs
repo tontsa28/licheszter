@@ -129,3 +129,34 @@ async fn bulk_pairings_show() {
     let result = LI.bulk_pairings_show("notvalid").await;
     assert!(result.is_err(), "Getting bulk pairing did not fail: {:?}", result.unwrap());
 }
+
+#[tokio::test]
+async fn bulk_pairings_cancel() {
+    // Create options and bulk pairings for testing
+    let options = BulkPairingOptions::new()
+        .clock(24897, 255)
+        .players(vec![("lip_bot0", "lip_bot1")]);
+    let bulk = LI.bulk_pairings_create(&options).await.unwrap();
+
+    // Run some test cases
+    let result = LI.bulk_pairings_cancel(&bulk.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to start bulk pairing clocks: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.bulk_pairings_cancel(&bulk.id).await;
+    assert!(
+        result.is_err(),
+        "Starting bulk pairing clocks did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = LI.bulk_pairings_cancel("notvalid").await;
+    assert!(
+        result.is_err(),
+        "Starting bulk pairing clocks did not fail: {:?}",
+        result.unwrap()
+    );
+}
