@@ -352,7 +352,7 @@ async fn board_handle_takebacks() {
 #[tokio::test]
 async fn board_claim_victory() {
     // Create a game for testing
-    let options = ChallengeOptions::new().color(Color::Black).clock(180, 0);
+    let options = ChallengeOptions::new().color(Color::Black).clock(0, 5);
     let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
@@ -368,14 +368,14 @@ async fn board_claim_victory() {
     while let Some(event) = stream.try_next().await.unwrap() {
         if let BoardState::OpponentGone(gone) = event {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
-                sleep(Duration::from_secs(3)).await;
-
                 let result = LI.board_claim_victory(&challenge.id).await;
                 assert!(
                     result.is_ok(),
                     "Failed to claim victory of a game: {:?}",
                     result.unwrap_err().source().unwrap()
                 );
+
+                break;
             }
         }
     }
@@ -398,7 +398,7 @@ async fn board_claim_victory() {
 #[tokio::test]
 async fn board_claim_draw() {
     // Create a game for testing
-    let options = ChallengeOptions::new().color(Color::Black).clock(180, 0);
+    let options = ChallengeOptions::new().color(Color::Black).clock(0, 5);
     let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
     ADRIANA.challenge_accept(&challenge.id).await.unwrap();
 
@@ -414,14 +414,14 @@ async fn board_claim_draw() {
     while let Some(event) = stream.try_next().await.unwrap() {
         if let BoardState::OpponentGone(gone) = event {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
-                sleep(Duration::from_secs(3)).await;
-
                 let result = LI.board_claim_draw(&challenge.id).await;
                 assert!(
                     result.is_ok(),
                     "Failed to claim victory of a game: {:?}",
                     result.unwrap_err().source().unwrap()
                 );
+
+                break;
             }
         }
     }
