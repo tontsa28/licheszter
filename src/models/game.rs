@@ -226,7 +226,7 @@ pub struct GameFull {
 pub struct OpponentGone {
     pub gone: bool,
     #[serde(rename = "claimWinInSeconds")]
-    pub claim_win_in_seconds: Option<u8>,
+    pub claim_win_in_seconds: Option<u16>,
 }
 
 #[skip_serializing_none]
