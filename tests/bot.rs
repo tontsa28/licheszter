@@ -294,7 +294,7 @@ async fn bot_handle_takebacks() {
 #[tokio::test]
 async fn bot_claim_victory() {
     // Create a game for testing
-    let options = ChallengeOptions::new().color(Color::Black).clock(30, 0);
+    let options = ChallengeOptions::new().color(Color::Black).clock(0, 1);
     let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
     BOT1.challenge_accept(&challenge.id).await.unwrap();
 
@@ -313,6 +313,7 @@ async fn bot_claim_victory() {
                     "Failed to claim draw of a game: {:?}",
                     result.unwrap_err().source().unwrap()
                 );
+
                 break;
             }
         }
@@ -336,7 +337,7 @@ async fn bot_claim_victory() {
 #[tokio::test]
 async fn bot_claim_draw() {
     // Create a game for testing
-    let options = ChallengeOptions::new().color(Color::Black).clock(30, 0);
+    let options = ChallengeOptions::new().color(Color::Black).clock(0, 1);
     let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
     BOT1.challenge_accept(&challenge.id).await.unwrap();
 
@@ -355,6 +356,7 @@ async fn bot_claim_draw() {
                     "Failed to claim draw of a game: {:?}",
                     result.unwrap_err().source().unwrap()
                 );
+
                 break;
             }
         }
