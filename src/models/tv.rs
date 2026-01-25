@@ -62,7 +62,7 @@ pub struct FeaturedEvent {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct FenEvent {
     pub fen: String,
-    pub lm: Option<String>,
+    pub lm: String,
     pub wc: u16,
     pub bc: u16,
 }

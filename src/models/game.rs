@@ -1,6 +1,5 @@
 use crate::models::{
     common::date_dot,
-    tv::FenEvent,
     user::{LightUser, MinimalUser, PerfType},
 };
 use serde::{Deserialize, Serialize};
@@ -226,23 +225,33 @@ pub struct StreamGame {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
-pub struct StreamMovesGame {
+pub struct StreamMovesFull {
     pub id: String,
     pub variant: Variant,
     pub speed: Speed,
     pub perf: PerfType,
     pub rated: bool,
     pub initial_fen: Option<String>,
-    pub fen: String,
-    pub player: FinalColor,
-    pub turns: u16,
+    pub fen: Option<String>,
+    pub player: Option<FinalColor>,
+    pub turns: Option<u16>,
     pub started_at_turn: Option<u16>,
     pub source: ChallengeSource,
-    pub status: FullGameStatus,
+    pub status: Option<FullGameStatus>,
     #[serde_as(as = "TimestampMilliSeconds")]
     pub created_at: PrimitiveDateTime,
     pub last_move: Option<String>,
     pub players: Players,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct StreamMovesEvent {
+    pub fen: String,
+    pub lm: Option<String>,
+    pub wc: Option<u16>,
+    pub bc: Option<u16>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -250,8 +259,8 @@ pub struct StreamMovesGame {
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum StreamMoves {
-    Game(StreamMovesGame),
-    Move(FenEvent),
+    Game(StreamMovesFull),
+    Move(StreamMovesEvent),
 }
 
 #[skip_serializing_none]
