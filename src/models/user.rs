@@ -959,10 +959,11 @@ pub struct FollowsActivityList {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct GamesActivity {
-    pub blitz: Option<ScoreActivity>,
-    pub standard: Option<ScoreActivity>,
     pub bullet: Option<ScoreActivity>,
+    pub blitz: Option<ScoreActivity>,
     pub rapid: Option<ScoreActivity>,
+    pub classical: Option<ScoreActivity>,
+    pub standard: Option<ScoreActivity>,
     pub chess960: Option<ScoreActivity>,
     pub atomic: Option<ScoreActivity>,
     pub racing_kings: Option<ScoreActivity>,
