@@ -1,11 +1,15 @@
+use std::pin::Pin;
+
+use futures_util::Stream;
 use reqwest::header;
 
 use crate::{
     client::{Licheszter, UrlBase},
-    config::pairings::BulkPairingOptions,
+    config::{games::GameOptions, pairings::BulkPairingOptions},
     error::Result,
     models::{
         common::OkResponse,
+        game::Game,
         pairings::{BulkPairing, BulkPairings},
     },
 };
@@ -65,5 +69,26 @@ impl Licheszter {
 
         self.into::<OkResponse>(builder).await?;
         Ok(())
+    }
+
+    /// Download games of a bulk pairing.
+    pub async fn bulk_pairings_export(
+        &self,
+        bulk_id: &str,
+        options: Option<&GameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}/games"));
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/x-ndjson");
+        self.into_stream::<Game>(builder).await
     }
 }

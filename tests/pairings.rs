@@ -1,8 +1,9 @@
 use std::{error::Error, sync::LazyLock};
 
+use futures_util::StreamExt;
 use licheszter::{
     client::Licheszter,
-    config::pairings::BulkPairingOptions,
+    config::{games::GameOptions, pairings::BulkPairingOptions},
     models::game::{CorrespondenceDays, Rules, VariantMode},
 };
 
@@ -159,4 +160,46 @@ async fn bulk_pairings_cancel() {
         "Starting bulk pairing clocks did not fail: {:?}",
         result.unwrap()
     );
+}
+
+#[tokio::test]
+async fn bulk_pairings_export() {
+    let bulk_options = BulkPairingOptions::new()
+        .clock(24897, 255)
+        .players(vec![("lip_bot0", "lip_bot1")]);
+    let bulk = LI.bulk_pairings_create(&bulk_options).await.unwrap();
+    let options = GameOptions::new()
+        .moves(true)
+        .tags(true)
+        .clocks(true)
+        .evals(true)
+        .accuracy(true)
+        .opening(true)
+        .division(true)
+        .literate(true);
+
+    // Run some test cases
+    let mut result = LI.bulk_pairings_export(&bulk.id, Some(&options)).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to export bulk pairing: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let mut result = LI.bulk_pairings_export(&bulk.id, None).await.unwrap();
+    while let Some(event) = result.next().await {
+        assert!(
+            event.is_ok(),
+            "Failed to export bulk pairing: {:?}",
+            event.unwrap_err().source().unwrap()
+        );
+    }
+
+    let result = BOT0.bulk_pairings_export(&bulk.id, Some(&options)).await;
+    assert!(result.is_err(), "Exporting bulk pairing did not fail");
+
+    let result = LI.bulk_pairings_export("notvalid", None).await;
+    assert!(result.is_err(), "Exporting bulk pairing did not fail");
 }
