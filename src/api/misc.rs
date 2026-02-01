@@ -47,16 +47,16 @@ impl Licheszter {
     /// This method panics if the provided authentication token contains non-visible ASCII characters.
     pub async fn bot_account_upgrade(&self, token: &str) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, "api/bot/account/upgrade");
-        
+
         // Securely construct the authorization header
         let bearer = format!("Bearer {token}");
         let mut auth_header = HeaderValue::from_str(&bearer)
             .expect("Authentication token should only contain visible ASCII characters");
         auth_header.set_sensitive(true);
-        
+
         let mut headers = HeaderMap::new();
         headers.insert(header::AUTHORIZATION, auth_header);
-        
+
         let builder = self.client.post(url).headers(headers);
 
         self.to_model::<OkResponse>(builder).await?;

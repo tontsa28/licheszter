@@ -139,7 +139,7 @@ impl LichessError {
                 .get("error")
                 .and_then(|v| v.as_str())
                 .unwrap_or("Unexpected error format, failed to parse the actual error message");
-            
+
             let mut msg = error_msg.to_string();
             let removable_chars = ['{', '}', '[', ']', '"'];
             msg.retain(|c| !removable_chars.contains(&c));
