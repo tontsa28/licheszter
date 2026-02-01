@@ -9,7 +9,10 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: '0 18 * * 6'
+    - cron: "0 18 * * 6"
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   test:
@@ -28,8 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Connect to bot accounts
         run: docker cp ${{ github.workspace }}/.github/docker/entrypoint.sh lila-bots:/entrypoint.sh && docker exec -d lila-bots ./entrypoint.sh && sleep 5s
 
       - name: Run all integration tests
-        run: cargo test --release --features=serde-strict,all -- --test-threads=1
+        run: cargo test --release --all-features -- --test-threads=1
