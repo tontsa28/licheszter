@@ -26,7 +26,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url).header(header::ACCEPT, "application/json");
-        self.into::<Game>(builder).await
+        self.to_model::<Game>(builder).await
     }
 
     /// Download the ongoing game, or the last game played, of a user.
@@ -45,7 +45,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url).header(header::ACCEPT, "application/json");
-        self.into::<Game>(builder).await
+        self.to_model::<Game>(builder).await
     }
 
     /// Download all games of any user.
@@ -67,7 +67,7 @@ impl Licheszter {
             .client
             .get(url)
             .header(header::ACCEPT, "application/x-ndjson");
-        self.into_stream::<Game>(builder).await
+        self.to_stream::<Game>(builder).await
     }
 
     /// Download games by IDs.
@@ -92,7 +92,7 @@ impl Licheszter {
             .post(url)
             .header(header::ACCEPT, "application/x-ndjson")
             .body(game_ids.join(","));
-        self.into_stream::<Game>(builder).await
+        self.to_stream::<Game>(builder).await
     }
 
     /// Stream the games played between a list of users in real time.
@@ -112,7 +112,7 @@ impl Licheszter {
             .query(&[("withCurrentGames", with_current_games)])
             .body(user_ids.join(","));
 
-        self.into_stream::<StreamGame>(builder).await
+        self.to_stream::<StreamGame>(builder).await
     }
 
     /// Create a stream of games with a custom ID.
@@ -127,7 +127,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}"));
         let builder = self.client.post(url).body(game_ids.join(","));
 
-        self.into_stream::<StreamGame>(builder).await
+        self.to_stream::<StreamGame>(builder).await
     }
 
     /// Add new games to an existing stream.
@@ -136,7 +136,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}/add"));
         let builder = self.client.post(url).body(game_ids.join(","));
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -146,7 +146,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/account/playing");
         let builder = self.client.get(url).query(&[("nb", games)]);
 
-        Ok(self.into::<UserGames>(builder).await?.now_playing)
+        Ok(self.to_model::<UserGames>(builder).await?.now_playing)
     }
 
     /// Stream positions and moves of any ongoing game.
@@ -162,7 +162,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/stream/game/{game_id}"));
         let builder = self.client.get(url);
 
-        self.into_stream::<StreamMoves>(builder).await
+        self.to_stream::<StreamMoves>(builder).await
     }
 
     /// Import a game from PGN.
@@ -172,7 +172,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/import");
         let builder = self.client.post(url).form(&[("pgn", pgn)]);
 
-        self.into::<ImportGame>(builder).await
+        self.to_model::<ImportGame>(builder).await
     }
 
     /// Download all games imported by you.
@@ -183,7 +183,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/games/export/imports");
         let builder = self.client.get(url);
 
-        self.into_str(builder).await
+        self.to_string(builder).await
     }
 
     /// Download all games bookmarked by you.
@@ -204,6 +204,6 @@ impl Licheszter {
             .client
             .get(url)
             .header(header::ACCEPT, "application/x-ndjson");
-        self.into_stream::<Game>(builder).await
+        self.to_stream::<Game>(builder).await
     }
 }

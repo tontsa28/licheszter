@@ -10,7 +10,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("/inbox/{username}"));
         let builder = self.client.post(url).form(&[("text", text)]);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 }

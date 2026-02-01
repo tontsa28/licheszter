@@ -10,7 +10,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/fide/player/{player_id}"));
         let builder = self.client.get(url);
 
-        self.into::<FidePlayer>(builder).await
+        self.to_model::<FidePlayer>(builder).await
     }
 
     /// Search for FIDE players. Only player names can be searched for.
@@ -18,6 +18,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/fide/player");
         let builder = self.client.get(url).query(&[("q", query)]);
 
-        self.into::<Vec<FidePlayer>>(builder).await
+        self.to_model::<Vec<FidePlayer>>(builder).await
     }
 }

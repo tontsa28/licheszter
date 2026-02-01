@@ -12,6 +12,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/simul");
         let builder = self.client.get(url);
 
-        self.into::<Simuls>(builder).await
+        self.to_model::<Simuls>(builder).await
     }
 }

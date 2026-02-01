@@ -15,7 +15,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/puzzle/daily");
         let builder = self.client.get(url);
 
-        self.into::<Puzzle>(builder).await
+        self.to_model::<Puzzle>(builder).await
     }
 
     /// Get a single puzzle by ID.
@@ -23,7 +23,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/{id}"));
         let builder = self.client.get(url);
 
-        self.into::<Puzzle>(builder).await
+        self.to_model::<Puzzle>(builder).await
     }
 
     /// Get a random puzzle.
@@ -39,7 +39,7 @@ impl Licheszter {
             .get(url)
             .query(&(("angle", angle), ("difficulty", difficulty)));
 
-        self.into::<Puzzle>(builder).await
+        self.to_model::<Puzzle>(builder).await
     }
 
     /// Get the puzzle activity of the logged in user.
@@ -51,7 +51,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/puzzle/activity");
         let builder = self.client.get(url).query(&(("max", max), ("before", before)));
 
-        self.into_stream::<PuzzleActivity>(builder).await
+        self.to_stream::<PuzzleActivity>(builder).await
     }
 
     /// Get the puzzle dashboard of the logged in user.
@@ -60,7 +60,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
         let builder = self.client.get(url);
 
-        self.into::<PuzzleDashboard>(builder).await
+        self.to_model::<PuzzleDashboard>(builder).await
     }
 
     /// Get the puzzle storm dashboard of any player.
@@ -74,7 +74,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/storm/dashboard/{username}"));
         let builder = self.client.get(url).query(&[("days", days)]);
 
-        self.into::<PuzzleStormDashboard>(builder).await
+        self.to_model::<PuzzleStormDashboard>(builder).await
     }
 
     /// Create a new private puzzle race.
@@ -83,6 +83,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/racer");
         let builder = self.client.post(url);
 
-        self.into::<PuzzleRace>(builder).await
+        self.to_model::<PuzzleRace>(builder).await
     }
 }

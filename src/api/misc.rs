@@ -6,6 +6,7 @@ use crate::{
     models::{board::Event, common::OkResponse, user::BasicUser},
 };
 use futures_util::Stream;
+use reqwest::header::{self, HeaderMap, HeaderValue};
 
 impl Licheszter {
     /// Stream the events reaching a Lichess user in real time.
@@ -14,7 +15,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/stream/event");
         let builder = self.client.get(url);
 
-        self.into_stream::<Event>(builder).await
+        self.to_stream::<Event>(builder).await
     }
 
     /// Get online bots.
@@ -25,19 +26,31 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/bot/online");
         let builder = self.client.get(url).query(&[("nb", bots)]);
 
-        self.into_stream::<BasicUser>(builder).await
+        self.to_stream::<BasicUser>(builder).await
     }
 
     /// Upgrade a Lichess player account into a bot account.
     /// This method only works for bot accounts.
     /// The account MUST NOT have any games played before upgrading.
     /// This action is irreversible.
+    ///
+    /// # Panics
+    /// This method panics if the provided authentication token contains non-visible ASCII characters.
     pub async fn bot_account_upgrade(&self, token: &str) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, "api/bot/account/upgrade");
+        
+        // Securely construct the authorization header
         let bearer = format!("Bearer {token}");
-        let builder = self.client.post(url).header("Authorization", bearer);
+        let mut auth_header = HeaderValue::from_str(&bearer)
+            .expect("Authentication token should only contain visible ASCII characters");
+        auth_header.set_sensitive(true);
+        
+        let mut headers = HeaderMap::new();
+        headers.insert(header::AUTHORIZATION, auth_header);
+        
+        let builder = self.client.post(url).headers(headers);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 }

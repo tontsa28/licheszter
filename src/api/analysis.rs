@@ -24,6 +24,6 @@ impl Licheszter {
             builder = builder.query(&[("variant", variant)]);
         }
 
-        self.into::<CloudAnalysis>(builder).await
+        self.to_model::<CloudAnalysis>(builder).await
     }
 }
