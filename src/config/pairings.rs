@@ -63,7 +63,7 @@ impl BulkPairingOptions {
 
     /// Determines a custom FEN string for the game.
     /// Requires the variant to be set as Standard, FromPosition or Chess960.
-    /// Also requires the challenge *NOT* to be rated.
+    /// Also requires the game *NOT* to be rated.
     /// Defaults to the default chess starting position.
     #[must_use]
     pub fn fen(mut self, fen: &str) -> Self {
@@ -72,6 +72,7 @@ impl BulkPairingOptions {
     }
 
     /// Set a custom message that is sent to each player when the game is created.
+    #[must_use]
     pub fn message(mut self, message: &str) -> Self {
         self.message = Some(message.to_string());
         self
@@ -81,13 +82,15 @@ impl BulkPairingOptions {
     /// The timestamp is in MILLISECONDS.
     /// Up to 7 days into the future.
     /// If not set, the games will start immediately.
+    #[must_use]
     pub fn pair_at(mut self, timestamp: u64) -> Self {
         self.pair_at = Some(timestamp);
         self
     }
 
     /// Authentication tokens of all players to be paired.
-    /// The correct order is `vec!["white1", "black1", "white2", "black2"]`, where the number represents the game.
+    /// The correct order is `vec![("white1", "black1"), ("white2", "black2")]`, where the number represents the game.
+    #[must_use]
     pub fn players(mut self, players: Vec<(&str, &str)>) -> Self {
         self.players = Some(
             players

@@ -23,7 +23,7 @@ path = "src/lib.rs"
 tokio = "^1.30"
 tokio-util = "^0.7"
 reqwest = { version = "^0.13", default-features = false, features = ["http2", "stream", "rustls", "query", "form"] }
-time = { version = "^0.3", features = ["macros"] }
+time = { version = "^0.3", features = ["serde", "macros"] }
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
 serde_with = { version = "^3.0", features = ["time_0_3"] }

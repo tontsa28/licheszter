@@ -143,23 +143,15 @@ async fn bulk_pairings_cancel() {
     let result = LI.bulk_pairings_cancel(&bulk.id).await;
     assert!(
         result.is_ok(),
-        "Failed to start bulk pairing clocks: {:?}",
+        "Failed to cancel bulk pairing: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.bulk_pairings_cancel(&bulk.id).await;
-    assert!(
-        result.is_err(),
-        "Starting bulk pairing clocks did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Cancelling bulk pairing did not fail: {:?}", result.unwrap());
 
     let result = LI.bulk_pairings_cancel("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Starting bulk pairing clocks did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Cancelling bulk pairing did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
