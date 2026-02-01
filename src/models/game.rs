@@ -549,3 +549,11 @@ pub struct ImportDetails {
     #[serde(with = "date_dot")]
     pub date: Date,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct MiniGame {
+    pub id: String,
+    pub black: String,
+    pub white: String,
+}

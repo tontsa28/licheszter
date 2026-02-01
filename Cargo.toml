@@ -20,7 +20,7 @@ path = "src/lib.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "^1.30", features = ["bytes"] }
+tokio = "^1.30"
 tokio-util = "^0.7"
 reqwest = { version = "^0.13", default-features = false, features = ["http2", "stream", "rustls", "query", "form"] }
 time = { version = "^0.3", features = ["serde", "macros"] }

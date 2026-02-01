@@ -5,6 +5,7 @@ pub mod chat;
 pub mod common;
 pub mod fide;
 pub mod game;
+pub mod pairings;
 pub mod puzzle;
 pub mod simul;
 pub mod tv;
