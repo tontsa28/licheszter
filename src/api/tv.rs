@@ -19,7 +19,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/tv/channels");
         let builder = self.client.get(url);
 
-        self.into::<TvGames>(builder).await
+        self.to_model::<TvGames>(builder).await
     }
 
     /// Stream positions and moves of the current TV game.
@@ -27,7 +27,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/tv/feed");
         let builder = self.client.get(url);
 
-        self.into_stream::<TvGameEvent>(builder).await
+        self.to_stream::<TvGameEvent>(builder).await
     }
 
     /// Stream positions and moves of a current TV channel's game.
@@ -38,7 +38,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/tv/{channel}/feed"));
         let builder = self.client.get(url);
 
-        self.into_stream::<TvGameEvent>(builder).await
+        self.to_stream::<TvGameEvent>(builder).await
     }
 
     /// Get a list of ongoing games for a given TV channel.
@@ -56,6 +56,6 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url).header(header::ACCEPT, "application/json");
-        self.into_stream::<Game>(builder).await
+        self.to_stream::<Game>(builder).await
     }
 }

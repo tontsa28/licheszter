@@ -23,7 +23,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url);
-        self.into::<Opening>(builder).await
+        self.to_model::<Opening>(builder).await
     }
 
     /// Lookup positions from the Lichess opening database.
@@ -37,7 +37,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url);
-        self.into::<Opening>(builder).await
+        self.to_model::<Opening>(builder).await
     }
 
     /// Lookup positions from the Player opening database.
@@ -58,7 +58,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url);
-        self.into_stream::<PlayerOpening>(builder).await
+        self.to_stream::<PlayerOpening>(builder).await
     }
 
     /// Get an OTB (over the board) master game in PGN format.
@@ -68,6 +68,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Openings, &format!("master/pgn/{game_id}"));
         let builder = self.client.get(url);
 
-        self.into_str(builder).await
+        self.to_string(builder).await
     }
 }

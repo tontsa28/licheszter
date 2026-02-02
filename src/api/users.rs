@@ -29,7 +29,7 @@ impl Licheszter {
         }
 
         let builder = self.client.get(url).query(&[("ids", user_ids.join(","))]);
-        self.into::<Vec<RealtimeUser>>(builder).await
+        self.to_model::<Vec<RealtimeUser>>(builder).await
     }
 
     /// Get the top 10 players for each speed and variant.
@@ -37,7 +37,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/player");
         let builder = self.client.get(url);
 
-        self.into::<TopUsers>(builder).await
+        self.to_model::<TopUsers>(builder).await
     }
 
     /// Get the leaderboard for a single speed or variant (perf type).
@@ -46,7 +46,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/player/top/{amount}/{perf_type}"));
         let builder = self.client.get(url);
 
-        Ok(self.into::<TopUserLeaderboard>(builder).await?.users)
+        Ok(self.to_model::<TopUserLeaderboard>(builder).await?.users)
     }
 
     /// Read public data of a user.
@@ -54,7 +54,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}"));
         let builder = self.client.get(url).query(&[("trophies", trophies)]);
 
-        self.into::<User>(builder).await
+        self.to_model::<User>(builder).await
     }
 
     /// Read rating history of a user, for all perf types.
@@ -64,7 +64,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/rating-history"));
         let builder = self.client.get(url);
 
-        self.into::<Vec<RatingHistory>>(builder).await
+        self.to_model::<Vec<RatingHistory>>(builder).await
     }
 
     /// Read performance statistics of a user, for a single performance.
@@ -72,7 +72,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/perf/{perf}"));
         let builder = self.client.get(url);
 
-        self.into::<UserPerformance>(builder).await
+        self.to_model::<UserPerformance>(builder).await
     }
 
     /// Read data to generate the activity feed of a user.
@@ -80,7 +80,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/activity"));
         let builder = self.client.get(url);
 
-        self.into::<Vec<UserActivity>>(builder).await
+        self.to_model::<Vec<UserActivity>>(builder).await
     }
 
     /// Get up to 300 users by their IDs.
@@ -89,7 +89,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/users");
         let builder = self.client.post(url).body(user_ids.join(","));
 
-        self.into::<Vec<BasicUser>>(builder).await
+        self.to_model::<Vec<BasicUser>>(builder).await
     }
 
     /// Get basic information about currently streaming users.
@@ -97,7 +97,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/streamer/live");
         let builder = self.client.get(url);
 
-        self.into::<Vec<StreamingUser>>(builder).await
+        self.to_model::<Vec<StreamingUser>>(builder).await
     }
 
     /// Get total number of games, and current score, of any two users.
@@ -106,7 +106,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/crosstable/{user1}/{user2}"));
         let builder = self.client.get(url).query(&[("matchup", matchup)]);
 
-        self.into::<Crosstable>(builder).await
+        self.to_model::<Crosstable>(builder).await
     }
 
     /// Provides autocompletion options for an incomplete username.
@@ -114,7 +114,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/player/autocomplete");
         let builder = self.client.get(url).query(&(("term", term), ("friend", friend)));
 
-        self.into::<Vec<String>>(builder).await
+        self.to_model::<Vec<String>>(builder).await
     }
 
     /// Provides detailed autocompletion options for an incomplete username.
@@ -130,7 +130,7 @@ impl Licheszter {
                 .get(url)
                 .query(&(("term", term), ("object", true), ("friend", friend)));
 
-        Ok(self.into::<UserAutocomplete>(builder).await?.result)
+        Ok(self.to_model::<UserAutocomplete>(builder).await?.result)
     }
 
     /// Add a private note about the given account.
@@ -139,7 +139,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
         let builder = self.client.post(url).form(&[("text", text)]);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -148,6 +148,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
         let builder = self.client.get(url);
 
-        self.into::<Vec<UserNote>>(builder).await
+        self.to_model::<Vec<UserNote>>(builder).await
     }
 }

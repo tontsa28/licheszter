@@ -14,7 +14,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/stream/event");
         let builder = self.client.get(url);
 
-        self.into_stream::<Event>(builder).await
+        self.to_stream::<Event>(builder).await
     }
 
     /// Get online bots.
@@ -25,7 +25,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/bot/online");
         let builder = self.client.get(url).query(&[("nb", bots)]);
 
-        self.into_stream::<BasicUser>(builder).await
+        self.to_stream::<BasicUser>(builder).await
     }
 
     /// Upgrade a Lichess player account into a bot account.
@@ -37,7 +37,7 @@ impl Licheszter {
         let bearer = format!("Bearer {token}");
         let builder = self.client.post(url).header("Authorization", bearer);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 }

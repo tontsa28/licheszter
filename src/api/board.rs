@@ -30,7 +30,7 @@ impl Licheszter {
                 .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded")
         }
 
-        self.into_stream::<()>(builder).await
+        self.to_stream::<()>(builder).await
     }
 
     /// Stream game state using the Board API.
@@ -41,7 +41,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/stream/{game_id}"));
         let builder = self.client.get(url);
 
-        self.into_stream::<BoardState>(builder).await
+        self.to_stream::<BoardState>(builder).await
     }
 
     /// Make a move in a game using the Board API.
@@ -50,7 +50,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/move/{uci_move}"));
         let builder = self.client.post(url).query(&[("offeringDraw", draw_offer)]);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -59,7 +59,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/chat"));
         let builder = self.client.post(url).form(&(("room", room), ("text", text)));
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -68,7 +68,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/chat"));
         let builder = self.client.get(url);
 
-        self.into::<Vec<ChatMessage>>(builder).await
+        self.to_model::<Vec<ChatMessage>>(builder).await
     }
 
     /// Abort a bot game using the Board API.
@@ -76,7 +76,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/abort"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -85,7 +85,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/resign"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -94,7 +94,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/draw/{accept}"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -103,7 +103,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/takeback/{accept}"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -112,7 +112,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/claim-victory"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -121,7 +121,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/claim-draw"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -132,7 +132,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/berserk"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 }

@@ -13,7 +13,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/account");
         let builder = self.client.get(url);
 
-        self.into::<User>(builder).await
+        self.to_model::<User>(builder).await
     }
 
     /// Read the email address of the logged in user.
@@ -21,7 +21,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/account/email");
         let builder = self.client.get(url);
 
-        self.into::<Email>(builder).await
+        self.to_model::<Email>(builder).await
     }
 
     /// Read the preferences of the logged in user.
@@ -29,7 +29,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/account/preferences");
         let builder = self.client.get(url);
 
-        self.into::<Preferences>(builder).await
+        self.to_model::<Preferences>(builder).await
     }
 
     /// Read the kid mode status of the logged in user.
@@ -37,7 +37,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/account/kid");
         let builder = self.client.get(url);
 
-        self.into::<KidMode>(builder).await
+        self.to_model::<KidMode>(builder).await
     }
 
     /// Set the kid mode status of the logged in user.
@@ -45,7 +45,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/account/kid");
         let builder = self.client.post(url).query(&[("v", kid)]);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -54,6 +54,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/timeline");
         let builder = self.client.get(url).query(&(("since", since), ("nb", amount)));
 
-        self.into::<Timeline>(builder).await
+        self.to_model::<Timeline>(builder).await
     }
 }

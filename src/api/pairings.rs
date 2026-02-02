@@ -20,7 +20,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/bulk-pairing");
         let builder = self.client.get(url);
 
-        Ok(self.into::<BulkPairings>(builder).await?.bulks)
+        Ok(self.to_model::<BulkPairings>(builder).await?.bulks)
     }
 
     /// Schedule many games at once, up to 24 hours in advance.
@@ -39,7 +39,7 @@ impl Licheszter {
             .body(encoded)
             .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
 
-        self.into::<BulkPairing>(builder).await
+        self.to_model::<BulkPairing>(builder).await
     }
 
     /// Immediately start all clocks of the games of a bulk pairing.
@@ -49,7 +49,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}/start-clocks"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -58,7 +58,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
         let builder = self.client.get(url);
 
-        self.into::<BulkPairing>(builder).await
+        self.to_model::<BulkPairing>(builder).await
     }
 
     /// Cancel and delete a bulk pairing that is scheduled in the future.
@@ -67,7 +67,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
         let builder = self.client.delete(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -89,6 +89,6 @@ impl Licheszter {
             .client
             .get(url)
             .header(header::ACCEPT, "application/x-ndjson");
-        self.into_stream::<Game>(builder).await
+        self.to_stream::<Game>(builder).await
     }
 }

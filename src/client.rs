@@ -76,7 +76,7 @@ impl Licheszter {
     }
 
     // Convert the API response into a deserialized model
-    pub(crate) async fn into<T>(&self, builder: RequestBuilder) -> Result<T>
+    pub(crate) async fn to_model<T>(&self, builder: RequestBuilder) -> Result<T>
     where
         T: DeserializeOwned,
     {
@@ -93,7 +93,7 @@ impl Licheszter {
     }
 
     // Convert API response into a deserialized stream model
-    pub(crate) async fn into_stream<T>(
+    pub(crate) async fn to_stream<T>(
         &self,
         builder: RequestBuilder,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<T>> + Send>>>
@@ -139,7 +139,7 @@ impl Licheszter {
     }
 
     // Convert the API response into a string
-    pub(crate) async fn into_str(&self, builder: RequestBuilder) -> Result<String> {
+    pub(crate) async fn to_string(&self, builder: RequestBuilder) -> Result<String> {
         // Send the request & get the response
         let response = builder.send().await?;
 

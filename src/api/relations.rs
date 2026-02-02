@@ -16,7 +16,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/rel/following");
         let builder = self.client.get(url);
 
-        self.into_stream::<User>(builder).await
+        self.to_stream::<User>(builder).await
     }
 
     /// Follow a player, adding them to your list of Lichess friends.
@@ -24,7 +24,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/follow/{username}"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -33,7 +33,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/unfollow/{username}"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -42,7 +42,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/block/{username}"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 
@@ -51,7 +51,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/unblock/{username}"));
         let builder = self.client.post(url);
 
-        self.into::<OkResponse>(builder).await?;
+        self.to_model::<OkResponse>(builder).await?;
         Ok(())
     }
 }
