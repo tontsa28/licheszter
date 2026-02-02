@@ -13,6 +13,9 @@ use crate::{
 impl Licheszter {
     /// Download one game.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn games_export_one(&self, game_id: &str, options: Option<&GameOptions>) -> Result<Game> {
         let mut url = self.req_url(UrlBase::Lichess, &format!("game/export/{game_id}"));
 
@@ -28,6 +31,9 @@ impl Licheszter {
 
     /// Download the ongoing game, or the last game played, of a user.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn games_export_ongoing_user(
         &self,
         username: &str,
@@ -47,6 +53,9 @@ impl Licheszter {
 
     /// Download all games of any user.
     /// By default, games are delivered in reverse chronological order (most recent first).
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn games_export_user(
         &self,
         username: &str,
@@ -150,6 +159,9 @@ impl Licheszter {
 
     /// Get the ongoing games of the current user.
     /// The most urgent games are listed first.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn games_ongoing(&self, games: u8) -> Result<Vec<UserGame>> {
         let url = self.req_url(UrlBase::Lichess, "api/account/playing");
         let builder = self.client.get(url).query(&[("nb", games)]);
@@ -163,6 +175,9 @@ impl Licheszter {
     /// Finally, a description is sent once the game is finished and the stream is closed.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
     /// A maximum of 8 game streams can be opened from the same IP address at the same time.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn games_moves_connect(
         &self,
         game_id: &str,
@@ -176,6 +191,9 @@ impl Licheszter {
     /// Import a game from PGN.
     /// Up to 100 games using anonymous requests or 200 games using authenticated requests can be imported hourly.
     /// To broadcast ongoing games, consider pushing to a broadcast instead.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn games_import_one(&self, pgn: &str) -> Result<ImportGame> {
         let url = self.req_url(UrlBase::Lichess, "api/import");
         let builder = self.client.post(url).form(&[("pgn", pgn)]);
@@ -187,6 +205,9 @@ impl Licheszter {
     /// Games are exported in PGN format.
     /// # NOTE:
     /// This method does NOT deserialize the PGN data, it must be manually parsed.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn games_export_imported(&self) -> Result<String> {
         let url = self.req_url(UrlBase::Lichess, "api/games/export/imports");
         let builder = self.client.get(url);
@@ -196,6 +217,9 @@ impl Licheszter {
 
     /// Download all games bookmarked by you.
     /// By default, games are delivered in reverse chronological order (most recent first).
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn games_export_bookmarked(
         &self,
         options: Option<&BookmarkedGameOptions>,
