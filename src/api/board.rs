@@ -7,7 +7,6 @@ use crate::{
     models::{
         board::BoardState,
         chat::{ChatMessage, ChatRoom},
-        common::OkResponse,
     },
 };
 use futures_util::Stream;
@@ -50,8 +49,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/move/{uci_move}"));
         let builder = self.client.post(url).query(&[("offeringDraw", draw_offer)]);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Post a message to the player or spectator chat using the Board API.
@@ -59,8 +57,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/chat"));
         let builder = self.client.post(url).form(&(("room", room), ("text", text)));
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Fetch the messages posted in the game chat using the Board API.
@@ -76,8 +73,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/abort"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Resign a bot game using the Board API.
@@ -85,8 +81,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/resign"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Create, accept or decline draw offers using the Board API.
@@ -94,8 +89,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/draw/{accept}"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Create, accept or decline takeback proposals using the Board API.
@@ -103,8 +97,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/takeback/{accept}"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Claim victory when the opponent has left the game for a while using the Board API.
@@ -112,8 +105,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/claim-victory"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Claim draw when the opponent has left the game for a while using the Board API.
@@ -121,8 +113,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/claim-draw"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Go berserk on an arena tournament game using the Board API.
@@ -132,7 +123,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/board/game/{game_id}/berserk"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 }

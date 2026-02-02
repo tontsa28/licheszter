@@ -1,7 +1,6 @@
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
-    models::common::OkResponse,
 };
 
 impl Licheszter {
@@ -10,7 +9,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("/inbox/{username}"));
         let builder = self.client.post(url).form(&[("text", text)]);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 }

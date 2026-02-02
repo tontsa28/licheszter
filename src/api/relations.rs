@@ -5,7 +5,7 @@ use futures_util::Stream;
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
-    models::{common::OkResponse, user::User},
+    models::user::User,
 };
 
 impl Licheszter {
@@ -24,8 +24,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/follow/{username}"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Unfollow a player, removing them from your list of Lichess friends.
@@ -33,8 +32,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/unfollow/{username}"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Block a player, adding them to your list of blocked Lichess users.
@@ -42,8 +40,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/block/{username}"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Unblock a player, removing them from your list of blocked Lichess users.
@@ -51,7 +48,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/rel/unblock/{username}"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 }

@@ -8,7 +8,6 @@ use crate::{
     config::{games::GameOptions, pairings::BulkPairingOptions},
     error::Result,
     models::{
-        common::OkResponse,
         game::Game,
         pairings::{BulkPairing, BulkPairings},
     },
@@ -49,8 +48,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}/start-clocks"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Get a single bulk pairing by its ID.
@@ -67,8 +65,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
         let builder = self.client.delete(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Download games of a bulk pairing.

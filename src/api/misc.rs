@@ -3,7 +3,7 @@ use std::pin::Pin;
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
-    models::{board::Event, common::OkResponse, user::BasicUser},
+    models::{board::Event, user::BasicUser},
 };
 use futures_util::Stream;
 use reqwest::header::{self, HeaderMap, HeaderValue};
@@ -59,7 +59,6 @@ impl Licheszter {
 
         let builder = self.client.post(url).headers(headers);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 }

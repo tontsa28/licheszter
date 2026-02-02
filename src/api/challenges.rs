@@ -11,7 +11,6 @@ use crate::{
         challenge::{
             AIChallenge, Challenge, ChallengeComplete, ChallengeDeclineReason, Challenges, OpenChallenge,
         },
-        common::OkResponse,
         game::AILevel,
     },
 };
@@ -84,8 +83,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/accept"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Decline an incoming challenge.
@@ -100,8 +98,7 @@ impl Licheszter {
             .post(url)
             .form(&[("reason", reason.unwrap_or(ChallengeDeclineReason::Generic))]);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Cancel a challenge you sent.
@@ -119,8 +116,7 @@ impl Licheszter {
             builder = builder.query(&[("opponentToken", token)]);
         }
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Start a game with Lichess AI (Stockfish).
@@ -179,8 +175,7 @@ impl Licheszter {
             .post(url)
             .query(&[("token1", token1), ("token2", token2)]);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Add seconds to the opponent's clock.
@@ -189,7 +184,6 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/round/{game_id}/add-time/{seconds}"));
         let builder = self.client.post(url);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 }

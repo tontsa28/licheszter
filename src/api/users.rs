@@ -2,13 +2,10 @@ use crate::{
     client::{Licheszter, UrlBase},
     config::users::UserStatusOptions,
     error::Result,
-    models::{
-        common::OkResponse,
-        user::{
-            BasicUser, Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser,
-            TopUser, TopUserLeaderboard, TopUsers, User, UserActivity, UserAutocomplete, UserNote,
-            UserPerformance,
-        },
+    models::user::{
+        BasicUser, Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser,
+        TopUser, TopUserLeaderboard, TopUsers, User, UserActivity, UserAutocomplete, UserNote,
+        UserPerformance,
     },
 };
 
@@ -145,8 +142,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
         let builder = self.client.post(url).form(&[("text", text)]);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Get the private notes that you have added for a user.
