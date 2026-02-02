@@ -9,6 +9,7 @@ static LI: LazyLock<Licheszter> = LazyLock::new(|| {
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_li")
+        .unwrap()
         .build()
 });
 

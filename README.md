@@ -37,6 +37,7 @@ async fn main() {
     // Create a new instance of Licheszter with your account token
     let client = Licheszter::builder()
         .with_authentication("lip_exampletoken")
+        .expect("Invalid token")
         .build();
 
     // Use the client to fetch online bots, for example...

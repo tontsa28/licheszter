@@ -39,8 +39,9 @@
 //! async fn main() {
 //!     // Create a new Licheszter with your account token
 //!     let client = Licheszter::builder()
-//!     .with_authentication("lip_exampletoken")
-//!     .build();
+//!         .with_authentication("lip_exampletoken")
+//!         .expect("Invalid token")
+//!         .build();
 //!
 //!     // Use the client to fetch online bots, for example...
 //!     let bots = client.bots_online(10).await.unwrap();

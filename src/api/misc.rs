@@ -2,7 +2,7 @@ use std::pin::Pin;
 
 use crate::{
     client::{Licheszter, UrlBase},
-    error::Result,
+    error::{Error, ErrorKind, Result, StringError},
     models::{board::Event, user::BasicUser},
 };
 use futures_util::Stream;
@@ -41,17 +41,20 @@ impl Licheszter {
     /// This action is irreversible.
     ///
     /// # Errors
-    /// Returns an error if the API request fails or the response cannot be deserialized.
-    ///
-    /// # Panics
-    /// This method panics if the provided authentication token contains non-visible ASCII characters.
+    /// Returns an error if:
+    /// - The API request fails or the response cannot be deserialized
+    /// - The authentication token contains invalid characters (non-visible ASCII, newlines, etc.)
     pub async fn bot_account_upgrade(&self, token: &str) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, "api/bot/account/upgrade");
 
         // Securely construct the authorization header
         let bearer = format!("Bearer {token}");
-        let mut auth_header = HeaderValue::from_str(&bearer)
-            .expect("Authentication token should only contain visible ASCII characters");
+        let mut auth_header = HeaderValue::from_str(&bearer).map_err(|e| {
+            Error::new(
+                ErrorKind::InvalidAuthToken,
+                StringError(format!("Authentication token contains invalid characters: {}", e)),
+            )
+        })?;
         auth_header.set_sensitive(true);
 
         let mut headers = HeaderMap::new();

@@ -1,5 +1,5 @@
 use crate::{
-    error::{LichessError, Result},
+    error::{Error, ErrorKind, LichessError, Result, StringError},
     models::common::OkResponse,
 };
 use futures_util::{stream, Stream, TryStreamExt};
@@ -217,19 +217,29 @@ impl LicheszterBuilder {
     /// Use authentication to gain full access to the Lichess API.
     /// This is recommended for most use cases.
     ///
-    /// # Panics
-    /// This method panics if the provided authentication token contains non-visible ASCII characters.
-    /// A panic can also rarely occur in specific conditions while initializing the inner [`reqwest::Client`].
-    #[must_use]
-    pub fn with_authentication<S>(mut self, token: S) -> LicheszterBuilder
+    /// # Errors
+    /// Returns an error if:
+    /// - The authentication token contains invalid characters (non-visible ASCII, newlines, etc.)
+    /// - The HTTP client fails to initialize (extremely rare)
+    ///
+    /// # Security Note
+    /// The token should be a valid Lichess API token. Keep your token secure and never
+    /// commit it to version control or expose it in logs.
+    pub fn with_authentication<S>(mut self, token: S) -> Result<LicheszterBuilder>
     where
         S: AsRef<str> + Display,
     {
         // Create a new header map & the authentication header
         let mut header_map = HeaderMap::new();
         let token = format!("Bearer {token}");
-        let mut auth_header = HeaderValue::from_str(&token)
-            .expect("Authentication token should only contain visible ASCII characters");
+
+        // Validate the token and create header (returns error instead of panicking)
+        let mut auth_header = HeaderValue::from_str(&token).map_err(|e| {
+            Error::new(
+                ErrorKind::InvalidAuthToken,
+                StringError(format!("Authentication token contains invalid characters: {}", e)),
+            )
+        })?;
 
         // Insert the authentication header into the header map
         auth_header.set_sensitive(true);
@@ -240,8 +250,13 @@ impl LicheszterBuilder {
             .user_agent(USER_AGENT)
             .tls_backend_rustls()
             .build()
-            .expect("Failed to build HTTP client - this should never fail with valid configuration");
-        self
+            .map_err(|e| {
+                Error::new(
+                    ErrorKind::ClientBuild,
+                    StringError(format!("Failed to build HTTP client: {}", e)),
+                )
+            })?;
+        Ok(self)
     }
 
     /// Insert a valid base URL of a custom Lichess server.
