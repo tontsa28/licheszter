@@ -13,6 +13,9 @@ use futures_util::Stream;
 
 impl Licheszter {
     /// Lookup positions from the Masters opening database.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn openings_masters(&self, options: Option<&MastersOpeningsOptions>) -> Result<Opening> {
         let mut url = self.req_url(UrlBase::Openings, "masters");
 
@@ -27,6 +30,9 @@ impl Licheszter {
     }
 
     /// Lookup positions from the Lichess opening database.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn openings_lichess(&self, options: Option<&LichessOpeningsOptions>) -> Result<Opening> {
         let mut url = self.req_url(UrlBase::Openings, "lichess");
 
@@ -41,6 +47,9 @@ impl Licheszter {
     }
 
     /// Lookup positions from the Player opening database.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn openings_player(
         &self,
         player: &str,
@@ -64,6 +73,9 @@ impl Licheszter {
     /// Get an OTB (over the board) master game in PGN format.
     /// # NOTE:
     /// This method does NOT deserialize the PGN data, it must be manually parsed.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be read.
     pub async fn openings_masters_otb_game(&self, game_id: &str) -> Result<String> {
         let url = self.req_url(UrlBase::Openings, &format!("master/pgn/{game_id}"));
         let builder = self.client.get(url);

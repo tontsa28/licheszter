@@ -15,6 +15,9 @@ use crate::{
 
 impl Licheszter {
     /// Get a list of bulk pairings you created.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn bulk_pairings_list(&self) -> Result<Vec<BulkPairing>> {
         let url = self.req_url(UrlBase::Lichess, "api/bulk-pairing");
         let builder = self.client.get(url);
@@ -28,6 +31,9 @@ impl Licheszter {
     /// If games have a real-time clock, each player must have only one pairing.
     /// For correspondence games, players can have multiple pairings within the same bulk.
     /// The pairing must contain time control and player information.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn bulk_pairings_create(&self, options: &BulkPairingOptions) -> Result<BulkPairing> {
         let url = self.req_url(UrlBase::Lichess, "api/bulk-pairing");
         let mut builder = self.client.post(url);
@@ -44,6 +50,9 @@ impl Licheszter {
     /// Immediately start all clocks of the games of a bulk pairing.
     /// This overrides the clock start setting of an existing pairing.
     /// If the games have not yet been created or the clocks have already started, this method does nothing.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn bulk_pairings_clocks_start(&self, bulk_id: &str) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}/start-clocks"));
         let builder = self.client.post(url);
@@ -52,6 +61,9 @@ impl Licheszter {
     }
 
     /// Get a single bulk pairing by its ID.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn bulk_pairings_show(&self, bulk_id: &str) -> Result<BulkPairing> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
         let builder = self.client.get(url);
@@ -61,6 +73,9 @@ impl Licheszter {
 
     /// Cancel and delete a bulk pairing that is scheduled in the future.
     /// If the games have already been created, this method does nothing.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn bulk_pairings_cancel(&self, bulk_id: &str) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
         let builder = self.client.delete(url);
@@ -69,6 +84,9 @@ impl Licheszter {
     }
 
     /// Download games of a bulk pairing.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn bulk_pairings_export(
         &self,
         bulk_id: &str,
