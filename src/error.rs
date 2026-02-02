@@ -134,12 +134,13 @@ impl LichessError {
         let message = if status == StatusCode::NOT_FOUND && error.is_err() {
             String::from("Not found")
         } else {
-            let mut msg = error?
+            let error_json = error?;
+            let error_msg = error_json
                 .get("error")
-                .unwrap_or(&Value::String(
-                    "Unexpected error format, failed to parse the actual error message".to_string(),
-                ))
-                .to_string();
+                .and_then(|v| v.as_str())
+                .unwrap_or("Unexpected error format, failed to parse the actual error message");
+
+            let mut msg = error_msg.to_string();
             let removable_chars = ['{', '}', '[', ']', '"'];
             msg.retain(|c| !removable_chars.contains(&c));
             msg.replace(':', ": ")

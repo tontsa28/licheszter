@@ -231,7 +231,7 @@ impl LicheszterBuilder {
             .user_agent(USER_AGENT)
             .tls_backend_rustls()
             .build()
-            .unwrap();
+            .expect("Failed to build HTTP client - this should never fail with valid configuration");
         self
     }
 
@@ -276,12 +276,14 @@ impl Default for LicheszterBuilder {
                 .user_agent(USER_AGENT)
                 .tls_backend_rustls()
                 .build()
-                .unwrap(),
-            base_url: Url::parse(BASE_URL).unwrap(),
+                .expect(
+                    "Failed to build HTTP client - this should never fail with default configuration",
+                ),
+            base_url: Url::parse(BASE_URL).expect("BASE_URL constant is not a valid URL"),
             #[cfg(feature = "openings")]
-            openings_url: Url::parse(OPENINGS_URL).unwrap(),
+            openings_url: Url::parse(OPENINGS_URL).expect("OPENINGS_URL constant is not a valid URL"),
             #[cfg(feature = "tablebase")]
-            tablebase_url: Url::parse(TABLEBASE_URL).unwrap(),
+            tablebase_url: Url::parse(TABLEBASE_URL).expect("TABLEBASE_URL constant is not a valid URL"),
         }
     }
 }
