@@ -17,6 +17,9 @@ use crate::{
 
 impl Licheszter {
     /// Get a list of challenges created by targeted at you.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_list(&self) -> Result<Challenges> {
         let url = self.req_url(UrlBase::Lichess, "api/challenge");
         let builder = self.client.get(url);
@@ -27,6 +30,9 @@ impl Licheszter {
     /// Challenge someone to play.
     /// The targeted player can choose to accept or decline.
     /// The game ID will be the same as the challenge ID.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_create(
         &self,
         username: &str,
@@ -50,6 +56,9 @@ impl Licheszter {
     /// The challenge is kept alive until the connection is closed by the client.
     /// The targeted player can choose to accept or decline.
     /// The game ID will be the same as the challenge ID.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn challenge_create_connect(
         &self,
         username: &str,
@@ -71,6 +80,9 @@ impl Licheszter {
     }
 
     /// Get details about a specific challenge, even if it has been recently accepted, canceled or declined.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_show(&self, challenge_id: &str) -> Result<Challenge> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/show"));
         let builder = self.client.get(url);
@@ -79,6 +91,9 @@ impl Licheszter {
     }
 
     /// Accept an incoming challenge.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_accept(&self, challenge_id: &str) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/accept"));
         let builder = self.client.post(url);
@@ -87,6 +102,9 @@ impl Licheszter {
     }
 
     /// Decline an incoming challenge.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_decline(
         &self,
         challenge_id: &str,
@@ -129,6 +147,9 @@ impl Licheszter {
     }
 
     /// Start a game with Lichess AI (Stockfish).
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_ai(
         &self,
         level: AILevel,
@@ -150,6 +171,9 @@ impl Licheszter {
 
     /// Create a challenge that 2 players can join.
     /// The first 2 players to click the URLs will be paired for a game.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_create_open(
         &self,
         options: Option<&OpenChallengeOptions>,
@@ -198,6 +222,9 @@ impl Licheszter {
 
     /// Add seconds to the opponent's clock.
     /// Can be used to create games with time odds.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn challenge_opponent_clock_increment(&self, game_id: &str, seconds: u32) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/round/{game_id}/add-time/{seconds}"));
         let builder = self.client.post(url);
