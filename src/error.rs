@@ -158,7 +158,10 @@ impl LichessError {
         let status = response.status();
         let error = serde_json::from_slice::<Value>(&response.bytes().await?);
 
-        // Return a simple "not found" message if the response is a 404 HTML page
+        // Design decision: Return a simple "Not found" message for 404s with unparseable bodies.
+        // Lichess often returns long HTML pages instead of JSON for 404 errors, even on API endpoints.
+        // These HTML responses don't contain any actionable information, just generic error pages.
+        // Returning "Not found" provides a cleaner, more consistent error message than showing raw HTML.
         let message = if status == StatusCode::NOT_FOUND && error.is_err() {
             String::from("Not found")
         } else {
