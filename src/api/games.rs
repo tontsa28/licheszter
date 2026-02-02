@@ -7,10 +7,7 @@ use crate::{
     client::{Licheszter, UrlBase},
     config::games::{BookmarkedGameOptions, ExtendedGameOptions, GameOptions},
     error::Result,
-    models::{
-        common::OkResponse,
-        game::{Game, ImportGame, StreamGame, StreamMoves, UserGame, UserGames},
-    },
+    models::game::{Game, ImportGame, StreamGame, StreamMoves, UserGame, UserGames},
 };
 
 impl Licheszter {
@@ -74,9 +71,12 @@ impl Licheszter {
     /// Games are delivered in reverse chronological order (most recent first).
     /// Up to 300 game IDs can be submitted at a time.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn games_export(
         &self,
-        game_ids: Vec<&str>,
+        game_ids: &[&str],
         options: Option<&GameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
         let mut url = self.req_url(UrlBase::Lichess, "api/games/export/_ids");
@@ -100,9 +100,12 @@ impl Licheszter {
     /// The stream emits an event each time a game is started or finished.
     /// To get all current ongoing games at the beginning of the stream, use the `with_current_games` option.
     /// Up to 300 users can be listed.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn games_users_connect(
         &self,
-        user_ids: Vec<&str>,
+        user_ids: &[&str],
         with_current_games: bool,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/stream/games-by-users");
@@ -119,10 +122,13 @@ impl Licheszter {
     /// The stream first outputs the games that already exist, then emits an event each time a game is started or finished.
     /// Up to 500 games using anonymous requests or 1000 games using authenticated requests can be streamed at a time.
     /// It is possible to add new games to the stream while it is open using [`games_connect_add`](fn@Licheszter::games_connect_add).
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn games_connect(
         &self,
         stream_id: &str,
-        game_ids: Vec<&str>,
+        game_ids: &[&str],
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}"));
         let builder = self.client.post(url).body(game_ids.join(","));
@@ -132,12 +138,14 @@ impl Licheszter {
 
     /// Add new games to an existing stream.
     /// The stream will immediately output the games that already exist, then emit an event each time a game is started or finished.
-    pub async fn games_connect_add(&self, stream_id: &str, game_ids: Vec<&str>) -> Result<()> {
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn games_connect_add(&self, stream_id: &str, game_ids: &[&str]) -> Result<()> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}/add"));
         let builder = self.client.post(url).body(game_ids.join(","));
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Get the ongoing games of the current user.

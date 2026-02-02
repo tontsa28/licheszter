@@ -15,9 +15,12 @@ use crate::{
 impl Licheszter {
     /// Get the status of one or more users at the same time.
     /// Works with up to 100 users.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn users_status(
         &self,
-        user_ids: Vec<&str>,
+        user_ids: &[&str],
         options: Option<&UserStatusOptions>,
     ) -> Result<Vec<RealtimeUser>> {
         let mut url = self.req_url(UrlBase::Lichess, "api/users/status");
@@ -85,7 +88,10 @@ impl Licheszter {
 
     /// Get up to 300 users by their IDs.
     /// This endpoint is limited to 8 000 users every 10 minutes and 120 000 every day.
-    pub async fn users_list(&self, user_ids: Vec<&str>) -> Result<Vec<BasicUser>> {
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn users_list(&self, user_ids: &[&str]) -> Result<Vec<BasicUser>> {
         let url = self.req_url(UrlBase::Lichess, "api/users");
         let builder = self.client.post(url).body(user_ids.join(","));
 

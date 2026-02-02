@@ -1,10 +1,7 @@
 use crate::{
     client::{Licheszter, UrlBase},
     error::Result,
-    models::{
-        common::OkResponse,
-        user::{Email, KidMode, Preferences, Timeline, User},
-    },
+    models::user::{Email, KidMode, Preferences, Timeline, User},
 };
 
 impl Licheszter {
@@ -60,8 +57,7 @@ impl Licheszter {
         let url = self.req_url(UrlBase::Lichess, "api/account/kid");
         let builder = self.client.post(url).query(&[("v", kid)]);
 
-        self.to_model::<OkResponse>(builder).await?;
-        Ok(())
+        self.execute(builder).await
     }
 
     /// Get the timeline events of the logged in user.

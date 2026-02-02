@@ -1,4 +1,7 @@
-use crate::error::{LichessError, Result};
+use crate::{
+    error::{LichessError, Result},
+    models::common::OkResponse,
+};
 use futures_util::{stream, Stream, TryStreamExt};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
@@ -149,6 +152,12 @@ impl Licheszter {
         }
 
         Ok(response.text().await?)
+    }
+
+    // Execute a request that returns an OkResponse and discard the response body
+    pub(crate) async fn execute(&self, builder: RequestBuilder) -> Result<()> {
+        self.to_model::<OkResponse>(builder).await?;
+        Ok(())
     }
 
     // Construct the full URL of a request with given path
