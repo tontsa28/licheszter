@@ -5,12 +5,12 @@ use crate::{
 };
 
 impl Licheszter {
-    /// Get cloud evaluation of a position from the Lichess opening explorer.
-    ///
-    /// # Arguments
-    /// * `fen` - FEN notation of the position to analyze
-    /// * `multi_pv` - Optional number of principal variations to return (MultiPV)
-    /// * `variant` - Optional chess variant (standard, chess960, etc.)
+    /// Get the cached evaluation of a position, if available.
+    /// Opening positions have higher chances of being available.
+    /// There are about 320 million positions in the database.
+    /// Up to 5 variations may be available.
+    /// Variants are supported.
+    /// If you want to download a lot of positions, get the full list from [Lichess database](https://database.lichess.org).
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
