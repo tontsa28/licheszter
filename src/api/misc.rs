@@ -2,7 +2,7 @@ use std::pin::Pin;
 
 use crate::{
     client::{Licheszter, UrlBase},
-    error::{Error, ErrorKind, Result, StringError},
+    error::Result,
     models::{board::Event, user::BasicUser},
 };
 use futures_util::Stream;
@@ -49,12 +49,7 @@ impl Licheszter {
 
         // Securely construct the authorization header
         let bearer = format!("Bearer {token}");
-        let mut auth_header = HeaderValue::from_str(&bearer).map_err(|e| {
-            Error::new(
-                ErrorKind::InvalidAuthToken,
-                StringError(format!("Authentication token contains invalid characters: {}", e)),
-            )
-        })?;
+        let mut auth_header = HeaderValue::from_str(&bearer)?;
         auth_header.set_sensitive(true);
 
         let mut headers = HeaderMap::new();

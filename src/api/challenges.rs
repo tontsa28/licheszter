@@ -121,12 +121,6 @@ impl Licheszter {
 
     /// Cancel a challenge you sent.
     /// Aborts the game if the challenge was accepted, but the game was not yet played.
-    /// Cancel a challenge you created.
-    ///
-    /// # Security Warning
-    /// ⚠️ **IMPORTANT**: If `opponent_token` is provided, it will be sent as a URL query parameter,
-    /// which may be logged by servers, proxies, and monitoring tools. Only use in trusted
-    /// environments and rotate tokens regularly after use.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
@@ -196,12 +190,6 @@ impl Licheszter {
     /// If the clocks have already started, this method will have no effect.
     ///
     /// Requires the OAuth tokens of both players to contain the `challenge:write` scope.
-    ///
-    /// # Security Warning
-    /// ⚠️ **CRITICAL**: This method passes OAuth tokens as URL query parameters, which will be
-    /// logged by servers, proxies, monitoring tools, and may appear in browser history. This is
-    /// a significant security risk. Only use in highly trusted environments and rotate both
-    /// tokens immediately after use. Consider using alternative API endpoints when possible.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.

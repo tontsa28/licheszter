@@ -5,18 +5,6 @@ use std::{error::Error as StdError, fmt::Display, result::Result as StdResult};
 /// A shorthand for the actual result type.
 pub type Result<T> = StdResult<T, Error>;
 
-// Simple string error for internal use
-#[derive(Debug)]
-pub(crate) struct StringError(pub(crate) String);
-
-impl Display for StringError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl StdError for StringError {}
-
 /// A general, library-wide error type that will be returned in case of any error.
 #[derive(Debug)]
 pub struct Error {
@@ -71,12 +59,6 @@ impl Error {
     pub fn is_invalid_auth_token(&self) -> bool {
         matches!(self.kind, ErrorKind::InvalidAuthToken)
     }
-
-    /// Returns true if the error is caused by HTTP client build failure.
-    #[must_use]
-    pub fn is_client_build(&self) -> bool {
-        matches!(self.kind, ErrorKind::ClientBuild)
-    }
 }
 
 impl StdError for Error {
@@ -121,6 +103,12 @@ impl From<comma_serde_urlencoded::ser::Error> for Error {
     }
 }
 
+impl From<reqwest::header::InvalidHeaderValue> for Error {
+    fn from(source: reqwest::header::InvalidHeaderValue) -> Self {
+        Error::new(ErrorKind::InvalidAuthToken, source)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub(crate) enum ErrorKind {
     IO,
@@ -129,7 +117,6 @@ pub(crate) enum ErrorKind {
     Json,
     UrlEncoded,
     InvalidAuthToken,
-    ClientBuild,
 }
 
 impl Display for ErrorKind {
@@ -141,7 +128,6 @@ impl Display for ErrorKind {
             Self::Reqwest => write!(f, "reqwest error"),
             Self::UrlEncoded => write!(f, "url-encoded error"),
             Self::InvalidAuthToken => write!(f, "invalid authentication token"),
-            Self::ClientBuild => write!(f, "HTTP client build error"),
         }
     }
 }

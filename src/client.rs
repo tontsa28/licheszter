@@ -1,5 +1,5 @@
 use crate::{
-    error::{Error, ErrorKind, LichessError, Result, StringError},
+    error::{LichessError, Result},
     models::common::OkResponse,
 };
 use futures_util::{stream, Stream, TryStreamExt};
@@ -221,10 +221,6 @@ impl LicheszterBuilder {
     /// Returns an error if:
     /// - The authentication token contains invalid characters (non-visible ASCII, newlines, etc.)
     /// - The HTTP client fails to initialize (extremely rare)
-    ///
-    /// # Security Note
-    /// The token should be a valid Lichess API token. Keep your token secure and never
-    /// commit it to version control or expose it in logs.
     pub fn with_authentication<S>(mut self, token: S) -> Result<LicheszterBuilder>
     where
         S: AsRef<str> + Display,
@@ -234,12 +230,7 @@ impl LicheszterBuilder {
         let token = format!("Bearer {token}");
 
         // Validate the token and create header (returns error instead of panicking)
-        let mut auth_header = HeaderValue::from_str(&token).map_err(|e| {
-            Error::new(
-                ErrorKind::InvalidAuthToken,
-                StringError(format!("Authentication token contains invalid characters: {}", e)),
-            )
-        })?;
+        let mut auth_header = HeaderValue::from_str(&token)?;
 
         // Insert the authentication header into the header map
         auth_header.set_sensitive(true);
@@ -249,13 +240,7 @@ impl LicheszterBuilder {
             .default_headers(header_map)
             .user_agent(USER_AGENT)
             .tls_backend_rustls()
-            .build()
-            .map_err(|e| {
-                Error::new(
-                    ErrorKind::ClientBuild,
-                    StringError(format!("Failed to build HTTP client: {}", e)),
-                )
-            })?;
+            .build()?;
         Ok(self)
     }
 
