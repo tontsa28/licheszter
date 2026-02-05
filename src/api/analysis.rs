@@ -5,6 +5,15 @@ use crate::{
 };
 
 impl Licheszter {
+    /// Get the cached evaluation of a position, if available.
+    /// Opening positions have higher chances of being available.
+    /// There are about 320 million positions in the database.
+    /// Up to 5 variations may be available.
+    /// Variants are supported.
+    /// If you want to download a lot of positions, get the full list from [Lichess database](https://database.lichess.org).
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn analysis_cloud(
         &self,
         fen: &str,

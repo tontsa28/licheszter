@@ -17,6 +17,7 @@ static LI: LazyLock<Licheszter> = LazyLock::new(|| {
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_li")
+        .unwrap()
         .build()
 });
 
@@ -25,6 +26,7 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_bot0")
+        .unwrap()
         .build()
 });
 
@@ -185,7 +187,7 @@ async fn games_export() {
         .literate(true);
 
     // Run some test cases
-    let mut result = LI.games_export(game_ids.clone(), Some(&options)).await.unwrap();
+    let mut result = LI.games_export(&game_ids, Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -194,7 +196,7 @@ async fn games_export() {
         );
     }
 
-    let mut result = LI.games_export(game_ids.clone(), None).await.unwrap();
+    let mut result = LI.games_export(&game_ids, None).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -203,11 +205,11 @@ async fn games_export() {
         );
     }
 
-    let mut result = LI.games_export(vec![], Some(&options)).await.unwrap();
+    let mut result = LI.games_export(&[], Some(&options)).await.unwrap();
     let next = result.next().await;
     assert!(next.is_none(), "Exporting games did not fail: {:?}", next.unwrap());
 
-    let mut result = LI.games_export(vec![], None).await.unwrap();
+    let mut result = LI.games_export(&[], None).await.unwrap();
     let next = result.next().await;
     assert!(next.is_none(), "Exporting games did not fail: {:?}", next.unwrap());
 }
@@ -215,7 +217,7 @@ async fn games_export() {
 #[tokio::test]
 async fn games_users_connect() {
     // Run some test cases
-    let mut result = LI.games_users_connect(vec!["li", "bot0"], true).await.unwrap();
+    let mut result = LI.games_users_connect(&["li", "bot0"], true).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -228,7 +230,7 @@ async fn games_users_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_users_connect(vec!["li", "adriana"], true).await.unwrap();
+    let mut result = LI.games_users_connect(&["li", "adriana"], true).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -241,7 +243,7 @@ async fn games_users_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_users_connect(vec!["li", "bot0"], false).await.unwrap();
+    let mut result = LI.games_users_connect(&["li", "bot0"], false).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -254,7 +256,7 @@ async fn games_users_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_users_connect(vec!["li"], false).await.unwrap();
+    let mut result = LI.games_users_connect(&["li"], false).await.unwrap();
     let next = result.next().await;
     assert!(next.is_none(), "Streaming user games did not fail: {:?}", next.unwrap());
 }
@@ -263,7 +265,7 @@ async fn games_users_connect() {
 async fn games_connect() {
     // Get some game IDs for testing
     let games: Vec<StreamGame> = LI
-        .games_users_connect(vec!["li", "bot0", "adriana"], true)
+        .games_users_connect(&["li", "bot0", "adriana"], true)
         .await
         .unwrap()
         .take(3)
@@ -273,7 +275,7 @@ async fn games_connect() {
     let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
 
     // Run some test cases
-    let mut result = LI.games_connect("randomid", game_ids).await.unwrap();
+    let mut result = LI.games_connect("randomid", &game_ids).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -286,7 +288,7 @@ async fn games_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_connect("randomid", vec![]).await.unwrap();
+    let mut result = LI.games_connect("randomid", &[]).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -299,7 +301,7 @@ async fn games_connect() {
     .await
     .unwrap_err();
 
-    let result = LI.games_connect("", vec![]).await;
+    let result = LI.games_connect("", &[]).await;
     assert!(result.is_err(), "Streaming games did not fail");
 }
 
@@ -308,7 +310,7 @@ async fn games_connect_add() {
     // Start a stream of games for testing
     let task = tokio::spawn(async {
         let games: Vec<StreamGame> = LI
-            .games_users_connect(vec!["li", "bot0", "adriana"], true)
+            .games_users_connect(&["li", "bot0", "adriana"], true)
             .await
             .unwrap()
             .take(3)
@@ -317,13 +319,13 @@ async fn games_connect_add() {
             .unwrap();
         let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
 
-        let mut stream = LI.games_connect("someid", game_ids).await.unwrap();
+        let mut stream = LI.games_connect("someid", &game_ids).await.unwrap();
         while stream.next().await.is_some() {}
     });
 
     // Get some game IDs for testing
     let games: Vec<StreamGame> = LI
-        .games_users_connect(vec!["li", "bot0", "adriana"], true)
+        .games_users_connect(&["li", "bot0", "adriana"], true)
         .await
         .unwrap()
         .take(3)
@@ -334,28 +336,28 @@ async fn games_connect_add() {
     sleep(Duration::from_millis(100)).await;
 
     // Run some test cases
-    let result = LI.games_connect_add("someid", game_ids).await;
+    let result = LI.games_connect_add("someid", &game_ids).await;
     assert!(
         result.is_ok(),
         "Failed to add game to stream: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_connect_add("someid", vec![]).await;
+    let result = LI.games_connect_add("someid", &[]).await;
     assert!(
         result.is_ok(),
         "Failed to add game to stream: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_connect_add("someid", vec!["notvalid"]).await;
+    let result = LI.games_connect_add("someid", &["notvalid"]).await;
     assert!(
         result.is_ok(),
         "Failed to add game to stream: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_connect_add("invalid", vec![]).await;
+    let result = LI.games_connect_add("invalid", &[]).await;
     assert!(result.is_err(), "Adding game to stream did not fail: {:?}", result.unwrap());
 
     task.abort();

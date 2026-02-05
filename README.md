@@ -37,6 +37,7 @@ async fn main() {
     // Create a new instance of Licheszter with your account token
     let client = Licheszter::builder()
         .with_authentication("lip_exampletoken")
+        .expect("Invalid token")
         .build();
 
     // Use the client to fetch online bots, for example...
@@ -57,14 +58,14 @@ Below is a list of supported API endpoints as of the last release:
 | Account           | ✅        |
 | Users             | ✅        |
 | Relations         | ✅        |
-| Games             | ❌        |
+| Games             | ✅        |
 | TV                | ✅        |
 | Puzzles           | ✅        |
 | Teams             | ❌        |
 | Bot               | ✅        |
 | Board             | ✅        |
 | Challenges        | ✅        |
-| Bulk pairings     | ❌        |
+| Bulk pairings     | ✅        |
 | Arena tournaments | ❌        |
 | Swiss tournaments | ❌        |
 | Simuls            | ✅        |

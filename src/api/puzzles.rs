@@ -11,6 +11,9 @@ use crate::{
 
 impl Licheszter {
     /// Get the daily puzzle.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn puzzle_daily(&self) -> Result<Puzzle> {
         let url = self.req_url(UrlBase::Lichess, "api/puzzle/daily");
         let builder = self.client.get(url);
@@ -19,6 +22,9 @@ impl Licheszter {
     }
 
     /// Get a single puzzle by ID.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn puzzle_show(&self, id: &str) -> Result<Puzzle> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/{id}"));
         let builder = self.client.get(url);
@@ -28,6 +34,9 @@ impl Licheszter {
 
     /// Get a random puzzle.
     /// If authenticated, only returns puzzles the user has never seen before.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn puzzle_next(
         &self,
         angle: Option<&str>,
@@ -43,6 +52,9 @@ impl Licheszter {
     }
 
     /// Get the puzzle activity of the logged in user.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn puzzle_activity(
         &self,
         max: Option<u16>,
@@ -56,6 +68,9 @@ impl Licheszter {
 
     /// Get the puzzle dashboard of the logged in user.
     /// Includes all puzzle themes played, with aggregated results.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn puzzle_dashboard(&self, days: u8) -> Result<PuzzleDashboard> {
         let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
         let builder = self.client.get(url);
@@ -66,6 +81,9 @@ impl Licheszter {
     /// Get the puzzle storm dashboard of any player.
     /// Contains the aggregated highscores and the history of storm runs aggregated by days.
     /// Use `days = 0` if you only care about the highscores.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn puzzle_dashboard_storm(
         &self,
         username: &str,
@@ -79,6 +97,9 @@ impl Licheszter {
 
     /// Create a new private puzzle race.
     /// Once the puzzle race has been created, the creator must join the page and manually start the race when enough players have joined.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn puzzle_race_create(&self) -> Result<PuzzleRace> {
         let url = self.req_url(UrlBase::Lichess, "api/racer");
         let builder = self.client.post(url);

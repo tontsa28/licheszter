@@ -1,4 +1,7 @@
-use crate::error::{LichessError, Result};
+use crate::{
+    error::{LichessError, Result},
+    models::common::OkResponse,
+};
 use futures_util::{stream, Stream, TryStreamExt};
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
@@ -151,6 +154,12 @@ impl Licheszter {
         Ok(response.text().await?)
     }
 
+    // Execute a request that returns an OkResponse and discard the response body
+    pub(crate) async fn execute(&self, builder: RequestBuilder) -> Result<()> {
+        self.to_model::<OkResponse>(builder).await?;
+        Ok(())
+    }
+
     // Construct the full URL of a request with given path
     pub(crate) fn req_url(&self, url: UrlBase, path: &str) -> Url {
         let mut base = match url {
@@ -208,19 +217,20 @@ impl LicheszterBuilder {
     /// Use authentication to gain full access to the Lichess API.
     /// This is recommended for most use cases.
     ///
-    /// # Panics
-    /// This method panics if the provided authentication token contains non-visible ASCII characters.
-    /// A panic can also rarely occur in specific conditions while initializing the inner [`reqwest::Client`].
-    #[must_use]
-    pub fn with_authentication<S>(mut self, token: S) -> LicheszterBuilder
+    /// # Errors
+    /// Returns an error if:
+    /// - The authentication token contains invalid characters (non-visible ASCII, newlines, etc.)
+    /// - The HTTP client fails to initialize (extremely rare)
+    pub fn with_authentication<S>(mut self, token: S) -> Result<LicheszterBuilder>
     where
         S: AsRef<str> + Display,
     {
         // Create a new header map & the authentication header
         let mut header_map = HeaderMap::new();
         let token = format!("Bearer {token}");
-        let mut auth_header = HeaderValue::from_str(&token)
-            .expect("Authentication token should only contain visible ASCII characters");
+
+        // Validate the token and create header (returns error instead of panicking)
+        let mut auth_header = HeaderValue::from_str(&token)?;
 
         // Insert the authentication header into the header map
         auth_header.set_sensitive(true);
@@ -230,9 +240,8 @@ impl LicheszterBuilder {
             .default_headers(header_map)
             .user_agent(USER_AGENT)
             .tls_backend_rustls()
-            .build()
-            .expect("Failed to build HTTP client - this should never fail with valid configuration");
-        self
+            .build()?;
+        Ok(self)
     }
 
     /// Insert a valid base URL of a custom Lichess server.

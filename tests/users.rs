@@ -8,6 +8,7 @@ static LI: LazyLock<Licheszter> = LazyLock::new(|| {
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_li")
+        .unwrap()
         .build()
 });
 
@@ -27,16 +28,14 @@ async fn users_status() {
         .game_metas(true);
 
     // Run some test cases
-    let result = LI.users_status(vec!["adriana", "ana", "bot0"], None).await;
+    let result = LI.users_status(&["adriana", "ana", "bot0"], None).await;
     assert!(
         result.is_ok(),
         "Failed to get user statuses: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI
-        .users_status(vec!["adriana", "ana", "bot0"], Some(&options))
-        .await;
+    let result = LI.users_status(&["adriana", "ana", "bot0"], Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to get user statuses: {:?}",
@@ -235,14 +234,14 @@ async fn users_activity() {
 #[tokio::test]
 async fn users_list() {
     // Run some test cases
-    let result = LI.users_list(vec!["Ana", "Adriana", "Bot0"]).await;
+    let result = LI.users_list(&["Ana", "Adriana", "Bot0"]).await;
     assert!(
         result.is_ok(),
         "Failed to get list of users: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = DEFAULT.users_list(vec!["Ana", "Adriana", "Bot0"]).await;
+    let result = DEFAULT.users_list(&["Ana", "Adriana", "Bot0"]).await;
     assert!(
         result.is_ok(),
         "Failed to get list of users: {:?}",

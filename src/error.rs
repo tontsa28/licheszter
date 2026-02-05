@@ -53,6 +53,12 @@ impl Error {
     pub fn is_urlencoded(&self) -> bool {
         matches!(self.kind, ErrorKind::UrlEncoded)
     }
+
+    /// Returns true if the error is caused by an invalid authentication token.
+    #[must_use]
+    pub fn is_invalid_auth_token(&self) -> bool {
+        matches!(self.kind, ErrorKind::InvalidAuthToken)
+    }
 }
 
 impl StdError for Error {
@@ -97,6 +103,12 @@ impl From<comma_serde_urlencoded::ser::Error> for Error {
     }
 }
 
+impl From<reqwest::header::InvalidHeaderValue> for Error {
+    fn from(source: reqwest::header::InvalidHeaderValue) -> Self {
+        Error::new(ErrorKind::InvalidAuthToken, source)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub(crate) enum ErrorKind {
     IO,
@@ -104,6 +116,7 @@ pub(crate) enum ErrorKind {
     Reqwest,
     Json,
     UrlEncoded,
+    InvalidAuthToken,
 }
 
 impl Display for ErrorKind {
@@ -114,6 +127,7 @@ impl Display for ErrorKind {
             Self::Lichess => write!(f, "Lichess API error"),
             Self::Reqwest => write!(f, "reqwest error"),
             Self::UrlEncoded => write!(f, "url-encoded error"),
+            Self::InvalidAuthToken => write!(f, "invalid authentication token"),
         }
     }
 }
@@ -130,7 +144,10 @@ impl LichessError {
         let status = response.status();
         let error = serde_json::from_slice::<Value>(&response.bytes().await?);
 
-        // Return a simple "not found" message if the response is a 404 HTML page
+        // Design decision: Return a simple "Not found" message for 404s with unparseable bodies.
+        // Lichess often returns long HTML pages instead of JSON for 404 errors, even on API endpoints.
+        // These HTML responses don't contain any actionable information, just generic error pages.
+        // Returning "Not found" provides a cleaner, more consistent error message than showing raw HTML.
         let message = if status == StatusCode::NOT_FOUND && error.is_err() {
             String::from("Not found")
         } else {

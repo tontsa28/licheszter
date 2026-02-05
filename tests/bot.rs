@@ -16,6 +16,7 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_bot0")
+        .unwrap()
         .build()
 });
 
@@ -24,6 +25,7 @@ static BOT1: LazyLock<Licheszter> = LazyLock::new(|| {
         .with_base_url("http://localhost:8080")
         .unwrap()
         .with_authentication("lip_bot1")
+        .unwrap()
         .build()
 });
 
