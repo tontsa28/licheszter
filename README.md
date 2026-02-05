@@ -58,14 +58,14 @@ Below is a list of supported API endpoints as of the last release:
 | Account           | ✅        |
 | Users             | ✅        |
 | Relations         | ✅        |
-| Games             | ❌        |
+| Games             | ✅        |
 | TV                | ✅        |
 | Puzzles           | ✅        |
 | Teams             | ❌        |
 | Bot               | ✅        |
 | Board             | ✅        |
 | Challenges        | ✅        |
-| Bulk pairings     | ❌        |
+| Bulk pairings     | ✅        |
 | Arena tournaments | ❌        |
 | Swiss tournaments | ❌        |
 | Simuls            | ✅        |
