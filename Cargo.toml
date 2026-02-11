@@ -40,6 +40,19 @@ default = ["bot"]
 # This is not recommended for production environments as it might cause unexpected problems.
 serde-strict = []
 
+# API category features
+account = []
+users = []
+relations = []
+games = []
+tv = []
+puzzles = []
+challenges = []
+pairings = []
+messaging = []
+simuls = []
+fide = []
+analysis = []
 openings = []
 tablebase = []
 
@@ -49,5 +62,5 @@ tablebase = []
 bot = []
 board = []
 
-# Enable all features at once.
-all = ["bot", "board", "openings", "tablebase"]
+# Convenience feature to enable all API categories at once.
+all = ["account", "users", "relations", "games", "tv", "puzzles", "challenges", "pairings", "messaging", "simuls", "fide", "analysis", "bot", "board", "openings", "tablebase"]

@@ -1,3 +1,5 @@
+#![cfg(feature = "pairings")]
+
 use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;

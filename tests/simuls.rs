@@ -1,3 +1,5 @@
+#![cfg(feature = "simuls")]
+
 use std::{error::Error, sync::LazyLock};
 
 use licheszter::client::Licheszter;

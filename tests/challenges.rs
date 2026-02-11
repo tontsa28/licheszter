@@ -1,3 +1,5 @@
+#![cfg(feature = "challenges")]
+
 use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;

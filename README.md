@@ -53,30 +53,66 @@ async fn main() {
 
 ## Features
 Below is a list of supported API endpoints as of the last release:
-| Category          | Supported |
-| --------          | --------- |
-| Account           | ✅        |
-| Users             | ✅        |
-| Relations         | ✅        |
-| Games             | ✅        |
-| TV                | ✅        |
-| Puzzles           | ✅        |
-| Teams             | ❌        |
-| Bot               | ✅        |
-| Board             | ✅        |
-| Challenges        | ✅        |
-| Bulk pairings     | ✅        |
-| Arena tournaments | ❌        |
-| Swiss tournaments | ❌        |
-| Simuls            | ✅        |
-| Studies           | ❌        |
-| Messaging         | ✅        |
-| Broadcasts        | ❌        |
-| FIDE              | ✅        |
-| Analysis          | ✅        |
-| External engine   | ❌        |
-| Opening explorer  | ✅        |
-| Tablebase         | ✅        |
+| Category          | Supported | Cargo Feature |
+| --------          | --------- | ------------- |
+| Account           | ✅        | `account`     |
+| Users             | ✅        | `users`       |
+| Relations         | ✅        | `relations`   |
+| Games             | ✅        | `games`       |
+| TV                | ✅        | `tv`          |
+| Puzzles           | ✅        | `puzzles`     |
+| Teams             | ❌        | —             |
+| Bot               | ✅        | `bot` (default) |
+| Board             | ✅        | `board`       |
+| Challenges        | ✅        | `challenges`  |
+| Bulk pairings     | ✅        | `pairings`    |
+| Arena tournaments | ❌        | —             |
+| Swiss tournaments | ❌        | —             |
+| Simuls            | ✅        | `simuls`      |
+| Studies           | ❌        | —             |
+| Messaging         | ✅        | `messaging`   |
+| Broadcasts        | ❌        | —             |
+| FIDE              | ✅        | `fide`        |
+| Analysis          | ✅        | `analysis`    |
+| External engine   | ❌        | —             |
+| Opening explorer  | ✅        | `openings`    |
+| Tablebase         | ✅        | `tablebase`   |
+
+### Cargo Features
+Licheszter uses Cargo features to allow you to compile only the API categories you need, reducing compile times and binary size.
+
+**Default features:** Only `bot` is enabled by default to prevent accidental misuse of the Board API.
+
+**Enable specific features:**
+```toml
+# In your Cargo.toml, enable only the features you need
+licheszter = { version = "0.4", default-features = false, features = ["account", "users", "games"] }
+```
+
+**Enable all features:**
+```toml
+licheszter = { version = "0.4", features = ["all"] }
+```
+
+**Available features:**
+- `account` - Account API endpoints
+- `users` - User profile and status endpoints  
+- `relations` - Following and followers endpoints
+- `games` - Game history and streaming endpoints
+- `tv` - Lichess TV endpoints
+- `puzzles` - Puzzle training endpoints
+- `challenges` - Challenge creation and management
+- `pairings` - Bulk pairing endpoints
+- `messaging` - Direct messaging endpoints
+- `simuls` - Simultaneous exhibition endpoints
+- `fide` - FIDE player data endpoints
+- `analysis` - Cloud analysis endpoints
+- `bot` - Bot game endpoints (default)
+- `board` - Board game endpoints (requires authentication, use with caution)
+- `openings` - Opening explorer endpoints
+- `tablebase` - Endgame tablebase endpoints
+- `all` - Enables all available features
+- `serde-strict` - Return errors for unknown fields (not recommended for production)
 
 ## Contributions
 All contributions are greatly appreciated, no matter if they provide improvements to code, documentation or anything else related to the project.

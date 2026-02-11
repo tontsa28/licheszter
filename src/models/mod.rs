@@ -1,15 +1,29 @@
-pub mod analysis;
+// Core models used across multiple APIs
 pub mod board;
 pub mod challenge;
 pub mod chat;
 pub mod common;
-pub mod fide;
 pub mod game;
-pub mod pairings;
-pub mod puzzle;
-pub mod simul;
-pub mod tv;
 pub mod user;
+
+// API-specific models
+#[cfg(feature = "analysis")]
+pub mod analysis;
+
+#[cfg(feature = "fide")]
+pub mod fide;
+
+#[cfg(feature = "pairings")]
+pub mod pairings;
+
+#[cfg(feature = "puzzles")]
+pub mod puzzle;
+
+#[cfg(feature = "simuls")]
+pub mod simul;
+
+#[cfg(feature = "tv")]
+pub mod tv;
 
 #[cfg(feature = "openings")]
 pub mod openings;

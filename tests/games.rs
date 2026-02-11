@@ -1,3 +1,5 @@
+#![cfg(feature = "games")]
+
 use std::{error::Error, sync::LazyLock, time::Duration};
 
 use futures_util::{StreamExt, TryStreamExt};

@@ -1,3 +1,5 @@
+#![cfg(feature = "relations")]
+
 use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;
