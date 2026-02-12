@@ -1,6 +1,6 @@
 use super::{
     common::{Color, FinalColor},
-    game::{Computer, FullGameStatus, Perf, Rules, Speed, TimeControl, Variant},
+    game::{ChallengeSource, Computer, FullGameStatus, Perf, Rules, Speed, TimeControl, Variant},
     user::{ChallengeUser, LightUser, PerfType},
 };
 use serde::{Deserialize, Serialize};
@@ -127,26 +127,6 @@ pub enum ChallengeDeclineReason {
 pub enum ChallengeDirection {
     In,
     Out,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum ChallengeSource {
-    Lobby,
-    Friend,
-    #[serde(rename = "ai")]
-    AI,
-    #[serde(rename = "api")]
-    API,
-    Tournament,
-    Position,
-    Import,
-    Importlive,
-    Simul,
-    Relay,
-    Pool,
-    Arena,
-    Swiss,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

@@ -6,8 +6,6 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::{Date, PrimitiveDateTime};
 
-use super::challenge::ChallengeSource;
-
 #[skip_serializing_none]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
@@ -541,4 +539,24 @@ pub struct MiniGame {
     pub id: String,
     pub black: String,
     pub white: String,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ChallengeSource {
+    Lobby,
+    Friend,
+    #[serde(rename = "ai")]
+    AI,
+    #[serde(rename = "api")]
+    API,
+    Tournament,
+    Position,
+    Import,
+    Importlive,
+    Simul,
+    Relay,
+    Pool,
+    Arena,
+    Swiss,
 }

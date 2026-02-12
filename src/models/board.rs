@@ -1,8 +1,11 @@
 use super::{
-    challenge::Challenge,
     chat::ChatLine,
     game::{GameEventInfo, GameFull, GameState, OpponentGone},
 };
+
+#[cfg(feature = "challenges")]
+use super::challenge::Challenge;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -12,8 +15,11 @@ use serde::{Deserialize, Serialize};
 pub enum Event {
     GameStart { game: GameEventInfo },
     GameFinish { game: GameEventInfo },
+    #[cfg(feature = "challenges")]
     Challenge { challenge: Challenge },
+    #[cfg(feature = "challenges")]
     ChallengeCanceled { challenge: Challenge },
+    #[cfg(feature = "challenges")]
     ChallengeDeclined { challenge: Challenge },
 }
 
