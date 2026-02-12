@@ -5,7 +5,7 @@ use crate::{
     config::openings::{LichessOpeningsOptions, MastersOpeningsOptions, PlayerOpeningsOptions},
     error::Result,
     models::{
-        game::Color,
+        common::Color,
         openings::{Opening, PlayerOpening},
     },
 };

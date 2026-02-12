@@ -4,9 +4,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::{OffsetDateTime, PrimitiveDateTime};
 
-use crate::models::game::{FinalColor, Pace, Speed, VariantMode};
-
-use super::game::GameCount;
+use crate::models::{
+    common::{FinalColor, PatronTier, Title},
+    game::{GameCount, Pace, Speed, VariantMode},
+};
 
 #[skip_serializing_none]
 #[serde_as]
@@ -316,22 +317,6 @@ pub struct PlayTime {
     pub total: u32,
     pub tv: u32,
     pub human: Option<u32>,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-pub enum Title {
-    GM,
-    WGM,
-    IM,
-    WIM,
-    FM,
-    WFM,
-    NM,
-    CM,
-    WCM,
-    WNM,
-    LM,
-    BOT,
 }
 
 #[skip_serializing_none]
@@ -1033,23 +1018,6 @@ pub struct Tournament {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct Patron {
     pub months: u16,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-#[serde(rename_all = "camelCase")]
-pub enum PatronTier {
-    Months1,
-    Months2,
-    Months3,
-    Months6,
-    Months9,
-    Years1,
-    Years2,
-    Years3,
-    Years4,
-    Years5,
-    Lifetime,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

@@ -1,6 +1,6 @@
 use super::{
-    game::FullGameStatus,
-    game::{Color, Computer, FinalColor, Perf, Rules, Speed, TimeControl, Variant},
+    common::{Color, FinalColor},
+    game::{Computer, FullGameStatus, Perf, Rules, Speed, TimeControl, Variant},
     user::{ChallengeUser, LightUser, PerfType},
 };
 use serde::{Deserialize, Serialize};

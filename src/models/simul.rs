@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
-use crate::models::user::PatronTier;
+use crate::models::common::{PatronTier, Title};
 
-use super::{game::Perf, user::Title};
+use super::game::Perf;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]

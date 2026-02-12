@@ -1,12 +1,12 @@
 use crate::models::{
-    common::date_dot,
+    common::{date_dot, Color, FinalColor, Title},
     user::{LightUser, MinimalUser, PerfType},
 };
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::{Date, PrimitiveDateTime};
 
-use super::{challenge::ChallengeSource, user::Title};
+use super::challenge::ChallengeSource;
 
 #[skip_serializing_none]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -78,7 +78,7 @@ pub struct StreamPlayers {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-pub struct Opening {
+pub struct GameOpening {
     pub eco: String,
     pub name: String,
     pub ply: u16,
@@ -184,7 +184,7 @@ pub struct Game {
     pub players: Players,
     pub initial_fen: Option<String>,
     pub winner: Option<FinalColor>,
-    pub opening: Option<Opening>,
+    pub opening: Option<GameOpening>,
     pub moves: Option<String>,
     pub days_per_turn: Option<u8>,
     #[serde(default)]
@@ -378,21 +378,6 @@ pub enum VariantMode {
     RacingKings,
     ThreeCheck,
     FromPosition,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum Color {
-    Black,
-    Random,
-    White,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum FinalColor {
-    Black,
-    White,
 }
 
 #[skip_serializing_none]

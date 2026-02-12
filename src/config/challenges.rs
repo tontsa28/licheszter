@@ -1,7 +1,10 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::models::game::{Color, CorrespondenceDays, Rules, VariantMode};
+use crate::models::{
+    common::Color,
+    game::{CorrespondenceDays, Rules, VariantMode},
+};
 
 /// Optional configuration for creating challenges using [`Licheszter::challenge_create()`](fn@crate::client::Licheszter::challenge_create).
 #[skip_serializing_none]
