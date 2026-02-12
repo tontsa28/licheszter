@@ -49,6 +49,7 @@ impl Error {
     }
 
     /// Returns true if the error is a [`url-encoded` error](enum@comma_serde_urlencoded::ser::Error).
+    #[cfg(feature = "url-encoding")]
     #[must_use]
     pub fn is_urlencoded(&self) -> bool {
         matches!(self.kind, ErrorKind::UrlEncoded)
@@ -97,6 +98,7 @@ impl From<serde_json::Error> for Error {
     }
 }
 
+#[cfg(feature = "url-encoding")]
 impl From<comma_serde_urlencoded::ser::Error> for Error {
     fn from(source: comma_serde_urlencoded::ser::Error) -> Self {
         Error::new(ErrorKind::UrlEncoded, source)
@@ -115,6 +117,7 @@ pub(crate) enum ErrorKind {
     Lichess,
     Reqwest,
     Json,
+    #[cfg(feature = "url-encoding")]
     UrlEncoded,
     InvalidAuthToken,
 }
@@ -126,6 +129,7 @@ impl Display for ErrorKind {
             Self::Json => write!(f, "JSON error"),
             Self::Lichess => write!(f, "Lichess API error"),
             Self::Reqwest => write!(f, "reqwest error"),
+            #[cfg(feature = "url-encoding")]
             Self::UrlEncoded => write!(f, "url-encoded error"),
             Self::InvalidAuthToken => write!(f, "invalid authentication token"),
         }

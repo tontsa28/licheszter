@@ -2,14 +2,24 @@ use crate::{
     error::{LichessError, Result},
     models::common::OkResponse,
 };
+
+#[cfg(feature = "streaming")]
 use futures_util::{stream, Stream, TryStreamExt};
+
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
     Client, IntoUrl, RequestBuilder, Url,
 };
 use serde::de::DeserializeOwned;
-use std::{fmt::Display, io::Error as StdIoError, pin::Pin};
+use std::fmt::Display;
+
+#[cfg(feature = "streaming")]
+use std::{io::Error as StdIoError, pin::Pin};
+
+#[cfg(feature = "streaming")]
 use tokio::io::{AsyncBufReadExt, BufReader};
+
+#[cfg(feature = "streaming")]
 use tokio_util::io::StreamReader;
 
 // Lichess default URL constants
@@ -96,6 +106,7 @@ impl Licheszter {
     }
 
     // Convert API response into a deserialized stream model
+    #[cfg(feature = "streaming")]
     pub(crate) async fn to_stream<T>(
         &self,
         builder: RequestBuilder,

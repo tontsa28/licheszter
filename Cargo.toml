@@ -21,14 +21,14 @@ path = "src/lib.rs"
 
 [dependencies]
 tokio = "^1.30"
-tokio-util = "^0.7"
+tokio-util = { version = "^0.7", optional = true }
 reqwest = { version = "^0.13", default-features = false, features = ["http2", "stream", "rustls", "query", "form"] }
 time = { version = "^0.3", features = ["serde", "macros"] }
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
 serde_with = { version = "^3.0", features = ["time_0_3"] }
-futures-util = { version = "^0.3", default-features = false }
-comma_serde_urlencoded = "^0.8"
+futures-util = { version = "^0.3", default-features = false, optional = true }
+comma_serde_urlencoded = { version = "^0.8", optional = true }
 
 [dev-dependencies]
 tokio = { version = "^1.30", features = ["macros"] }
@@ -40,27 +40,31 @@ default = ["bot"]
 # This is not recommended for production environments as it might cause unexpected problems.
 serde-strict = []
 
+# Internal features for dependency management
+streaming = ["dep:tokio-util", "dep:futures-util"]
+url-encoding = ["dep:comma_serde_urlencoded"]
+
 # API category features
 account = []
-users = []
-relations = []
-games = []
-tv = []
-puzzles = []
-challenges = []
-pairings = []
+users = ["url-encoding"]
+relations = ["streaming"]
+games = ["streaming", "url-encoding"]
+tv = ["streaming", "url-encoding"]
+puzzles = ["streaming"]
+challenges = ["streaming", "url-encoding"]
+pairings = ["streaming", "url-encoding"]
 messaging = []
 simuls = []
-fide = []
+fide = ["url-encoding"]
 analysis = []
-openings = []
+openings = ["streaming", "url-encoding"]
 tablebase = []
 
 # Only bot is enabled by default to prevent accidental cheating with the Board API.
 # Any kind of chess assistance is only allowed using the Bot API.
 # This project and its developers are not responsible for any possible consequences that may occur from misusing the Board API.
-bot = []
-board = []
+bot = ["streaming"]
+board = ["streaming", "url-encoding"]
 
 # Convenience feature to enable all API categories at once.
 all = ["account", "users", "relations", "games", "tv", "puzzles", "challenges", "pairings", "messaging", "simuls", "fide", "analysis", "bot", "board", "openings", "tablebase"]
