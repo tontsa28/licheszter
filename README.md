@@ -83,6 +83,8 @@ Licheszter uses Cargo features to allow you to compile only the API categories y
 
 **Default features:** Only `bot` is enabled by default to prevent accidental misuse of the Board API.
 
+**Binary size optimization:** Using minimal features can reduce the library size by ~40% compared to enabling all features.
+
 **Enable specific features:**
 ```toml
 # In your Cargo.toml, enable only the features you need
