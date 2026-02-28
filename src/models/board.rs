@@ -13,14 +13,24 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum Event {
-    GameStart { game: GameEventInfo },
-    GameFinish { game: GameEventInfo },
+    GameStart {
+        game: GameEventInfo,
+    },
+    GameFinish {
+        game: GameEventInfo,
+    },
     #[cfg(feature = "challenges")]
-    Challenge { challenge: Challenge },
+    Challenge {
+        challenge: Challenge,
+    },
     #[cfg(feature = "challenges")]
-    ChallengeCanceled { challenge: Challenge },
+    ChallengeCanceled {
+        challenge: Challenge,
+    },
     #[cfg(feature = "challenges")]
-    ChallengeDeclined { challenge: Challenge },
+    ChallengeDeclined {
+        challenge: Challenge,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

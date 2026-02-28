@@ -7,7 +7,8 @@ use licheszter::{
     client::Licheszter,
     config::games::{BookmarkedGameOptions, ExtendedGameOptions, GameOptions, GameSortOrder},
     models::{
-        game::{FinalColor, Game, StreamGame},
+        common::FinalColor,
+        game::{Game, StreamGame},
         user::PerfType,
     },
 };

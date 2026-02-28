@@ -7,7 +7,11 @@ use crate::models::{
     game::GameCount,
 };
 
-use super::{perf::UserPerfs, top::Trophy, variants::{PlayTime, Profile}};
+use super::{
+    perf::UserPerfs,
+    top::Trophy,
+    variants::{PlayTime, Profile},
+};
 
 // Forward declaration - Streamer is defined in mod.rs
 use super::Streamer;

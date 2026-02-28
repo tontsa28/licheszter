@@ -153,6 +153,7 @@ impl Licheszter {
     }
 
     // Convert the API response into a string
+    #[cfg(any(feature = "games", feature = "openings"))]
     pub(crate) async fn to_string(&self, builder: RequestBuilder) -> Result<String> {
         // Send the request & get the response
         let response = builder.send().await?;

@@ -8,13 +8,13 @@ pub mod variants;
 pub use core::{Email, KidMode, Preferences, User, UserPreferences};
 pub use perf::{
     PerfCount, PerfDetails, PerfGlicko, PerfPlayStreak, PerfPoint, PerfRecord, PerfRecords,
-    PerfResultStreak, PerfStats, PerfStreak, PerfStreakDate, PerfStreakRecord, PerfType,
-    RatingHistory, UserName, UserPerf, UserPerformance, UserPerfs, UserPuzzleModePerf,
+    PerfResultStreak, PerfStats, PerfStreak, PerfStreakDate, PerfStreakRecord, PerfType, RatingHistory,
+    UserName, UserPerf, UserPerformance, UserPerfs, UserPuzzleModePerf,
 };
 pub use top::{TopUser, TopUserLeaderboard, TopUserPerf, TopUsers, Trophy};
 pub use variants::{
-    BasicUser, ChallengeUser, LightUser, MinimalUser, NowPlaying, NowPlayingOpponent, PlayTime,
-    Profile, RealtimeUser, RealtimeUserPlaying, StreamingUser, UserAutocomplete,
+    BasicUser, ChallengeUser, LightUser, MinimalUser, NowPlaying, NowPlayingOpponent, PlayTime, Profile,
+    RealtimeUser, RealtimeUserPlaying, StreamingUser, UserAutocomplete,
 };
 
 // Temporarily keep these types in this file until they are extracted

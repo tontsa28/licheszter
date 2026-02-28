@@ -6,7 +6,7 @@ use futures_util::{StreamExt, TryStreamExt};
 use licheszter::{
     client::Licheszter,
     config::challenges::ChallengeOptions,
-    models::{board::BoardState, chat::ChatRoom, game::Color},
+    models::{board::BoardState, chat::ChatRoom, common::Color},
 };
 use tokio::time::{sleep, Duration};
 

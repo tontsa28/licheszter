@@ -7,7 +7,8 @@ use licheszter::{
     client::Licheszter,
     config::openings::{LichessOpeningsOptions, MastersOpeningsOptions, PlayerOpeningsOptions},
     models::{
-        game::{Color, GameType, Speed, VariantMode},
+        common::Color,
+        game::{GameType, Speed, VariantMode},
         openings::OpeningRatings,
     },
 };
