@@ -1,3 +1,20 @@
+//! User-related models and types.
+//!
+//! This module is organized into submodules for better structure:
+//! - [`core`] - Core user types (User, Preferences, etc.)
+//! - [`perf`] - Performance and rating types
+//! - [`top`] - Leaderboard and trophy types
+//! - [`variants`] - User variant types (LightUser, MinimalUser, etc.)
+//!
+//! All types are re-exported at the module level for convenience, allowing:
+//! ```ignore
+//! use licheszter::models::user::User;  // Via re-export (recommended)
+//! use licheszter::models::user::core::User;  // Direct path (also valid)
+//! ```
+//!
+//! Both patterns are supported to maintain flexibility. The re-exports provide
+//! a cleaner API while preserving access to types in their logical groupings.
+
 // Core user types
 pub mod core;
 pub mod perf;
@@ -17,8 +34,9 @@ pub use variants::{
     RealtimeUser, RealtimeUserPlaying, StreamingUser, UserAutocomplete,
 };
 
-// Temporarily keep these types in this file until they are extracted
-// TODO: Extract to activity.rs and social.rs in future refactoring
+// Activity and social types are currently defined in this module.
+// They could be organized into separate submodules (activity.rs and social.rs)
+// as a future enhancement if the file grows significantly larger.
 
 use std::collections::BTreeMap;
 
