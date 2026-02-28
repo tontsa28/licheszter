@@ -88,25 +88,18 @@ pub struct BasicUser {
     #[serde(default)]
     pub tos_violation: bool,
     pub profile: Option<Profile>,
+    #[serde_as(as = "TimestampMilliSeconds")]
+    pub seen_at: PrimitiveDateTime,
     #[serde(default)]
-    pub seen_at: Option<PrimitiveDateTime>,
-    pub patron: Option<bool>,
-    pub verified: Option<bool>,
-    pub play_time: Option<PlayTime>,
+    pub patron: bool,
+    pub patron_tier: Option<PatronTier>,
+    pub patron_color: Option<u8>,
+    #[serde(default)]
+    pub verified: bool,
+    #[serde(default)]
+    pub play_time: PlayTime,
     pub title: Option<Title>,
-    pub url: String,
-    pub playing: Option<String>,
-    pub count: GameCount,
-    #[serde(default)]
-    pub streaming: bool,
-    #[serde(default)]
-    pub followable: bool,
-    #[serde(default)]
-    pub following: bool,
-    #[serde(default)]
-    pub blocking: bool,
-    #[serde(default)]
-    pub follows_you: bool,
+    pub flair: Option<String>,
 }
 
 #[skip_serializing_none]
@@ -114,25 +107,26 @@ pub struct BasicUser {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Profile {
-    pub country: Option<String>,
     pub location: Option<String>,
     pub bio: Option<String>,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
+    pub flag: Option<String>,
+    pub real_name: Option<String>,
+    pub links: Option<String>,
     pub fide_rating: Option<u16>,
     pub uscf_rating: Option<u16>,
     pub ecf_rating: Option<u16>,
     pub rcf_rating: Option<u16>,
     pub cfc_rating: Option<u16>,
     pub dsb_rating: Option<u16>,
-    pub links: Option<String>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(default)]
 pub struct PlayTime {
     pub total: u32,
     pub tv: u32,
+    pub human: Option<u32>,
 }
 
 #[skip_serializing_none]
@@ -203,7 +197,7 @@ pub struct UserAutocomplete {
 // Re-export types needed for variants
 use crate::models::{
     common::Color,
-    game::{GameCount, Speed, Variant},
+    game::{Speed, Variant},
 };
 
 #[skip_serializing_none]
