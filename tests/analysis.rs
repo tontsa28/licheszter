@@ -1,3 +1,5 @@
+#![cfg(feature = "analysis")]
+
 use std::{error::Error, sync::LazyLock};
 
 use licheszter::{client::Licheszter, models::game::VariantMode};

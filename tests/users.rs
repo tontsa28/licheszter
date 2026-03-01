@@ -1,3 +1,5 @@
+#![cfg(feature = "users")]
+
 use std::{error::Error, sync::LazyLock};
 
 use licheszter::{client::Licheszter, config::users::UserStatusOptions, models::user::PerfType};

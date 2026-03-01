@@ -1,3 +1,5 @@
+#![cfg(feature = "challenges")]
+
 use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;
@@ -6,7 +8,8 @@ use licheszter::{
     config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     models::{
         challenge::{ChallengeComplete, ChallengeDeclineReason},
-        game::{AILevel, Color, CorrespondenceDays, Rules, VariantMode},
+        common::Color,
+        game::{AILevel, CorrespondenceDays, Rules, VariantMode},
     },
 };
 use tokio::time::{sleep, Duration};

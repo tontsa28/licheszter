@@ -1,12 +1,23 @@
-pub mod challenges;
-pub mod games;
-pub mod pairings;
-pub mod puzzles;
-pub mod tv;
-pub mod users;
-
 #[cfg(feature = "board")]
 pub mod board;
 
+#[cfg(feature = "challenges")]
+pub mod challenges;
+
+#[cfg(feature = "games")]
+pub mod games;
+
 #[cfg(feature = "openings")]
 pub mod openings;
+
+#[cfg(feature = "pairings")]
+pub mod pairings;
+
+#[cfg(feature = "puzzles")]
+pub mod puzzles;
+
+#[cfg(feature = "tv")]
+pub mod tv;
+
+#[cfg(feature = "users")]
+pub mod users;

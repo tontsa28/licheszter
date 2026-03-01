@@ -1,3 +1,5 @@
+#![cfg(feature = "tv")]
+
 use std::{error::Error, panic, sync::LazyLock};
 
 use futures_util::StreamExt;

@@ -1,7 +1,10 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::models::game::{Color, CorrespondenceDays, VariantMode};
+use crate::models::{
+    common::Color,
+    game::{CorrespondenceDays, VariantMode},
+};
 
 /// Optional configuration for seeking opponents using [`Licheszter::board_seek()`](fn@crate::client::Licheszter::board_seek).
 #[skip_serializing_none]

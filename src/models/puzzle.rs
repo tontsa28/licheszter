@@ -4,12 +4,9 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
-use crate::models::user::PatronTier;
+use crate::models::common::{Color, PatronTier, Title};
 
-use super::{
-    game::Color,
-    user::{PerfType, Title},
-};
+use super::user::PerfType;
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

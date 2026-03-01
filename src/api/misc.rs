@@ -1,3 +1,4 @@
+#[cfg(feature = "streaming")]
 use std::pin::Pin;
 
 use crate::{
@@ -5,7 +6,10 @@ use crate::{
     error::Result,
     models::{board::Event, user::BasicUser},
 };
+
+#[cfg(feature = "streaming")]
 use futures_util::Stream;
+
 use reqwest::header::{self, HeaderMap, HeaderValue};
 
 impl Licheszter {
@@ -14,6 +18,7 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
+    #[cfg(feature = "streaming")]
     pub async fn connect(&self) -> Result<Pin<Box<dyn Stream<Item = Result<Event>> + Send>>> {
         let url = self.req_url(UrlBase::Lichess, "api/stream/event");
         let builder = self.client.get(url);
@@ -25,6 +30,7 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
+    #[cfg(feature = "streaming")]
     pub async fn bots_online(
         &self,
         bots: u8,
