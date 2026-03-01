@@ -8,7 +8,6 @@ pub struct OkResponse {
     pub ok: bool,
 }
 
-/// Chess piece color
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum Color {
@@ -17,7 +16,6 @@ pub enum Color {
     White,
 }
 
-/// Final color in a game (no random)
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum FinalColor {
@@ -25,7 +23,6 @@ pub enum FinalColor {
     White,
 }
 
-/// Chess title (GM, IM, etc.)
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum Title {
     GM,
@@ -42,7 +39,6 @@ pub enum Title {
     BOT,
 }
 
-/// Patron tier levels
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]

@@ -1,4 +1,5 @@
 use crate::models::{
+    challenge::ChallengeSource,
     common::{date_dot, Color, FinalColor, Title},
     user::{LightUser, MinimalUser, PerfType},
 };
@@ -539,24 +540,4 @@ pub struct MiniGame {
     pub id: String,
     pub black: String,
     pub white: String,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum ChallengeSource {
-    Lobby,
-    Friend,
-    #[serde(rename = "ai")]
-    AI,
-    #[serde(rename = "api")]
-    API,
-    Tournament,
-    Position,
-    Import,
-    Importlive,
-    Simul,
-    Relay,
-    Pool,
-    Arena,
-    Swiss,
 }

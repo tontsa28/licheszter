@@ -2,7 +2,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, TimestampMilliSeconds};
 use time::PrimitiveDateTime;
 
-use crate::models::common::{PatronTier, Title};
+use crate::models::{
+    common::{PatronTier, Title},
+    user::{StreamDetails, StreamerDetails},
+};
 
 use super::perf::UserPerfs;
 
@@ -120,6 +123,7 @@ pub struct Profile {
     pub dsb_rating: Option<u16>,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(default)]
@@ -137,55 +141,39 @@ pub struct RealtimeUser {
     pub id: String,
     pub name: String,
     pub title: Option<Title>,
-    pub online: Option<bool>,
+    pub flair: Option<String>,
+    pub playing_id: Option<String>,
     #[serde(default)]
-    pub playing: bool,
-    pub patron: Option<bool>,
+    pub online: bool,
+    #[serde(default)]
+    pub playing: RealtimeUserPlaying,
+    #[serde(default)]
+    pub streaming: bool,
+    #[serde(default)]
+    pub patron: bool,
     pub patron_tier: Option<PatronTier>,
     pub patron_color: Option<u8>,
-    pub play_time: PlayTime,
-    pub perfs: UserPerfs,
-    pub language: Option<String>,
-    pub profile: Option<Profile>,
     #[serde(default)]
-    pub url: String,
-    pub user_playing: Option<RealtimeUserPlaying>,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-#[serde(rename_all = "camelCase")]
-pub enum RealtimeUserPlaying {
-    NowPlaying(Vec<NowPlaying>),
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-#[serde(rename_all = "camelCase")]
-pub struct NowPlaying {
-    pub full_id: String,
-    pub game_id: String,
-    pub fen: String,
-    pub color: Color,
-    pub last_move: String,
-    pub variant: Variant,
-    pub speed: Speed,
-    pub perf: String,
-    pub rated: bool,
-    pub has_moved: bool,
-    pub is_my_turn: bool,
-    pub opponent: NowPlayingOpponent,
+    pub signal: Option<u8>,
 }
 
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
-#[serde(rename_all = "camelCase")]
-pub struct NowPlayingOpponent {
-    pub id: Option<String>,
-    pub username: String,
-    pub rating: Option<u16>,
-    pub ai: Option<u8>,
+#[serde(untagged)]
+pub enum RealtimeUserPlaying {
+    Playing(bool),
+    PlayingDetails {
+        id: String,
+        clock: Option<String>,
+        variant: Option<String>,
+    },
+}
+
+impl Default for RealtimeUserPlaying {
+    fn default() -> Self {
+        Self::Playing(false)
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -194,14 +182,7 @@ pub struct UserAutocomplete {
     pub result: Vec<MinimalUser>,
 }
 
-// Re-export types needed for variants
-use crate::models::{
-    common::Color,
-    game::{Speed, Variant},
-};
-
 #[skip_serializing_none]
-#[serde_as]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
@@ -209,14 +190,11 @@ pub struct StreamingUser {
     pub id: String,
     pub name: String,
     pub title: Option<Title>,
-    pub patron: Option<bool>,
+    #[serde(default)]
+    pub patron: bool,
     pub patron_tier: Option<PatronTier>,
     pub patron_color: Option<u8>,
-    #[serde_as(as = "TimestampMilliSeconds")]
-    pub created_at: PrimitiveDateTime,
-    #[serde_as(as = "Option<TimestampMilliSeconds>")]
-    pub seen_at: Option<PrimitiveDateTime>,
-    pub rating: u16,
-    #[serde(default)]
-    pub provisional: bool,
+    pub flair: Option<String>,
+    pub stream: StreamDetails,
+    pub streamer: StreamerDetails,
 }
