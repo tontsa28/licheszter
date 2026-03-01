@@ -3,7 +3,6 @@ use super::{
     chat::ChatLine,
     game::{GameEventInfo, GameFull, GameState, OpponentGone},
 };
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
