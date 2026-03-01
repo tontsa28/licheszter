@@ -98,16 +98,10 @@ pub struct ExtendedGameOptions {
     perf_type: Option<String>,
     color: Option<FinalColor>,
     analysed: Option<bool>,
-    moves: Option<bool>,
-    tags: Option<bool>,
-    clocks: Option<bool>,
-    evals: Option<bool>,
-    accuracy: Option<bool>,
-    opening: Option<bool>,
-    division: Option<bool>,
+    #[serde(flatten)]
+    game: GameOptions,
     ongoing: Option<bool>,
     finished: Option<bool>,
-    literate: Option<bool>,
     last_fen: Option<bool>,
     with_bookmarked: Option<bool>,
     sort: Option<GameSortOrder>,
@@ -180,49 +174,49 @@ impl ExtendedGameOptions {
     /// Include the PGN moves.
     #[must_use]
     pub fn moves(mut self, moves: bool) -> Self {
-        self.moves = Some(moves);
+        self.game = self.game.moves(moves);
         self
     }
 
     /// Include the PGN tags.
     #[must_use]
     pub fn tags(mut self, tags: bool) -> Self {
-        self.tags = Some(tags);
+        self.game = self.game.tags(tags);
         self
     }
 
     /// Include the clock status when available.
     #[must_use]
     pub fn clocks(mut self, clocks: bool) -> Self {
-        self.clocks = Some(clocks);
+        self.game = self.game.clocks(clocks);
         self
     }
 
     /// Include analysis evaluations and comments when available.
     #[must_use]
     pub fn evals(mut self, evals: bool) -> Self {
-        self.evals = Some(evals);
+        self.game = self.game.evals(evals);
         self
     }
 
     /// Include accuracy percent of each player when available.
     #[must_use]
     pub fn accuracy(mut self, accuracy: bool) -> Self {
-        self.accuracy = Some(accuracy);
+        self.game = self.game.accuracy(accuracy);
         self
     }
 
     /// Include the opening name.
     #[must_use]
     pub fn opening(mut self, opening: bool) -> Self {
-        self.opening = Some(opening);
+        self.game = self.game.opening(opening);
         self
     }
 
     /// Plies which mark the beginning of the middlegame and the endgame.
     #[must_use]
     pub fn division(mut self, division: bool) -> Self {
-        self.division = Some(division);
+        self.game = self.game.division(division);
         self
     }
 
@@ -244,7 +238,7 @@ impl ExtendedGameOptions {
     /// Insert textual annotations in the PGN about the opening, analysis variations, mistakes, and game termination.
     #[must_use]
     pub fn literate(mut self, literate: bool) -> Self {
-        self.literate = Some(literate);
+        self.game = self.game.literate(literate);
         self
     }
 
@@ -276,14 +270,8 @@ pub struct BookmarkedGameOptions {
     since: Option<u64>,
     until: Option<u64>,
     max: Option<u16>,
-    moves: Option<bool>,
-    tags: Option<bool>,
-    clocks: Option<bool>,
-    evals: Option<bool>,
-    accuracy: Option<bool>,
-    opening: Option<bool>,
-    division: Option<bool>,
-    literate: Option<bool>,
+    #[serde(flatten)]
+    game: GameOptions,
     last_fen: Option<bool>,
     sort: Option<GameSortOrder>,
 }
@@ -319,56 +307,56 @@ impl BookmarkedGameOptions {
     /// Include the PGN moves.
     #[must_use]
     pub fn moves(mut self, moves: bool) -> Self {
-        self.moves = Some(moves);
+        self.game = self.game.moves(moves);
         self
     }
 
     /// Include the PGN tags.
     #[must_use]
     pub fn tags(mut self, tags: bool) -> Self {
-        self.tags = Some(tags);
+        self.game = self.game.tags(tags);
         self
     }
 
     /// Include the clock status when available.
     #[must_use]
     pub fn clocks(mut self, clocks: bool) -> Self {
-        self.clocks = Some(clocks);
+        self.game = self.game.clocks(clocks);
         self
     }
 
     /// Include analysis evaluations and comments when available.
     #[must_use]
     pub fn evals(mut self, evals: bool) -> Self {
-        self.evals = Some(evals);
+        self.game = self.game.evals(evals);
         self
     }
 
     /// Include accuracy percent of each player when available.
     #[must_use]
     pub fn accuracy(mut self, accuracy: bool) -> Self {
-        self.accuracy = Some(accuracy);
+        self.game = self.game.accuracy(accuracy);
         self
     }
 
     /// Include the opening name.
     #[must_use]
     pub fn opening(mut self, opening: bool) -> Self {
-        self.opening = Some(opening);
+        self.game = self.game.opening(opening);
         self
     }
 
     /// Plies which mark the beginning of the middlegame and the endgame.
     #[must_use]
     pub fn division(mut self, division: bool) -> Self {
-        self.division = Some(division);
+        self.game = self.game.division(division);
         self
     }
 
     /// Insert textual annotations in the PGN about the opening, analysis variations, mistakes, and game termination.
     #[must_use]
     pub fn literate(mut self, literate: bool) -> Self {
-        self.literate = Some(literate);
+        self.game = self.game.literate(literate);
         self
     }
 

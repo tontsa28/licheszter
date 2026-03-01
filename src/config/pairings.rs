@@ -35,20 +35,9 @@ impl BulkPairingOptions {
     /// Defaults to a correspondence game.
     #[must_use]
     pub fn clock(mut self, clock_limit: u16, clock_increment: u8) -> Self {
-        // Check if the clock limit value is valid
-        match clock_limit {
-            0 | 15 | 30 | 45 | 60 | 90 => self.clock_limit = Some(clock_limit),
-            x if x % 60 == 0 && x <= 10800 => self.clock_limit = Some(clock_limit),
-            _ => self.clock_limit = Some(0),
-        }
-
-        // Check if the clock increment value is valid
-        if clock_increment > 180 {
-            self.clock_increment = Some(180);
-        } else {
-            self.clock_increment = Some(clock_increment);
-        }
-
+        let (limit, increment) = super::set_clock(clock_limit, clock_increment);
+        self.clock_limit = Some(limit);
+        self.clock_increment = Some(increment);
         self
     }
 
