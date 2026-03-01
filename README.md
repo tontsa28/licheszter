@@ -96,26 +96,6 @@ licheszter = { version = "0.4", default-features = false, features = ["account",
 licheszter = { version = "0.4", features = ["all"] }
 ```
 
-**Available features:**
-- `account` - Account API endpoints
-- `users` - User profile and status endpoints  
-- `relations` - Following and followers endpoints
-- `games` - Game history and streaming endpoints
-- `tv` - Lichess TV endpoints
-- `puzzles` - Puzzle training endpoints
-- `challenges` - Challenge creation and management
-- `pairings` - Bulk pairing endpoints
-- `messaging` - Direct messaging endpoints
-- `simuls` - Simultaneous exhibition endpoints
-- `fide` - FIDE player data endpoints
-- `analysis` - Cloud analysis endpoints
-- `bot` - Bot game endpoints (default)
-- `board` - Board game endpoints (requires authentication, use with caution)
-- `openings` - Opening explorer endpoints
-- `tablebase` - Endgame tablebase endpoints
-- `all` - Enables all available features
-- `serde-strict` - Return errors for unknown fields (not recommended for production)
-
 ## Contributions
 All contributions are greatly appreciated, no matter if they provide improvements to code, documentation or anything else related to the project.
 Please follow [semantic commit message](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) guidelines in your commits.
