@@ -35,49 +35,11 @@ impl ChallengeOptions {
         self
     }
 
-    /// Determines the clock settings for the game.
-    /// Invalid clock limit values default to 0 and clock increment values over 180 default to 180.
-    /// Defaults to a correspondence game.
-    #[must_use]
-    pub fn clock(mut self, clock_limit: u16, clock_increment: u8) -> Self {
-        let (limit, increment) = super::set_clock(clock_limit, clock_increment);
-        self.clock_limit = Some(limit);
-        self.clock_increment = Some(increment);
-        self
-    }
-
-    /// Determines the length of a correspondence game in days.
-    /// Clock settings must be omitted.
-    /// Defaults to unlimited.
-    #[must_use]
-    pub fn days(mut self, days: CorrespondenceDays) -> Self {
-        self.days = Some(days as u8);
-        self
-    }
-
     /// Determines the color the challenger will get to play.
     /// Defaults to random.
     #[must_use]
     pub fn color(mut self, color: Color) -> Self {
         self.color = Some(color);
-        self
-    }
-
-    /// Determines the game variant.
-    /// Defaults to Standard.
-    #[must_use]
-    pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.variant = Some(variant);
-        self
-    }
-
-    /// Determines a custom FEN string for the game.
-    /// Requires the variant to be set as Standard, FromPosition or Chess960.
-    /// Also requires the challenge *NOT* to be rated.
-    /// Defaults to the default chess starting position.
-    #[must_use]
-    pub fn fen(mut self, fen: &str) -> Self {
-        self.fen = Some(fen.to_string());
         self
     }
 
@@ -89,6 +51,8 @@ impl ChallengeOptions {
         self
     }
 }
+
+impl_clock_game_methods!(ChallengeOptions);
 
 /// Optional configuration for creating challenges using [`Licheszter::challenge_ai()`](fn@crate::client::Licheszter::challenge_ai).
 #[skip_serializing_none]
@@ -109,26 +73,6 @@ impl AIChallengeOptions {
         Self::default()
     }
 
-    /// Determines the clock settings for the game.
-    /// Invalid clock limit values default to 0 and clock increment values over 180 default to 180.
-    /// Defaults to a correspondence game.
-    #[must_use]
-    pub fn clock(mut self, clock_limit: u16, clock_increment: u8) -> Self {
-        let (limit, increment) = super::set_clock(clock_limit, clock_increment);
-        self.clock_limit = Some(limit);
-        self.clock_increment = Some(increment);
-        self
-    }
-
-    /// Determines the length of a correspondence game in days.
-    /// Clock settings must be omitted.
-    /// Defaults to unlimited.
-    #[must_use]
-    pub fn days(mut self, days: CorrespondenceDays) -> Self {
-        self.days = Some(days as u8);
-        self
-    }
-
     /// Determines the color the challenger will get to play.
     /// Defaults to random.
     #[must_use]
@@ -136,25 +80,9 @@ impl AIChallengeOptions {
         self.color = Some(color);
         self
     }
-
-    /// Determines the game variant.
-    /// Defaults to Standard.
-    #[must_use]
-    pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.variant = Some(variant);
-        self
-    }
-
-    /// Determines a custom FEN string for the game.
-    /// Requires the variant to be set as Standard, FromPosition or Chess960.
-    /// Also requires the challenge *NOT* to be rated.
-    /// Defaults to the default chess starting position.
-    #[must_use]
-    pub fn fen(mut self, fen: &str) -> Self {
-        self.fen = Some(fen.to_string());
-        self
-    }
 }
+
+impl_clock_game_methods!(AIChallengeOptions);
 
 /// Optional configuration for creating challenges using [`Licheszter::challenge_create_open()`](fn@crate::client::Licheszter::challenge_create_open).
 #[skip_serializing_none]
@@ -185,44 +113,6 @@ impl OpenChallengeOptions {
     #[must_use]
     pub fn rated(mut self, rated: bool) -> Self {
         self.rated = Some(rated);
-        self
-    }
-
-    /// Determines the clock settings for the game.
-    /// Invalid clock limit values default to 0 and clock increment values over 180 default to 180.
-    /// Defaults to a correspondence game.
-    #[must_use]
-    pub fn clock(mut self, clock_limit: u16, clock_increment: u8) -> Self {
-        let (limit, increment) = super::set_clock(clock_limit, clock_increment);
-        self.clock_limit = Some(limit);
-        self.clock_increment = Some(increment);
-        self
-    }
-
-    /// Determines the length of a correspondence game in days.
-    /// Clock settings must be omitted.
-    /// Defaults to unlimited.
-    #[must_use]
-    pub fn days(mut self, days: CorrespondenceDays) -> Self {
-        self.days = Some(days as u8);
-        self
-    }
-
-    /// Determines the game variant.
-    /// Defaults to Standard.
-    #[must_use]
-    pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.variant = Some(variant);
-        self
-    }
-
-    /// Determines a custom FEN string for the game.
-    /// Requires the variant to be set as Standard, FromPosition or Chess960.
-    /// Also requires the challenge *NOT* to be rated.
-    /// Defaults to the default chess starting position.
-    #[must_use]
-    pub fn fen(mut self, fen: &str) -> Self {
-        self.fen = Some(fen.to_string());
         self
     }
 
@@ -260,3 +150,5 @@ impl OpenChallengeOptions {
         self
     }
 }
+
+impl_clock_game_methods!(OpenChallengeOptions);
