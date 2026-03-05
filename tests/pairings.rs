@@ -54,13 +54,13 @@ async fn bulk_pairings_create() {
         .days(CorrespondenceDays::Seven)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .message("{game}")
-        .players(vec![("lip_bot0", "lip_bot1")])
+        .players(&[("lip_bot0", "lip_bot1")])
         .rated(true)
-        .rules(vec![Rules::NoRematch, Rules::NoEarlyDraw])
+        .rules(&[Rules::NoRematch, Rules::NoEarlyDraw])
         .variant(VariantMode::FromPosition);
     let options2 = BulkPairingOptions::new()
         .clock(24897, 255)
-        .players(vec![("lip_bot0", "lip_bot1")]);
+        .players(&[("lip_bot0", "lip_bot1")]);
 
     // Run some test cases
     let result = LI.bulk_pairings_create(&options1).await;
@@ -86,7 +86,7 @@ async fn bulk_pairings_clocks_start() {
     // Create options and bulk pairings for testing
     let options = BulkPairingOptions::new()
         .clock(24897, 255)
-        .players(vec![("lip_bot0", "lip_bot1")]);
+        .players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings_create(&options).await.unwrap();
 
     // Run some test cases
@@ -117,7 +117,7 @@ async fn bulk_pairings_show() {
     // Create options and bulk pairings for testing
     let options = BulkPairingOptions::new()
         .clock(24897, 255)
-        .players(vec![("lip_bot0", "lip_bot1")]);
+        .players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings_create(&options).await.unwrap();
 
     // Run some test cases
@@ -140,7 +140,7 @@ async fn bulk_pairings_cancel() {
     // Create options and bulk pairings for testing
     let options = BulkPairingOptions::new()
         .clock(24897, 255)
-        .players(vec![("lip_bot0", "lip_bot1")]);
+        .players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings_create(&options).await.unwrap();
 
     // Run some test cases
@@ -162,7 +162,7 @@ async fn bulk_pairings_cancel() {
 async fn bulk_pairings_export() {
     let bulk_options = BulkPairingOptions::new()
         .clock(24897, 255)
-        .players(vec![("lip_bot0", "lip_bot1")]);
+        .players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings_create(&bulk_options).await.unwrap();
     let options = GameOptions::new()
         .moves(true)

@@ -30,63 +30,6 @@ impl BulkPairingOptions {
         Self::default()
     }
 
-    /// Set a custom message that is sent to each player when the game is created.
-    #[must_use]
-    pub fn message(mut self, message: &str) -> Self {
-        self.message = Some(message.to_string());
-        self
-    }
-
-    /// Determines when the games will be created.
-    /// The timestamp is in MILLISECONDS.
-    /// Up to 7 days into the future.
-    /// If not set, the games will start immediately.
-    #[must_use]
-    pub fn pair_at(mut self, timestamp: u64) -> Self {
-        self.pair_at = Some(timestamp);
-        self
-    }
-
-    /// Authentication tokens of all players to be paired.
-    /// The correct order is `vec![("white1", "black1"), ("white2", "black2")]`, where the number represents the game.
-    #[must_use]
-    pub fn players(mut self, players: Vec<(&str, &str)>) -> Self {
-        self.players = Some(
-            players
-                .iter()
-                .map(|(white, black)| format!("{white}:{black}"))
-                .collect(),
-        );
-        self
-    }
-
-    /// Determines whether the game is rated or not.
-    /// Defaults to false.
-    #[must_use]
-    pub fn rated(mut self, rated: bool) -> Self {
-        self.rated = Some(rated);
-        self
-    }
-
-    /// Determines if any extra game rules will be set.
-    /// Does not have a default value.
-    #[must_use]
-    pub fn rules(mut self, rules: Vec<Rules>) -> Self {
-        self.rules = Some(rules);
-        self
-    }
-
-    /// Determines when the clocks will be automatically started.
-    /// The timestamp is in MILLISECONDS.
-    /// Up to 7 days into the future.
-    /// If not set, the clocks will not start automatically.
-    /// Note that clocks can start regardless of this setting if players start making moves in the game.
-    #[must_use]
-    pub fn start_clocks_at(mut self, timestamp: u64) -> Self {
-        self.start_clocks_at = Some(timestamp);
-        self
-    }
-
     /// Determines the clock settings for the game.
     /// Invalid clock limit values default to 0 and clock increment values over 180 default to 180.
     /// Defaults to a correspondence game.
@@ -107,14 +50,6 @@ impl BulkPairingOptions {
         self
     }
 
-    /// Determines the game variant.
-    /// Defaults to Standard.
-    #[must_use]
-    pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.variant = Some(variant);
-        self
-    }
-
     /// Determines a custom FEN string for the game.
     /// Requires the variant to be set as Standard, FromPosition or Chess960.
     /// Also requires the game *NOT* to be rated.
@@ -122,6 +57,71 @@ impl BulkPairingOptions {
     #[must_use]
     pub fn fen(mut self, fen: &str) -> Self {
         self.fen = Some(fen.to_string());
+        self
+    }
+
+    /// Set a custom message that is sent to each player when the game is created.
+    #[must_use]
+    pub fn message(mut self, message: &str) -> Self {
+        self.message = Some(message.to_string());
+        self
+    }
+
+    /// Determines when the games will be created.
+    /// The timestamp is in MILLISECONDS.
+    /// Up to 7 days into the future.
+    /// If not set, the games will start immediately.
+    #[must_use]
+    pub fn pair_at(mut self, timestamp: u64) -> Self {
+        self.pair_at = Some(timestamp);
+        self
+    }
+
+    /// Authentication tokens of all players to be paired.
+    /// The correct order is `vec![("white1", "black1"), ("white2", "black2")]`, where the number represents the game.
+    #[must_use]
+    pub fn players(mut self, players: &[(&str, &str)]) -> Self {
+        self.players = Some(
+            players
+                .iter()
+                .map(|(white, black)| format!("{white}:{black}"))
+                .collect(),
+        );
+        self
+    }
+
+    /// Determines whether the game is rated or not.
+    /// Defaults to false.
+    #[must_use]
+    pub fn rated(mut self, rated: bool) -> Self {
+        self.rated = Some(rated);
+        self
+    }
+
+    /// Determines if any extra game rules will be set.
+    /// Does not have a default value.
+    #[must_use]
+    pub fn rules(mut self, rules: &[Rules]) -> Self {
+        self.rules = Some(rules.into());
+        self
+    }
+
+    /// Determines when the clocks will be automatically started.
+    /// The timestamp is in MILLISECONDS.
+    /// Up to 7 days into the future.
+    /// If not set, the clocks will not start automatically.
+    /// Note that clocks can start regardless of this setting if players start making moves in the game.
+    #[must_use]
+    pub fn start_clocks_at(mut self, timestamp: u64) -> Self {
+        self.start_clocks_at = Some(timestamp);
+        self
+    }
+
+    /// Determines the game variant.
+    /// Defaults to Standard.
+    #[must_use]
+    pub fn variant(mut self, variant: VariantMode) -> Self {
+        self.variant = Some(variant);
         self
     }
 }
