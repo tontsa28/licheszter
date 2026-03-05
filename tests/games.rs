@@ -118,7 +118,7 @@ async fn games_export_user() {
     let options = ExtendedGameOptions::new()
         .max(10)
         .rated(false)
-        .perf_type(vec![PerfType::Bullet, PerfType::Blitz, PerfType::Rapid])
+        .perf_type(&[PerfType::Bullet, PerfType::Blitz, PerfType::Rapid])
         .color(FinalColor::White)
         .analysed(false)
         .moves(true)

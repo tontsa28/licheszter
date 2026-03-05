@@ -40,20 +40,8 @@ impl SeekOptions {
     /// Defaults to a correspondence game.
     #[must_use]
     pub fn clock(mut self, time: u8, increment: u8) -> Self {
-        // Check if the clock limit value is valid
-        if time > 180 {
-            self.time = Some(180);
-        } else {
-            self.time = Some(time);
-        }
-
-        // Check if the clock increment value is valid
-        if increment > 180 {
-            self.increment = Some(180);
-        } else {
-            self.increment = Some(increment);
-        }
-
+        self.time = Some(time.min(180));
+        self.increment = Some(increment.min(180));
         self
     }
 

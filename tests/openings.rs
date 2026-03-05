@@ -22,7 +22,7 @@ async fn openings_masters() {
     // Create options for testing
     let options = MastersOpeningsOptions::new()
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
-        .play(vec!["g1f3"])
+        .play(&["g1f3"])
         .since(1967)
         .until(2024)
         .moves(20)
@@ -43,7 +43,7 @@ async fn openings_masters() {
         result.unwrap_err().source().unwrap()
     );
 
-    let options = options.play(vec!["d1d3"]);
+    let options = options.play(&["d1d3"]);
     let result = EXPLORER.openings_masters(Some(&options)).await;
     assert!(result.is_err(), "Fetching masters openings did not fail: {:?}", result.unwrap());
 }
@@ -54,9 +54,9 @@ async fn openings_lichess() {
     let options = LichessOpeningsOptions::new()
         .variant(VariantMode::Standard)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
-        .play(vec!["g1f3"])
-        .speeds(vec![Speed::Blitz, Speed::Rapid])
-        .ratings(vec![OpeningRatings::TwoThousand])
+        .play(&["g1f3"])
+        .speeds(&[Speed::Blitz, Speed::Rapid])
+        .ratings(&[OpeningRatings::TwoThousand])
         .since("1967-01")
         .until("2024-01")
         .moves(20)
@@ -90,8 +90,8 @@ async fn openings_player() {
     let options1 = PlayerOpeningsOptions::new()
         .variant(VariantMode::Standard)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
-        .play(vec!["g1f3"])
-        .speeds(vec![Speed::Blitz, Speed::Rapid])
+        .play(&["g1f3"])
+        .speeds(&[Speed::Blitz, Speed::Rapid])
         .mode(GameType::Rated)
         .since("1967-01")
         .until("2024-01")

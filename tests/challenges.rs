@@ -65,7 +65,7 @@ async fn challenge_create() {
         .color(Color::Black)
         .variant(VariantMode::FromPosition)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
-        .rules(vec![Rules::NoEarlyDraw, Rules::NoRematch]);
+        .rules(&[Rules::NoEarlyDraw, Rules::NoRematch]);
 
     // Run some test cases
     let result = LI.challenge_create("Bot0", None).await;
@@ -250,8 +250,8 @@ async fn challenge_create_open() {
         .days(CorrespondenceDays::Seven)
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
         .name("An Open Challenge")
-        .rules(vec![Rules::NoRematch, Rules::NoEarlyDraw])
-        .users(vec!["Adriana", "Bot0"])
+        .rules(&[Rules::NoRematch, Rules::NoEarlyDraw])
+        .users(&["Adriana", "Bot0"])
         .variant(VariantMode::FromPosition);
 
     // Run some test cases
@@ -269,7 +269,7 @@ async fn challenge_create_open() {
         result.unwrap_err().source().unwrap()
     );
 
-    let options = options.users(vec!["Adriana", "Bot0", "NoSuchUser"]);
+    let options = options.users(&["Adriana", "Bot0", "NoSuchUser"]);
     let result = LI.challenge_create_open(Some(&options)).await;
     assert!(
         result.is_err(),
