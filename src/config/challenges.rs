@@ -6,10 +6,11 @@ use crate::models::{
     game::{CorrespondenceDays, Rules, VariantMode},
 };
 
-/// Shared clock and game setup configuration used by challenge option types.
+/// Optional configuration for creating challenges using [`Licheszter::challenge_ai()`](fn@crate::client::Licheszter::challenge_ai).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-pub struct ClockGameOptions {
+pub struct AIChallengeOptions {
+    color: Option<Color>,
     clock_limit: Option<u16>,
     clock_increment: Option<u8>,
     days: Option<u8>,
@@ -17,11 +18,19 @@ pub struct ClockGameOptions {
     fen: Option<String>,
 }
 
-impl ClockGameOptions {
-    /// Create a new instance of [`ClockGameOptions`] with default configuration.
+impl AIChallengeOptions {
+    /// Create a new instance of [`AIChallengeOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Determines the color the challenger will get to play.
+    /// Defaults to random.
+    #[must_use]
+    pub fn color(mut self, color: Color) -> Self {
+        self.color = Some(color);
+        self
     }
 
     /// Determines the clock settings for the game.
@@ -68,10 +77,9 @@ impl ClockGameOptions {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct ChallengeOptions {
     rated: Option<bool>,
-    color: Option<Color>,
     rules: Option<Vec<Rules>>,
     #[serde(flatten)]
-    clock_game: ClockGameOptions,
+    inner: AIChallengeOptions,
 }
 
 impl ChallengeOptions {
@@ -93,7 +101,7 @@ impl ChallengeOptions {
     /// Defaults to random.
     #[must_use]
     pub fn color(mut self, color: Color) -> Self {
-        self.color = Some(color);
+        self.inner = self.inner.color(color);
         self
     }
 
@@ -102,7 +110,7 @@ impl ChallengeOptions {
     /// Defaults to a correspondence game.
     #[must_use]
     pub fn clock(mut self, clock_limit: u16, clock_increment: u8) -> Self {
-        self.clock_game = self.clock_game.clock(clock_limit, clock_increment);
+        self.inner = self.inner.clock(clock_limit, clock_increment);
         self
     }
 
@@ -111,7 +119,7 @@ impl ChallengeOptions {
     /// Defaults to unlimited.
     #[must_use]
     pub fn days(mut self, days: CorrespondenceDays) -> Self {
-        self.clock_game = self.clock_game.days(days);
+        self.inner = self.inner.days(days);
         self
     }
 
@@ -119,7 +127,7 @@ impl ChallengeOptions {
     /// Defaults to Standard.
     #[must_use]
     pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.clock_game = self.clock_game.variant(variant);
+        self.inner = self.inner.variant(variant);
         self
     }
 
@@ -129,7 +137,7 @@ impl ChallengeOptions {
     /// Defaults to the default chess starting position.
     #[must_use]
     pub fn fen(mut self, fen: &str) -> Self {
-        self.clock_game = self.clock_game.fen(fen);
+        self.inner = self.inner.fen(fen);
         self
     }
 
@@ -138,67 +146,6 @@ impl ChallengeOptions {
     #[must_use]
     pub fn rules(mut self, rules: Vec<Rules>) -> Self {
         self.rules = Some(rules);
-        self
-    }
-}
-
-/// Optional configuration for creating challenges using [`Licheszter::challenge_ai()`](fn@crate::client::Licheszter::challenge_ai).
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-pub struct AIChallengeOptions {
-    color: Option<Color>,
-    #[serde(flatten)]
-    clock_game: ClockGameOptions,
-}
-
-impl AIChallengeOptions {
-    /// Create a new instance of [`AIChallengeOptions`] with default configuration.
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Determines the color the challenger will get to play.
-    /// Defaults to random.
-    #[must_use]
-    pub fn color(mut self, color: Color) -> Self {
-        self.color = Some(color);
-        self
-    }
-
-    /// Determines the clock settings for the game.
-    /// Invalid clock limit values default to 0 and clock increment values over 180 default to 180.
-    /// Defaults to a correspondence game.
-    #[must_use]
-    pub fn clock(mut self, clock_limit: u16, clock_increment: u8) -> Self {
-        self.clock_game = self.clock_game.clock(clock_limit, clock_increment);
-        self
-    }
-
-    /// Determines the length of a correspondence game in days.
-    /// Clock settings must be omitted.
-    /// Defaults to unlimited.
-    #[must_use]
-    pub fn days(mut self, days: CorrespondenceDays) -> Self {
-        self.clock_game = self.clock_game.days(days);
-        self
-    }
-
-    /// Determines the game variant.
-    /// Defaults to Standard.
-    #[must_use]
-    pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.clock_game = self.clock_game.variant(variant);
-        self
-    }
-
-    /// Determines a custom FEN string for the game.
-    /// Requires the variant to be set as Standard, FromPosition or Chess960.
-    /// Also requires the challenge *NOT* to be rated.
-    /// Defaults to the default chess starting position.
-    #[must_use]
-    pub fn fen(mut self, fen: &str) -> Self {
-        self.clock_game = self.clock_game.fen(fen);
         self
     }
 }
@@ -214,7 +161,7 @@ pub struct OpenChallengeOptions {
     #[serde(rename = "expiresAt")]
     expires_at: Option<u64>,
     #[serde(flatten)]
-    clock_game: ClockGameOptions,
+    inner: AIChallengeOptions,
 }
 
 impl OpenChallengeOptions {
@@ -237,7 +184,7 @@ impl OpenChallengeOptions {
     /// Defaults to a correspondence game.
     #[must_use]
     pub fn clock(mut self, clock_limit: u16, clock_increment: u8) -> Self {
-        self.clock_game = self.clock_game.clock(clock_limit, clock_increment);
+        self.inner = self.inner.clock(clock_limit, clock_increment);
         self
     }
 
@@ -246,7 +193,7 @@ impl OpenChallengeOptions {
     /// Defaults to unlimited.
     #[must_use]
     pub fn days(mut self, days: CorrespondenceDays) -> Self {
-        self.clock_game = self.clock_game.days(days);
+        self.inner = self.inner.days(days);
         self
     }
 
@@ -254,7 +201,7 @@ impl OpenChallengeOptions {
     /// Defaults to Standard.
     #[must_use]
     pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.clock_game = self.clock_game.variant(variant);
+        self.inner = self.inner.variant(variant);
         self
     }
 
@@ -264,7 +211,7 @@ impl OpenChallengeOptions {
     /// Defaults to the default chess starting position.
     #[must_use]
     pub fn fen(mut self, fen: &str) -> Self {
-        self.clock_game = self.clock_game.fen(fen);
+        self.inner = self.inner.fen(fen);
         self
     }
 
