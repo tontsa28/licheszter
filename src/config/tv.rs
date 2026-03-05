@@ -3,6 +3,7 @@ use std::fmt::Display;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+/// Represents a Lichess TV channel.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum TvChannel {
@@ -45,6 +46,7 @@ impl Display for TvChannel {
     }
 }
 
+/// Optional configuration for watching TV channel games using [`Licheszter::tv_channel_games()`](fn@crate::client::Licheszter::tv_channel_games).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct TvChannelOptions {

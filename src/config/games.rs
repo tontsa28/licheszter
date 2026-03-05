@@ -3,6 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::models::{common::FinalColor, user::PerfType};
 
+/// Optional configuration for working with games.
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct GameOptions {
@@ -87,6 +88,7 @@ pub enum GameSortOrder {
     DateDesc,
 }
 
+/// Optional configuration for exporting user games using [`Licheszter::games_export_user()`](fn@crate::client::Licheszter::games_export_user).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct ExtendedGameOptions {
@@ -264,6 +266,7 @@ impl ExtendedGameOptions {
     }
 }
 
+/// Optional configuration for exporting bookmarked games using [`Licheszter::games_export_bookmarked()`](fn@crate::client::Licheszter::games_export_bookmarked).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct BookmarkedGameOptions {

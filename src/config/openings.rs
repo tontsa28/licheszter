@@ -6,13 +6,14 @@ use crate::models::{
     openings::OpeningRatings,
 };
 
+/// Optional configuration for querying Masters openings using [`Licheszter::openings_masters()`](fn@crate::client::Licheszter::openings_masters).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct MastersOpeningsOptions {
     fen: Option<String>,
     play: Option<Vec<String>>,
-    since: Option<u16>,
-    until: Option<u16>,
+    since: Option<String>,
+    until: Option<String>,
     moves: Option<u16>,
     #[serde(rename = "topGames")]
     top_games: Option<u8>,
@@ -44,14 +45,28 @@ impl MastersOpeningsOptions {
     /// Include only games from this year or later.
     #[must_use]
     pub fn since(mut self, since: u16) -> Self {
-        self.since = Some(since);
+        self.since = Some(since.to_string());
+        self
+    }
+
+    // Internal helper to use strings to include only games from this year or later.
+    #[must_use]
+    fn since_str(mut self, since: &str) -> Self {
+        self.since = Some(since.to_string());
         self
     }
 
     /// Include only games from this year or earlier.
     #[must_use]
     pub fn until(mut self, until: u16) -> Self {
-        self.until = Some(until);
+        self.until = Some(until.to_string());
+        self
+    }
+
+    // Internal helper to use strings to include only games from this year or earlier.
+    #[must_use]
+    fn until_str(mut self, until: &str) -> Self {
+        self.until = Some(until.to_string());
         self
     }
 
@@ -70,6 +85,7 @@ impl MastersOpeningsOptions {
     }
 }
 
+/// Optional configuration for querying Lichess openings using [`Licheszter::openings_lichess()`](fn@crate::client::Licheszter::openings_lichess).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename = "camelCase")]
@@ -77,8 +93,6 @@ pub struct LichessOpeningsOptions {
     variant: Option<VariantMode>,
     speeds: Option<Vec<Speed>>,
     ratings: Option<Vec<u16>>,
-    since: Option<String>,
-    until: Option<String>,
     recent_games: Option<u8>,
     history: Option<bool>,
     #[serde(flatten)]
@@ -134,14 +148,14 @@ impl LichessOpeningsOptions {
     /// Include only games from this month or later.
     #[must_use]
     pub fn since(mut self, since: &str) -> Self {
-        self.since = Some(since.to_string());
+        self.inner = self.inner.since_str(since);
         self
     }
 
     /// Include only games from this month or earlier.
     #[must_use]
     pub fn until(mut self, until: &str) -> Self {
-        self.until = Some(until.to_string());
+        self.inner = self.inner.until_str(until);
         self
     }
 
@@ -174,6 +188,7 @@ impl LichessOpeningsOptions {
     }
 }
 
+/// Optional configuration for querying player openings using [`Licheszter::openings_player()`](fn@crate::client::Licheszter::openings_player).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename = "camelCase")]
