@@ -19,7 +19,7 @@ pub struct MastersOpeningsOptions {
 }
 
 impl MastersOpeningsOptions {
-    /// Create a new instance of [`MastersOpeningOptions`] with default configuration.
+    /// Create a new instance of [`MastersOpeningsOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -73,6 +73,110 @@ impl MastersOpeningsOptions {
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename = "camelCase")]
+pub struct LichessOpeningsOptions {
+    variant: Option<VariantMode>,
+    speeds: Option<Vec<Speed>>,
+    ratings: Option<Vec<u16>>,
+    since: Option<String>,
+    until: Option<String>,
+    recent_games: Option<u8>,
+    history: Option<bool>,
+    #[serde(flatten)]
+    inner: MastersOpeningsOptions,
+}
+
+impl LichessOpeningsOptions {
+    /// Create a new instance of [`LichessOpeningsOptions`] with default configuration.
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Determines the game variant.
+    /// Defaults to Standard.
+    #[must_use]
+    pub fn variant(mut self, variant: VariantMode) -> Self {
+        self.variant = Some(variant);
+        self
+    }
+
+    /// Determines the FEN of the root position.
+    #[must_use]
+    pub fn fen(mut self, fen: &str) -> Self {
+        self.inner = self.inner.fen(fen);
+        self
+    }
+
+    /// Determines the sequence of legal moves in UCI notation.
+    /// Play additional moves starting from the FEN position.
+    /// Required to find an opening game, if the FEN is not an exact match for a named position.
+    #[must_use]
+    pub fn play(mut self, play: Vec<&str>) -> Self {
+        self.inner = self.inner.play(play);
+        self
+    }
+
+    /// Determines the game speeds to filter by.
+    #[must_use]
+    pub fn speeds(mut self, speeds: Vec<Speed>) -> Self {
+        self.speeds = Some(speeds);
+        self
+    }
+
+    /// Determines the rating groups to filter by.
+    /// Each group ranges from its value to the next higher group.
+    #[must_use]
+    pub fn ratings(mut self, ratings: Vec<OpeningRatings>) -> Self {
+        self.ratings = Some(ratings.iter().map(|r| r.to_owned() as u16).collect::<Vec<u16>>());
+        self
+    }
+
+    /// Include only games from this month or later.
+    #[must_use]
+    pub fn since(mut self, since: &str) -> Self {
+        self.since = Some(since.to_string());
+        self
+    }
+
+    /// Include only games from this month or earlier.
+    #[must_use]
+    pub fn until(mut self, until: &str) -> Self {
+        self.until = Some(until.to_string());
+        self
+    }
+
+    /// Determines the number of most common moves to display.
+    #[must_use]
+    pub fn moves(mut self, moves: u16) -> Self {
+        self.inner = self.inner.moves(moves);
+        self
+    }
+
+    /// Determines the number of top games to display.
+    #[must_use]
+    pub fn top_games(mut self, top_games: u8) -> Self {
+        self.inner = self.inner.top_games(top_games);
+        self
+    }
+
+    /// Determines the number of recent games to display.
+    #[must_use]
+    pub fn recent_games(mut self, recent_games: u8) -> Self {
+        self.recent_games = Some(recent_games);
+        self
+    }
+
+    /// Determines whether history will be retrieved or not.
+    #[must_use]
+    pub fn history(mut self, history: bool) -> Self {
+        self.history = Some(history);
+        self
+    }
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
+#[serde(rename = "camelCase")]
 pub struct PlayerOpeningsOptions {
     variant: Option<VariantMode>,
     fen: Option<String>,
@@ -86,7 +190,7 @@ pub struct PlayerOpeningsOptions {
 }
 
 impl PlayerOpeningsOptions {
-    /// Create a new instance of [`LichessOpeningOptions`] with default configuration.
+    /// Create a new instance of [`PlayerOpeningsOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -130,14 +234,14 @@ impl PlayerOpeningsOptions {
         self
     }
 
-    /// Include only games from this year or later.
+    /// Include only games from this month or later.
     #[must_use]
     pub fn since(mut self, since: &str) -> Self {
         self.since = Some(since.to_string());
         self
     }
 
-    /// Include only games from this year or earlier.
+    /// Include only games from this month or earlier.
     #[must_use]
     pub fn until(mut self, until: &str) -> Self {
         self.until = Some(until.to_string());
@@ -155,106 +259,6 @@ impl PlayerOpeningsOptions {
     #[must_use]
     pub fn recent_games(mut self, recent_games: u8) -> Self {
         self.recent_games = Some(recent_games);
-        self
-    }
-}
-
-#[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
-#[serde(rename = "camelCase")]
-pub struct LichessOpeningsOptions {
-    ratings: Option<Vec<u16>>,
-    top_games: Option<u8>,
-    history: Option<bool>,
-    #[serde(flatten)]
-    inner: PlayerOpeningsOptions,
-}
-
-impl LichessOpeningsOptions {
-    /// Create a new instance of [`LichessOpeningOptions`] with default configuration.
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Determines the game variant.
-    /// Defaults to Standard.
-    #[must_use]
-    pub fn variant(mut self, variant: VariantMode) -> Self {
-        self.inner = self.inner.variant(variant);
-        self
-    }
-
-    /// Determines the FEN of the root position.
-    #[must_use]
-    pub fn fen(mut self, fen: &str) -> Self {
-        self.inner = self.inner.fen(fen);
-        self
-    }
-
-    /// Determines the sequence of legal moves in UCI notation.
-    /// Play additional moves starting from the FEN position.
-    /// Required to find an opening game, if the FEN is not an exact match for a named position.
-    #[must_use]
-    pub fn play(mut self, play: Vec<&str>) -> Self {
-        self.inner = self.inner.play(play);
-        self
-    }
-
-    /// Determines the game speeds to filter by.
-    #[must_use]
-    pub fn speeds(mut self, speeds: Vec<Speed>) -> Self {
-        self.inner = self.inner.speeds(speeds);
-        self
-    }
-
-    /// Determines the rating groups to filter by.
-    /// Each group ranges from its value to the next higher group.
-    #[must_use]
-    pub fn ratings(mut self, ratings: Vec<OpeningRatings>) -> Self {
-        self.ratings = Some(ratings.iter().map(|r| r.to_owned() as u16).collect::<Vec<u16>>());
-        self
-    }
-
-    /// Include only games from this year or later.
-    #[must_use]
-    pub fn since(mut self, since: &str) -> Self {
-        self.inner = self.inner.since(since);
-        self
-    }
-
-    /// Include only games from this year or earlier.
-    #[must_use]
-    pub fn until(mut self, until: &str) -> Self {
-        self.inner = self.inner.until(until);
-        self
-    }
-
-    /// Determines the number of most common moves to display.
-    #[must_use]
-    pub fn moves(mut self, moves: u16) -> Self {
-        self.inner = self.inner.moves(moves);
-        self
-    }
-
-    /// Determines the number of top games to display.
-    #[must_use]
-    pub fn top_games(mut self, top_games: u8) -> Self {
-        self.top_games = Some(top_games);
-        self
-    }
-
-    /// Determines the number of recent games to display.
-    #[must_use]
-    pub fn recent_games(mut self, recent_games: u8) -> Self {
-        self.inner = self.inner.recent_games(recent_games);
-        self
-    }
-
-    /// Determines whether history will be retrieved or not.
-    #[must_use]
-    pub fn history(mut self, history: bool) -> Self {
-        self.history = Some(history);
         self
     }
 }
