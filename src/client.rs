@@ -88,6 +88,20 @@ impl Licheszter {
         self.tablebase_url.clone()
     }
 
+    /// Access the Account API endpoints.
+    #[cfg(feature = "account")]
+    #[must_use]
+    pub fn account(&self) -> crate::api::account::AccountApi<'_> {
+        crate::api::account::AccountApi { client: self }
+    }
+
+    /// Access the Challenges API endpoints.
+    #[cfg(feature = "challenges")]
+    #[must_use]
+    pub fn challenges(&self) -> crate::api::challenges::ChallengesApi<'_> {
+        crate::api::challenges::ChallengesApi { client: self }
+    }
+
     // Convert the API response into a deserialized model
     pub(crate) async fn to_model<T>(&self, builder: RequestBuilder) -> Result<T>
     where

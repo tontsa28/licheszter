@@ -33,8 +33,8 @@ static BOT1: LazyLock<Licheszter> = LazyLock::new(|| {
 async fn bot_game_connect() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", Some(&options)).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
     let mut result = BOT0.bot_game_connect(&challenge.id).await.unwrap();
@@ -73,8 +73,8 @@ async fn bot_game_connect() {
 async fn bot_play_move() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", Some(&options)).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT0.bot_play_move(&challenge.id, "e2e4", false).await;
@@ -115,8 +115,8 @@ async fn bot_play_move() {
 #[tokio::test]
 async fn bot_chat_write() {
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT0
@@ -144,8 +144,8 @@ async fn bot_chat_write() {
 #[tokio::test]
 async fn bot_chat_read() {
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Write some messages to the chat
     BOT0.bot_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
@@ -170,8 +170,8 @@ async fn bot_chat_read() {
 #[tokio::test]
 async fn bot_game_abort() {
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT0.bot_game_abort(&challenge.id).await;
@@ -185,8 +185,8 @@ async fn bot_game_abort() {
     assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT1.bot_game_abort(&challenge.id).await;
@@ -203,8 +203,8 @@ async fn bot_game_abort() {
 #[tokio::test]
 async fn bot_game_resign() {
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT0.bot_game_resign(&challenge.id).await;
@@ -218,8 +218,8 @@ async fn bot_game_resign() {
     assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT1.bot_game_resign(&challenge.id).await;
@@ -236,8 +236,8 @@ async fn bot_game_resign() {
 #[tokio::test]
 async fn bot_handle_draws() {
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
     let result = BOT0.bot_handle_draws(&challenge.id, true).await;
@@ -248,8 +248,8 @@ async fn bot_handle_draws() {
     );
 
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT0.bot_handle_draws(&challenge.id, false).await;
@@ -266,8 +266,8 @@ async fn bot_handle_draws() {
 #[tokio::test]
 async fn bot_handle_takebacks() {
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
     let result = BOT0.bot_handle_takebacks(&challenge.id, true).await;
@@ -278,8 +278,8 @@ async fn bot_handle_takebacks() {
     );
 
     // Create a game for testing
-    let challenge = BOT0.challenge_create("Bot1", None).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", None).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = BOT0.bot_handle_takebacks(&challenge.id, false).await;
@@ -297,8 +297,8 @@ async fn bot_handle_takebacks() {
 async fn bot_claim_victory() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::Black).clock(0, 1);
-    let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", Some(&options)).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
     BOT1.bot_play_move(&challenge.id, "e2e4", false).await.unwrap();
@@ -340,8 +340,8 @@ async fn bot_claim_victory() {
 async fn bot_claim_draw() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::Black).clock(0, 1);
-    let challenge = BOT0.challenge_create("Bot1", Some(&options)).await.unwrap();
-    BOT1.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = BOT0.challenges().create("Bot1", Some(&options)).await.unwrap();
+    BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
     BOT1.bot_play_move(&challenge.id, "e2e4", false).await.unwrap();

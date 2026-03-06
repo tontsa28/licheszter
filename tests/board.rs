@@ -81,8 +81,8 @@ async fn board_seek_create() {
 async fn board_game_connect() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", Some(&options)).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
     let mut result = LI.board_game_connect(&challenge.id).await.unwrap();
@@ -128,8 +128,8 @@ async fn board_game_connect() {
 async fn board_play_move() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::White);
-    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", Some(&options)).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = LI.board_play_move(&challenge.id, "e2e4", false).await;
@@ -170,8 +170,8 @@ async fn board_play_move() {
 #[tokio::test]
 async fn board_chat_write() {
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = LI.board_chat_write(&challenge.id, ChatRoom::Player, "GLHF").await;
@@ -197,8 +197,8 @@ async fn board_chat_write() {
 #[tokio::test]
 async fn board_chat_read() {
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Write some messages to the chat
     LI.board_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
@@ -224,8 +224,8 @@ async fn board_chat_read() {
 #[tokio::test]
 async fn board_game_abort() {
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = LI.board_game_abort(&challenge.id).await;
@@ -239,8 +239,8 @@ async fn board_game_abort() {
     assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = ADRIANA.board_game_abort(&challenge.id).await;
@@ -257,8 +257,8 @@ async fn board_game_abort() {
 #[tokio::test]
 async fn board_game_resign() {
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = LI.board_game_resign(&challenge.id).await;
@@ -272,8 +272,8 @@ async fn board_game_resign() {
     assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = ADRIANA.board_game_resign(&challenge.id).await;
@@ -290,8 +290,8 @@ async fn board_game_resign() {
 #[tokio::test]
 async fn board_handle_draws() {
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
     let result = LI.board_handle_draws(&challenge.id, true).await;
@@ -302,8 +302,8 @@ async fn board_handle_draws() {
     );
 
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = LI.board_handle_draws(&challenge.id, false).await;
@@ -320,8 +320,8 @@ async fn board_handle_draws() {
 #[tokio::test]
 async fn board_handle_takebacks() {
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
     let result = LI.board_handle_takebacks(&challenge.id, true).await;
@@ -332,8 +332,8 @@ async fn board_handle_takebacks() {
     );
 
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = LI.board_handle_takebacks(&challenge.id, false).await;
@@ -351,8 +351,8 @@ async fn board_handle_takebacks() {
 async fn board_claim_victory() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::Black).clock(0, 5);
-    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", Some(&options)).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
     ADRIANA
@@ -397,8 +397,8 @@ async fn board_claim_victory() {
 async fn board_claim_draw() {
     // Create a game for testing
     let options = ChallengeOptions::new().color(Color::Black).clock(0, 5);
-    let challenge = LI.challenge_create("Adriana", Some(&options)).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", Some(&options)).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
     ADRIANA
@@ -439,8 +439,8 @@ async fn board_claim_draw() {
 #[tokio::test]
 async fn board_berserk() {
     // Create a game for testing
-    let challenge = LI.challenge_create("Adriana", None).await.unwrap();
-    ADRIANA.challenge_accept(&challenge.id).await.unwrap();
+    let challenge = LI.challenges().create("Adriana", None).await.unwrap();
+    ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
     let result = LI.board_berserk(&challenge.id).await;
