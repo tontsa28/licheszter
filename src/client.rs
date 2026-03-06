@@ -88,6 +88,118 @@ impl Licheszter {
         self.tablebase_url.clone()
     }
 
+    /// Access the Account API endpoints.
+    #[cfg(feature = "account")]
+    #[must_use]
+    pub fn account(&self) -> crate::api::account::AccountApi<'_> {
+        crate::api::account::AccountApi { client: self }
+    }
+
+    /// Access the Challenges API endpoints.
+    #[cfg(feature = "challenges")]
+    #[must_use]
+    pub fn challenges(&self) -> crate::api::challenges::ChallengesApi<'_> {
+        crate::api::challenges::ChallengesApi { client: self }
+    }
+
+    /// Access the Users API endpoints.
+    #[cfg(feature = "users")]
+    #[must_use]
+    pub fn users(&self) -> crate::api::users::UsersApi<'_> {
+        crate::api::users::UsersApi { client: self }
+    }
+
+    /// Access the Games API endpoints.
+    #[cfg(feature = "games")]
+    #[must_use]
+    pub fn games(&self) -> crate::api::games::GamesApi<'_> {
+        crate::api::games::GamesApi { client: self }
+    }
+
+    /// Access the Puzzles API endpoints.
+    #[cfg(feature = "puzzles")]
+    #[must_use]
+    pub fn puzzles(&self) -> crate::api::puzzles::PuzzlesApi<'_> {
+        crate::api::puzzles::PuzzlesApi { client: self }
+    }
+
+    /// Access the Bot API endpoints.
+    #[cfg(feature = "bot")]
+    #[must_use]
+    pub fn bot(&self) -> crate::api::bot::BotApi<'_> {
+        crate::api::bot::BotApi { client: self }
+    }
+
+    /// Access the Board API endpoints.
+    #[cfg(feature = "board")]
+    #[must_use]
+    pub fn board(&self) -> crate::api::board::BoardApi<'_> {
+        crate::api::board::BoardApi { client: self }
+    }
+
+    /// Access the Relations API endpoints.
+    #[cfg(feature = "relations")]
+    #[must_use]
+    pub fn relations(&self) -> crate::api::relations::RelationsApi<'_> {
+        crate::api::relations::RelationsApi { client: self }
+    }
+
+    /// Access the TV API endpoints.
+    #[cfg(feature = "tv")]
+    #[must_use]
+    pub fn tv(&self) -> crate::api::tv::TvApi<'_> {
+        crate::api::tv::TvApi { client: self }
+    }
+
+    /// Access the Messaging API endpoints.
+    #[cfg(feature = "messaging")]
+    #[must_use]
+    pub fn messaging(&self) -> crate::api::messaging::MessagingApi<'_> {
+        crate::api::messaging::MessagingApi { client: self }
+    }
+
+    /// Access the Bulk Pairings API endpoints.
+    #[cfg(feature = "pairings")]
+    #[must_use]
+    pub fn bulk_pairings(&self) -> crate::api::pairings::BulkPairingsApi<'_> {
+        crate::api::pairings::BulkPairingsApi { client: self }
+    }
+
+    /// Access the Simuls API endpoints.
+    #[cfg(feature = "simuls")]
+    #[must_use]
+    pub fn simuls(&self) -> crate::api::simuls::SimulsApi<'_> {
+        crate::api::simuls::SimulsApi { client: self }
+    }
+
+    /// Access the FIDE API endpoints.
+    #[cfg(feature = "fide")]
+    #[must_use]
+    pub fn fide(&self) -> crate::api::fide::FideApi<'_> {
+        crate::api::fide::FideApi { client: self }
+    }
+
+    /// Access the Analysis API endpoints.
+    #[cfg(feature = "analysis")]
+    #[must_use]
+    pub fn analysis(&self) -> crate::api::analysis::AnalysisApi<'_> {
+        crate::api::analysis::AnalysisApi { client: self }
+    }
+
+    /// Access the Openings API endpoints.
+    #[cfg(feature = "openings")]
+    #[must_use]
+    pub fn openings(&self) -> crate::api::openings::OpeningsApi<'_> {
+        crate::api::openings::OpeningsApi { client: self }
+    }
+
+    /// Access the Tablebase API endpoints.
+    #[cfg(feature = "tablebase")]
+    #[must_use]
+    pub fn tablebase(&self) -> crate::api::tablebase::TablebaseApi<'_> {
+        crate::api::tablebase::TablebaseApi { client: self }
+    }
+
     // Convert the API response into a deserialized model
     pub(crate) async fn to_model<T>(&self, builder: RequestBuilder) -> Result<T>
     where

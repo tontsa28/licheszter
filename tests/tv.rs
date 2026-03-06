@@ -15,7 +15,7 @@ static LICHESS: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);
 #[tokio::test]
 async fn tv_games() {
     // Run a test case
-    let result = LICHESS.tv_games().await;
+    let result = LICHESS.tv().games().await;
     assert!(
         result.is_ok(),
         "Failed to get current TV games: {:?}",
@@ -27,7 +27,7 @@ async fn tv_games() {
 async fn tv_connect() {
     // Run a test case
     let thread = tokio::spawn(async move {
-        let mut result = LICHESS.tv_connect().await.unwrap();
+        let mut result = LICHESS.tv().connect().await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -48,7 +48,7 @@ async fn tv_connect() {
 async fn tv_channel_connect() {
     // Run some test cases
     let thread = tokio::spawn(async move {
-        let mut result = LICHESS.tv_channel_connect(TvChannel::Bullet).await.unwrap();
+        let mut result = LICHESS.tv().channel_connect(TvChannel::Bullet).await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -65,7 +65,7 @@ async fn tv_channel_connect() {
     }
 
     let thread = tokio::spawn(async move {
-        let mut result = LICHESS.tv_channel_connect(TvChannel::Bot).await.unwrap();
+        let mut result = LICHESS.tv().channel_connect(TvChannel::Bot).await.unwrap();
         while let Some(event) = result.next().await {
             assert!(
                 event.is_ok(),
@@ -93,7 +93,7 @@ async fn tv_channel_games() {
         .opening(true);
 
     // Run some test cases
-    let mut result = LICHESS.tv_channel_games(TvChannel::Bullet, None).await.unwrap();
+    let mut result = LICHESS.tv().channel_games(TvChannel::Bullet, None).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -103,7 +103,8 @@ async fn tv_channel_games() {
     }
 
     let mut result = LICHESS
-        .tv_channel_games(TvChannel::Bullet, Some(&options))
+        .tv()
+        .channel_games(TvChannel::Bullet, Some(&options))
         .await
         .unwrap();
     while let Some(event) = result.next().await {

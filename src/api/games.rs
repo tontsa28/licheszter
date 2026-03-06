@@ -10,58 +10,21 @@ use crate::{
     models::game::{Game, ImportGame, StreamGame, StreamMoves, UserGame, UserGames},
 };
 
-impl Licheszter {
+/// A struct for accessing the Games API endpoints.
+pub struct GamesApi<'a> {
+    pub(crate) client: &'a Licheszter,
+}
+
+impl GamesApi<'_> {
     /// Download one game.
     /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn games_export_one(&self, game_id: &str, options: Option<&GameOptions>) -> Result<Game> {
-        let mut url = self.req_url(UrlBase::Lichess, &format!("game/export/{game_id}"));
-
-        // Add the options to the request if they are present
-        if let Some(options) = options {
-            let encoded = comma_serde_urlencoded::to_string(options)?;
-            url.set_query(Some(&encoded));
-        }
-
-        let builder = self.client.get(url).header(header::ACCEPT, "application/json");
-        self.to_model::<Game>(builder).await
-    }
-
-    /// Download the ongoing game, or the last game played, of a user.
-    /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
-    ///
-    /// # Errors
-    /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn games_export_ongoing_user(
-        &self,
-        username: &str,
-        options: Option<&GameOptions>,
-    ) -> Result<Game> {
-        let mut url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/current-game"));
-
-        // Add the options to the request if they are present
-        if let Some(options) = options {
-            let encoded = comma_serde_urlencoded::to_string(options)?;
-            url.set_query(Some(&encoded));
-        }
-
-        let builder = self.client.get(url).header(header::ACCEPT, "application/json");
-        self.to_model::<Game>(builder).await
-    }
-
-    /// Download all games of any user.
-    /// By default, games are delivered in reverse chronological order (most recent first).
-    ///
-    /// # Errors
-    /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn games_export_user(
-        &self,
-        username: &str,
-        options: Option<&ExtendedGameOptions>,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.req_url(UrlBase::Lichess, &format!("api/games/user/{username}"));
+    pub async fn export_one(&self, game_id: &str, options: Option<&GameOptions>) -> Result<Game> {
+        let mut url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("game/export/{game_id}"));
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -71,9 +34,66 @@ impl Licheszter {
 
         let builder = self
             .client
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/json");
+        self.client.to_model::<Game>(builder).await
+    }
+
+    /// Download the ongoing game, or the last game played, of a user.
+    /// Ongoing games are delayed by a few seconds ranging from 3 to 60 depending on the time control to prevent cheat bots from using this endpoint.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn export_ongoing_user(
+        &self,
+        username: &str,
+        options: Option<&GameOptions>,
+    ) -> Result<Game> {
+        let mut url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/current-game"));
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self
+            .client
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/json");
+        self.client.to_model::<Game>(builder).await
+    }
+
+    /// Download all games of any user.
+    /// By default, games are delivered in reverse chronological order (most recent first).
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
+    pub async fn export_user(
+        &self,
+        username: &str,
+        options: Option<&ExtendedGameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/games/user/{username}"));
+
+        // Add the options to the request if they are present
+        if let Some(options) = options {
+            let encoded = comma_serde_urlencoded::to_string(options)?;
+            url.set_query(Some(&encoded));
+        }
+
+        let builder = self
+            .client
+            .client
             .get(url)
             .header(header::ACCEPT, "application/x-ndjson");
-        self.to_stream::<Game>(builder).await
+        self.client.to_stream::<Game>(builder).await
     }
 
     /// Download games by IDs.
@@ -83,12 +103,12 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn games_export(
+    pub async fn export(
         &self,
         game_ids: &[&str],
         options: Option<&GameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.req_url(UrlBase::Lichess, "api/games/export/_ids");
+        let mut url = self.client.req_url(UrlBase::Lichess, "api/games/export/_ids");
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -98,10 +118,11 @@ impl Licheszter {
 
         let builder = self
             .client
+            .client
             .post(url)
             .header(header::ACCEPT, "application/x-ndjson")
             .body(game_ids.join(","));
-        self.to_stream::<Game>(builder).await
+        self.client.to_stream::<Game>(builder).await
     }
 
     /// Stream the games played between a list of users in real time.
@@ -112,19 +133,20 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn games_users_connect(
+    pub async fn users_connect(
         &self,
         user_ids: &[&str],
         with_current_games: bool,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
-        let url = self.req_url(UrlBase::Lichess, "api/stream/games-by-users");
+        let url = self.client.req_url(UrlBase::Lichess, "api/stream/games-by-users");
         let builder = self
+            .client
             .client
             .post(url)
             .query(&[("withCurrentGames", with_current_games)])
             .body(user_ids.join(","));
 
-        self.to_stream::<StreamGame>(builder).await
+        self.client.to_stream::<StreamGame>(builder).await
     }
 
     /// Create a stream of games with a custom ID.
@@ -134,15 +156,17 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn games_connect(
+    pub async fn connect(
         &self,
         stream_id: &str,
         game_ids: &[&str],
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}"));
-        let builder = self.client.post(url).body(game_ids.join(","));
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}"));
+        let builder = self.client.client.post(url).body(game_ids.join(","));
 
-        self.to_stream::<StreamGame>(builder).await
+        self.client.to_stream::<StreamGame>(builder).await
     }
 
     /// Add new games to an existing stream.
@@ -150,11 +174,13 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn games_connect_add(&self, stream_id: &str, game_ids: &[&str]) -> Result<()> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}/add"));
-        let builder = self.client.post(url).body(game_ids.join(","));
+    pub async fn connect_add(&self, stream_id: &str, game_ids: &[&str]) -> Result<()> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}/add"));
+        let builder = self.client.client.post(url).body(game_ids.join(","));
 
-        self.execute(builder).await
+        self.client.execute(builder).await
     }
 
     /// Get the ongoing games of the current user.
@@ -162,11 +188,11 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn games_ongoing(&self, games: u8) -> Result<Vec<UserGame>> {
-        let url = self.req_url(UrlBase::Lichess, "api/account/playing");
-        let builder = self.client.get(url).query(&[("nb", games)]);
+    pub async fn ongoing(&self, games: u8) -> Result<Vec<UserGame>> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/account/playing");
+        let builder = self.client.client.get(url).query(&[("nb", games)]);
 
-        Ok(self.to_model::<UserGames>(builder).await?.now_playing)
+        Ok(self.client.to_model::<UserGames>(builder).await?.now_playing)
     }
 
     /// Stream positions and moves of any ongoing game.
@@ -178,14 +204,16 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn games_moves_connect(
+    pub async fn moves_connect(
         &self,
         game_id: &str,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamMoves>> + Send>>> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/stream/game/{game_id}"));
-        let builder = self.client.get(url);
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/stream/game/{game_id}"));
+        let builder = self.client.client.get(url);
 
-        self.to_stream::<StreamMoves>(builder).await
+        self.client.to_stream::<StreamMoves>(builder).await
     }
 
     /// Import a game from PGN.
@@ -194,11 +222,11 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn games_import_one(&self, pgn: &str) -> Result<ImportGame> {
-        let url = self.req_url(UrlBase::Lichess, "api/import");
-        let builder = self.client.post(url).form(&[("pgn", pgn)]);
+    pub async fn import_one(&self, pgn: &str) -> Result<ImportGame> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/import");
+        let builder = self.client.client.post(url).form(&[("pgn", pgn)]);
 
-        self.to_model::<ImportGame>(builder).await
+        self.client.to_model::<ImportGame>(builder).await
     }
 
     /// Download all games imported by you.
@@ -208,11 +236,11 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn games_export_imported(&self) -> Result<String> {
-        let url = self.req_url(UrlBase::Lichess, "api/games/export/imports");
-        let builder = self.client.get(url);
+    pub async fn export_imported(&self) -> Result<String> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/games/export/imports");
+        let builder = self.client.client.get(url);
 
-        self.to_string(builder).await
+        self.client.to_string(builder).await
     }
 
     /// Download all games bookmarked by you.
@@ -220,11 +248,13 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn games_export_bookmarked(
+    pub async fn export_bookmarked(
         &self,
         options: Option<&BookmarkedGameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.req_url(UrlBase::Lichess, "api/games/export/bookmarks");
+        let mut url = self
+            .client
+            .req_url(UrlBase::Lichess, "api/games/export/bookmarks");
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -234,8 +264,9 @@ impl Licheszter {
 
         let builder = self
             .client
+            .client
             .get(url)
             .header(header::ACCEPT, "application/x-ndjson");
-        self.to_stream::<Game>(builder).await
+        self.client.to_stream::<Game>(builder).await
     }
 }

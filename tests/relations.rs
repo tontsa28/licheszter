@@ -34,7 +34,7 @@ static DEFAULT: LazyLock<Licheszter> = LazyLock::new(|| {
 #[tokio::test]
 async fn relations_followed_users_list() {
     // Run some test cases
-    let mut result = LI.relations_followed_users_list().await.unwrap();
+    let mut result = LI.relations().followed_users_list().await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -43,7 +43,7 @@ async fn relations_followed_users_list() {
         );
     }
 
-    let mut result = BOT0.relations_followed_users_list().await.unwrap();
+    let mut result = BOT0.relations().followed_users_list().await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -52,28 +52,28 @@ async fn relations_followed_users_list() {
         );
     }
 
-    let result = DEFAULT.relations_followed_users_list().await;
+    let result = DEFAULT.relations().followed_users_list().await;
     assert!(result.is_err(), "Fetching followers did not fail");
 }
 
 #[tokio::test]
 async fn relations_follow() {
     // Run some test cases
-    let result = LI.relations_follow("Bot0").await;
+    let result = LI.relations().follow("Bot0").await;
     assert!(
         result.is_ok(),
         "Failed to follow a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.relations_follow("Li").await;
+    let result = BOT0.relations().follow("Li").await;
     assert!(
         result.is_ok(),
         "Failed to follow a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.relations_follow("NoSuchUser").await;
+    let result = LI.relations().follow("NoSuchUser").await;
     assert!(
         result.is_err(),
         "Following non-existent player did not fail: {:?}",
@@ -84,21 +84,21 @@ async fn relations_follow() {
 #[tokio::test]
 async fn relations_unfollow() {
     // Run some test cases
-    let result = LI.relations_unfollow("Bot0").await;
+    let result = LI.relations().unfollow("Bot0").await;
     assert!(
         result.is_ok(),
         "Failed to unfollow a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.relations_unfollow("Li").await;
+    let result = BOT0.relations().unfollow("Li").await;
     assert!(
         result.is_ok(),
         "Failed to unfollow a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.relations_unfollow("NoSuchUser").await;
+    let result = LI.relations().unfollow("NoSuchUser").await;
     assert!(
         result.is_err(),
         "Unfollowing non-existent player did not fail: {:?}",
@@ -109,21 +109,21 @@ async fn relations_unfollow() {
 #[tokio::test]
 async fn relations_block() {
     // Run some test cases
-    let result = LI.relations_block("Bot0").await;
+    let result = LI.relations().block("Bot0").await;
     assert!(
         result.is_ok(),
         "Failed to block a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.relations_block("Li").await;
+    let result = BOT0.relations().block("Li").await;
     assert!(
         result.is_ok(),
         "Failed to block a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.relations_block("NoSuchUser").await;
+    let result = LI.relations().block("NoSuchUser").await;
     assert!(
         result.is_err(),
         "Blocking non-existent player did not fail: {:?}",
@@ -134,21 +134,21 @@ async fn relations_block() {
 #[tokio::test]
 async fn relations_unblock() {
     // Run some test cases
-    let result = LI.relations_unblock("Bot0").await;
+    let result = LI.relations().unblock("Bot0").await;
     assert!(
         result.is_ok(),
         "Failed to unblock a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.relations_unblock("Li").await;
+    let result = BOT0.relations().unblock("Li").await;
     assert!(
         result.is_ok(),
         "Failed to unblock a player: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.relations_unblock("NoSuchUser").await;
+    let result = LI.relations().unblock("NoSuchUser").await;
     assert!(
         result.is_err(),
         "Unblocking non-existent player did not fail: {:?}",
