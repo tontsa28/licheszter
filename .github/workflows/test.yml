@@ -43,4 +43,6 @@ jobs:
         run: docker cp ${{ github.workspace }}/.github/docker/entrypoint.sh lila-bots:/entrypoint.sh && docker exec -d lila-bots ./entrypoint.sh && sleep 5s
 
       - name: Run all integration tests
+        env:
+          TEST_TOKEN: ${{ secrets.TEST_TOKEN }}
         run: cargo test --release --all-features -- --test-threads=1

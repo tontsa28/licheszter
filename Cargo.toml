@@ -32,6 +32,7 @@ comma_serde_urlencoded = { version = "^0.8", optional = true }
 
 [dev-dependencies]
 tokio = { version = "^1.30", features = ["macros"] }
+dotenvy = "^0.15.7"
 
 [features]
 default = ["bot"]

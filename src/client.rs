@@ -26,10 +26,10 @@ use tokio_util::io::StreamReader;
 const BASE_URL: &str = "https://lichess.org";
 
 #[cfg(feature = "openings")]
-const OPENINGS_URL: &str = "https://explorer.lichess.ovh";
+const OPENINGS_URL: &str = "https://explorer.lichess.org";
 
 #[cfg(feature = "tablebase")]
-const TABLEBASE_URL: &str = "https://tablebase.lichess.ovh";
+const TABLEBASE_URL: &str = "https://tablebase.lichess.org";
 
 // Default user agent
 const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));

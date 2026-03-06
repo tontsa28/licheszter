@@ -1,6 +1,6 @@
 #![cfg(feature = "openings")]
 
-use std::{error::Error, panic, sync::LazyLock};
+use std::{env::var, error::Error, panic, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::{
@@ -15,7 +15,12 @@ use licheszter::{
 use tokio::time::{sleep, Duration};
 
 // Connect to a test client
-static EXPLORER: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);
+static EXPLORER: LazyLock<Licheszter> = LazyLock::new(|| {
+    dotenvy::dotenv().ok();
+
+    let token = var("TEST_TOKEN").expect("TEST_TOKEN must be set for opening explorer tests");
+    Licheszter::builder().with_authentication(&token).unwrap().build()
+});
 
 #[tokio::test]
 async fn openings_masters() {

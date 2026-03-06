@@ -1,11 +1,16 @@
 #![cfg(feature = "tablebase")]
 
-use std::{error::Error, sync::LazyLock};
+use std::{env::var, error::Error, sync::LazyLock};
 
 use licheszter::client::Licheszter;
 
 // Connect to a test client
-static TABLEBASE: LazyLock<Licheszter> = LazyLock::new(Licheszter::new);
+static TABLEBASE: LazyLock<Licheszter> = LazyLock::new(|| {
+    dotenvy::dotenv().ok();
+
+    let token = var("TEST_TOKEN").expect("TEST_TOKEN must be set for opening explorer tests");
+    Licheszter::builder().with_authentication(&token).unwrap().build()
+});
 
 #[tokio::test]
 async fn tablebase_standard() {

@@ -77,7 +77,7 @@ impl Licheszter {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be read.
     pub async fn openings_masters_otb_game(&self, game_id: &str) -> Result<String> {
-        let url = self.req_url(UrlBase::Openings, &format!("master/pgn/{game_id}"));
+        let url = self.req_url(UrlBase::Openings, &format!("masters/pgn/{game_id}"));
         let builder = self.client.get(url);
 
         self.to_string(builder).await
