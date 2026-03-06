@@ -107,7 +107,8 @@ async fn openings_player() {
     // Run some test cases
     let thread = tokio::spawn(async move {
         let mut result = EXPLORER
-            .openings().player("Cheszter", Color::White, None)
+            .openings()
+            .player("Cheszter", Color::White, None)
             .await
             .unwrap();
         while let Some(event) = result.next().await {
@@ -127,7 +128,8 @@ async fn openings_player() {
 
     let thread = tokio::spawn(async move {
         let mut result = EXPLORER
-            .openings().player("Cheszter", Color::White, Some(&options1))
+            .openings()
+            .player("Cheszter", Color::White, Some(&options1))
             .await
             .unwrap();
         while let Some(event) = result.next().await {
@@ -146,7 +148,8 @@ async fn openings_player() {
     }
 
     let result = EXPLORER
-        .openings().player("NoSuchUser", Color::Black, Some(&options2))
+        .openings()
+        .player("NoSuchUser", Color::Black, Some(&options2))
         .await;
     assert!(result.is_err(), "Fetching player openings did not fail");
 }

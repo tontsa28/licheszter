@@ -54,10 +54,12 @@ async fn bot_game_connect() {
     BOT0.bot().play_move(&challenge.id, "g1f3", true).await.unwrap();
     BOT1.bot().play_move(&challenge.id, "b1c3", true).await.unwrap();
 
-    BOT0.bot().chat_write(&challenge.id, ChatRoom::Player, "Good game!")
+    BOT0.bot()
+        .chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
-    BOT1.bot().chat_write(&challenge.id, ChatRoom::Player, "Good game!")
+    BOT1.bot()
+        .chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
 
@@ -120,7 +122,8 @@ async fn bot_chat_write() {
 
     // Run some test cases
     let result = BOT0
-        .bot().chat_write(&challenge.id, ChatRoom::Player, "GLHF!")
+        .bot()
+        .chat_write(&challenge.id, ChatRoom::Player, "GLHF!")
         .await;
     assert!(
         result.is_ok(),
@@ -129,7 +132,8 @@ async fn bot_chat_write() {
     );
 
     let result = BOT1
-        .bot().chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
+        .bot()
+        .chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
         .await;
     assert!(
         result.is_ok(),
@@ -148,10 +152,12 @@ async fn bot_chat_read() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Write some messages to the chat
-    BOT0.bot().chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+    BOT0.bot()
+        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
-    BOT1.bot().chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+    BOT1.bot()
+        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
 

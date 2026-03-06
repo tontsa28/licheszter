@@ -99,20 +99,24 @@ async fn board_game_connect() {
     // Play the game
     LI.board().play_move(&challenge.id, "e2e4", true).await.unwrap();
     ADRIANA
-        .board().play_move(&challenge.id, "e7e5", true)
+        .board()
+        .play_move(&challenge.id, "e7e5", true)
         .await
         .unwrap();
     LI.board().play_move(&challenge.id, "g1f3", true).await.unwrap();
     ADRIANA
-        .board().play_move(&challenge.id, "b1c3", true)
+        .board()
+        .play_move(&challenge.id, "b1c3", true)
         .await
         .unwrap();
 
-    LI.board().chat_write(&challenge.id, ChatRoom::Player, "Good game!")
+    LI.board()
+        .chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
     ADRIANA
-        .board().chat_write(&challenge.id, ChatRoom::Player, "Good game!")
+        .board()
+        .chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
 
@@ -174,7 +178,10 @@ async fn board_chat_write() {
     ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = LI.board().chat_write(&challenge.id, ChatRoom::Player, "GLHF").await;
+    let result = LI
+        .board()
+        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+        .await;
     assert!(
         result.is_ok(),
         "Failed to write to chat: {:?}",
@@ -182,7 +189,8 @@ async fn board_chat_write() {
     );
 
     let result = ADRIANA
-        .board().chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
+        .board()
+        .chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
         .await;
     assert!(
         result.is_ok(),
@@ -201,11 +209,13 @@ async fn board_chat_read() {
     ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Write some messages to the chat
-    LI.board().chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+    LI.board()
+        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
     ADRIANA
-        .board().chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+        .board()
+        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
 
@@ -356,7 +366,8 @@ async fn board_claim_victory() {
 
     // Play some moves to get the game going
     ADRIANA
-        .board().play_move(&challenge.id, "e2e4", false)
+        .board()
+        .play_move(&challenge.id, "e2e4", false)
         .await
         .unwrap();
     LI.board().play_move(&challenge.id, "e7e5", false).await.unwrap();
@@ -402,7 +413,8 @@ async fn board_claim_draw() {
 
     // Play some moves to get the game going
     ADRIANA
-        .board().play_move(&challenge.id, "e2e4", false)
+        .board()
+        .play_move(&challenge.id, "e2e4", false)
         .await
         .unwrap();
     LI.board().play_move(&challenge.id, "e7e5", false).await.unwrap();

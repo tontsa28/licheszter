@@ -72,7 +72,8 @@ async fn puzzle_next() {
     );
 
     let result = LI
-        .puzzles().next(Some("rookEndgame"), Some(PuzzleDifficulty::Normal))
+        .puzzles()
+        .next(Some("rookEndgame"), Some(PuzzleDifficulty::Normal))
         .await;
     assert!(
         result.is_ok(),

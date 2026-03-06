@@ -38,7 +38,8 @@ async fn games_export_one() {
     // Create options and games for testing
     let games_options = ExtendedGameOptions::new().max(2);
     let games: Vec<Game> = LI
-        .games().export_user("Li", Some(&games_options))
+        .games()
+        .export_user("Li", Some(&games_options))
         .await
         .unwrap()
         .map(|event| event.unwrap())
@@ -172,7 +173,8 @@ async fn games_export() {
     // Create options and games for testing
     let games_options = ExtendedGameOptions::new().max(10);
     let games: Vec<Game> = LI
-        .games().export_user("Li", Some(&games_options))
+        .games()
+        .export_user("Li", Some(&games_options))
         .await
         .unwrap()
         .map(|event| event.unwrap())
@@ -268,7 +270,8 @@ async fn games_users_connect() {
 async fn games_connect() {
     // Get some game IDs for testing
     let games: Vec<StreamGame> = LI
-        .games().users_connect(&["li", "bot0", "adriana"], true)
+        .games()
+        .users_connect(&["li", "bot0", "adriana"], true)
         .await
         .unwrap()
         .take(3)
@@ -313,7 +316,8 @@ async fn games_connect_add() {
     // Start a stream of games for testing
     let task = tokio::spawn(async {
         let games: Vec<StreamGame> = LI
-            .games().users_connect(&["li", "bot0", "adriana"], true)
+            .games()
+            .users_connect(&["li", "bot0", "adriana"], true)
             .await
             .unwrap()
             .take(3)
@@ -328,7 +332,8 @@ async fn games_connect_add() {
 
     // Get some game IDs for testing
     let games: Vec<StreamGame> = LI
-        .games().users_connect(&["li", "bot0", "adriana"], true)
+        .games()
+        .users_connect(&["li", "bot0", "adriana"], true)
         .await
         .unwrap()
         .take(3)

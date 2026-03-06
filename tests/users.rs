@@ -37,7 +37,10 @@ async fn users_status() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.users().status(&["adriana", "ana", "bot0"], Some(&options)).await;
+    let result = LI
+        .users()
+        .status(&["adriana", "ana", "bot0"], Some(&options))
+        .await;
     assert!(
         result.is_ok(),
         "Failed to get user statuses: {:?}",
@@ -376,7 +379,8 @@ async fn users_notes_write() {
     );
 
     let result = LI
-        .users().notes_write("Adriana", "This is a private test note")
+        .users()
+        .notes_write("Adriana", "This is a private test note")
         .await;
     assert!(
         result.is_ok(),
@@ -385,12 +389,14 @@ async fn users_notes_write() {
     );
 
     let result = LI
-        .users().notes_write("NoSuchUser", "This is a private test note")
+        .users()
+        .notes_write("NoSuchUser", "This is a private test note")
         .await;
     assert!(result.is_err(), "Writing to private notes did not fail: {:?}", result.unwrap());
 
     let result = DEFAULT
-        .users().notes_write("Bot0", "This is a private test note")
+        .users()
+        .notes_write("Bot0", "This is a private test note")
         .await;
     assert!(result.is_err(), "Writing to private notes did not fail: {:?}", result.unwrap());
 }

@@ -114,7 +114,11 @@ async fn challenge_create_connect() {
         }
     }
 
-    let mut result = LI.challenges().create_connect("Bot0", Some(&options)).await.unwrap();
+    let mut result = LI
+        .challenges()
+        .create_connect("Bot0", Some(&options))
+        .await
+        .unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -175,7 +179,8 @@ async fn challenge_decline() {
 
     // Run some test cases
     let result = BOT0
-        .challenges().decline(&challenge.id, Some(ChallengeDeclineReason::OnlyBot))
+        .challenges()
+        .decline(&challenge.id, Some(ChallengeDeclineReason::OnlyBot))
         .await;
     assert!(
         result.is_ok(),
@@ -287,7 +292,8 @@ async fn challenge_game_clocks_start() {
 
     // Run some test cases
     let result = BOT0
-        .challenges().game_clocks_start(&challenge.id, "lip_li", "lip_bot0")
+        .challenges()
+        .game_clocks_start(&challenge.id, "lip_li", "lip_bot0")
         .await;
     assert!(
         result.is_ok(),
@@ -296,12 +302,14 @@ async fn challenge_game_clocks_start() {
     );
 
     let result = BOT0
-        .challenges().game_clocks_start("notvalid", "notvalid", "notvalid")
+        .challenges()
+        .game_clocks_start("notvalid", "notvalid", "notvalid")
         .await;
     assert!(result.is_err(), "Starting game clocks did not fail: {:?}", result.unwrap());
 
     let result = BOT0
-        .challenges().game_clocks_start("notvalid", "lip_li", "lip_bot0")
+        .challenges()
+        .game_clocks_start("notvalid", "lip_li", "lip_bot0")
         .await;
     assert!(result.is_err(), "Starting game clocks did not fail: {:?}", result.unwrap());
 }
@@ -321,14 +329,20 @@ async fn challenge_opponent_clock_increment() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.challenges().opponent_clock_increment(&challenge.id, 30).await;
+    let result = BOT0
+        .challenges()
+        .opponent_clock_increment(&challenge.id, 30)
+        .await;
     assert!(
         result.is_ok(),
         "Failed to add time to opponent clock: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.challenges().opponent_clock_increment(&challenge.id, 100000).await;
+    let result = LI
+        .challenges()
+        .opponent_clock_increment(&challenge.id, 100000)
+        .await;
     assert!(
         result.is_ok(),
         "Failed to add time to opponent clock: {:?}",

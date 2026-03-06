@@ -103,7 +103,8 @@ async fn tv_channel_games() {
     }
 
     let mut result = LICHESS
-        .tv().channel_games(TvChannel::Bullet, Some(&options))
+        .tv()
+        .channel_games(TvChannel::Bullet, Some(&options))
         .await
         .unwrap();
     while let Some(event) = result.next().await {
