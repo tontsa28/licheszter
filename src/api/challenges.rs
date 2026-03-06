@@ -38,12 +38,10 @@ impl ChallengesApi<'_> {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn create(
-        &self,
-        username: &str,
-        options: Option<&ChallengeOptions>,
-    ) -> Result<Challenge> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
+    pub async fn create(&self, username: &str, options: Option<&ChallengeOptions>) -> Result<Challenge> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
         let mut builder = self.client.client.post(url);
 
         // Add the options to the request if they are present
@@ -69,7 +67,9 @@ impl ChallengesApi<'_> {
         username: &str,
         options: Option<&ChallengeOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<ChallengeComplete>> + Send>>> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
         let mut builder = self.client.client.post(url).form(&[("keepAliveStream", true)]);
 
         // Add the options to the request if they are present
@@ -89,7 +89,9 @@ impl ChallengesApi<'_> {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn show(&self, challenge_id: &str) -> Result<Challenge> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/show"));
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/show"));
         let builder = self.client.client.get(url);
 
         self.client.to_model::<Challenge>(builder).await
@@ -100,7 +102,9 @@ impl ChallengesApi<'_> {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn accept(&self, challenge_id: &str) -> Result<()> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/accept"));
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/accept"));
         let builder = self.client.client.post(url);
 
         self.client.execute(builder).await
@@ -115,7 +119,9 @@ impl ChallengesApi<'_> {
         challenge_id: &str,
         reason: Option<ChallengeDeclineReason>,
     ) -> Result<()> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/decline"));
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/decline"));
         let builder = self
             .client
             .client
@@ -130,12 +136,10 @@ impl ChallengesApi<'_> {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn cancel(
-        &self,
-        challenge_id: &str,
-        opponent_token: Option<&str>,
-    ) -> Result<()> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/cancel"));
+    pub async fn cancel(&self, challenge_id: &str, opponent_token: Option<&str>) -> Result<()> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/cancel"));
         let mut builder = self.client.client.post(url);
 
         // Add the opponent token as a query parameter if it's present
@@ -150,11 +154,7 @@ impl ChallengesApi<'_> {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn ai(
-        &self,
-        level: AILevel,
-        options: Option<&AIChallengeOptions>,
-    ) -> Result<AIChallenge> {
+    pub async fn ai(&self, level: AILevel, options: Option<&AIChallengeOptions>) -> Result<AIChallenge> {
         let url = self.client.req_url(UrlBase::Lichess, "api/challenge/ai");
         let mut builder = self.client.client.post(url).form(&[("level", level as u8)]);
 
@@ -174,10 +174,7 @@ impl ChallengesApi<'_> {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn create_open(
-        &self,
-        options: Option<&OpenChallengeOptions>,
-    ) -> Result<OpenChallenge> {
+    pub async fn create_open(&self, options: Option<&OpenChallengeOptions>) -> Result<OpenChallenge> {
         let url = self.client.req_url(UrlBase::Lichess, "api/challenge/open");
         let mut builder = self.client.client.post(url);
 
@@ -199,13 +196,10 @@ impl ChallengesApi<'_> {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn game_clocks_start(
-        &self,
-        game_id: &str,
-        token1: &str,
-        token2: &str,
-    ) -> Result<()> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/challenge/{game_id}/start-clocks"));
+    pub async fn game_clocks_start(&self, game_id: &str, token1: &str, token2: &str) -> Result<()> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/challenge/{game_id}/start-clocks"));
         let builder = self
             .client
             .client
@@ -221,7 +215,9 @@ impl ChallengesApi<'_> {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn opponent_clock_increment(&self, game_id: &str, seconds: u32) -> Result<()> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/round/{game_id}/add-time/{seconds}"));
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/round/{game_id}/add-time/{seconds}"));
         let builder = self.client.client.post(url);
 
         self.client.execute(builder).await

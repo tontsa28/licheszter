@@ -71,7 +71,11 @@ impl AccountApi<'_> {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn timeline(&self, since: Option<u64>, amount: Option<u8>) -> Result<Timeline> {
         let url = self.client.req_url(UrlBase::Lichess, "api/timeline");
-        let builder = self.client.client.get(url).query(&(("since", since), ("nb", amount)));
+        let builder = self
+            .client
+            .client
+            .get(url)
+            .query(&(("since", since), ("nb", amount)));
 
         self.client.to_model::<Timeline>(builder).await
     }

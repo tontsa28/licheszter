@@ -9,18 +9,23 @@ use crate::{
     },
 };
 
-impl Licheszter {
+/// A struct for accessing the Users API endpoints.
+pub struct UsersApi<'a> {
+    pub(crate) client: &'a Licheszter,
+}
+
+impl UsersApi<'_> {
     /// Get the status of one or more users at the same time.
     /// Works with up to 100 users.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_status(
+    pub async fn status(
         &self,
         user_ids: &[&str],
         options: Option<&UserStatusOptions>,
     ) -> Result<Vec<RealtimeUser>> {
-        let mut url = self.req_url(UrlBase::Lichess, "api/users/status");
+        let mut url = self.client.req_url(UrlBase::Lichess, "api/users/status");
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -28,19 +33,19 @@ impl Licheszter {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.client.get(url).query(&[("ids", user_ids.join(","))]);
-        self.to_model::<Vec<RealtimeUser>>(builder).await
+        let builder = self.client.client.get(url).query(&[("ids", user_ids.join(","))]);
+        self.client.to_model::<Vec<RealtimeUser>>(builder).await
     }
 
     /// Get the top 10 players for each speed and variant.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_top10(&self) -> Result<TopUsers> {
-        let url = self.req_url(UrlBase::Lichess, "api/player");
-        let builder = self.client.get(url);
+    pub async fn top10(&self) -> Result<TopUsers> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/player");
+        let builder = self.client.client.get(url);
 
-        self.to_model::<TopUsers>(builder).await
+        self.client.to_model::<TopUsers>(builder).await
     }
 
     /// Get the leaderboard for a single speed or variant (perf type).
@@ -48,22 +53,26 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_leaderboard(&self, amount: u8, perf_type: PerfType) -> Result<Vec<TopUser>> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/player/top/{amount}/{perf_type}"));
-        let builder = self.client.get(url);
+    pub async fn leaderboard(&self, amount: u8, perf_type: PerfType) -> Result<Vec<TopUser>> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/player/top/{amount}/{perf_type}"));
+        let builder = self.client.client.get(url);
 
-        Ok(self.to_model::<TopUserLeaderboard>(builder).await?.users)
+        Ok(self.client.to_model::<TopUserLeaderboard>(builder).await?.users)
     }
 
     /// Read public data of a user.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_profile(&self, username: &str, trophies: bool) -> Result<User> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}"));
-        let builder = self.client.get(url).query(&[("trophies", trophies)]);
+    pub async fn profile(&self, username: &str, trophies: bool) -> Result<User> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}"));
+        let builder = self.client.client.get(url).query(&[("trophies", trophies)]);
 
-        self.to_model::<User>(builder).await
+        self.client.to_model::<User>(builder).await
     }
 
     /// Read rating history of a user, for all perf types.
@@ -72,33 +81,39 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_rating_history(&self, username: &str) -> Result<Vec<RatingHistory>> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/rating-history"));
-        let builder = self.client.get(url);
+    pub async fn rating_history(&self, username: &str) -> Result<Vec<RatingHistory>> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/rating-history"));
+        let builder = self.client.client.get(url);
 
-        self.to_model::<Vec<RatingHistory>>(builder).await
+        self.client.to_model::<Vec<RatingHistory>>(builder).await
     }
 
     /// Read performance statistics of a user, for a single performance.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_performance(&self, username: &str, perf: PerfType) -> Result<UserPerformance> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/perf/{perf}"));
-        let builder = self.client.get(url);
+    pub async fn performance(&self, username: &str, perf: PerfType) -> Result<UserPerformance> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/perf/{perf}"));
+        let builder = self.client.client.get(url);
 
-        self.to_model::<UserPerformance>(builder).await
+        self.client.to_model::<UserPerformance>(builder).await
     }
 
     /// Read data to generate the activity feed of a user.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_activity(&self, username: &str) -> Result<Vec<UserActivity>> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/activity"));
-        let builder = self.client.get(url);
+    pub async fn activity(&self, username: &str) -> Result<Vec<UserActivity>> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/activity"));
+        let builder = self.client.client.get(url);
 
-        self.to_model::<Vec<UserActivity>>(builder).await
+        self.client.to_model::<Vec<UserActivity>>(builder).await
     }
 
     /// Get up to 300 users by their IDs.
@@ -106,22 +121,22 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_list(&self, user_ids: &[&str]) -> Result<Vec<BasicUser>> {
-        let url = self.req_url(UrlBase::Lichess, "api/users");
-        let builder = self.client.post(url).body(user_ids.join(","));
+    pub async fn list(&self, user_ids: &[&str]) -> Result<Vec<BasicUser>> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/users");
+        let builder = self.client.client.post(url).body(user_ids.join(","));
 
-        self.to_model::<Vec<BasicUser>>(builder).await
+        self.client.to_model::<Vec<BasicUser>>(builder).await
     }
 
     /// Get basic information about currently streaming users.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_streamers_live(&self) -> Result<Vec<StreamingUser>> {
-        let url = self.req_url(UrlBase::Lichess, "api/streamer/live");
-        let builder = self.client.get(url);
+    pub async fn streamers_live(&self) -> Result<Vec<StreamingUser>> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/streamer/live");
+        let builder = self.client.client.get(url);
 
-        self.to_model::<Vec<StreamingUser>>(builder).await
+        self.client.to_model::<Vec<StreamingUser>>(builder).await
     }
 
     /// Get total number of games, and current score, of any two users.
@@ -129,22 +144,28 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_crosstable(&self, user1: &str, user2: &str, matchup: bool) -> Result<Crosstable> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/crosstable/{user1}/{user2}"));
-        let builder = self.client.get(url).query(&[("matchup", matchup)]);
+    pub async fn crosstable(&self, user1: &str, user2: &str, matchup: bool) -> Result<Crosstable> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/crosstable/{user1}/{user2}"));
+        let builder = self.client.client.get(url).query(&[("matchup", matchup)]);
 
-        self.to_model::<Crosstable>(builder).await
+        self.client.to_model::<Crosstable>(builder).await
     }
 
     /// Provides autocompletion options for an incomplete username.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_autocomplete(&self, term: &str, friend: bool) -> Result<Vec<String>> {
-        let url = self.req_url(UrlBase::Lichess, "api/player/autocomplete");
-        let builder = self.client.get(url).query(&(("term", term), ("friend", friend)));
+    pub async fn autocomplete(&self, term: &str, friend: bool) -> Result<Vec<String>> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/player/autocomplete");
+        let builder = self
+            .client
+            .client
+            .get(url)
+            .query(&(("term", term), ("friend", friend)));
 
-        self.to_model::<Vec<String>>(builder).await
+        self.client.to_model::<Vec<String>>(builder).await
     }
 
     /// Provides detailed autocompletion options for an incomplete username.
@@ -152,18 +173,15 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_autocomplete_details(
-        &self,
-        term: &str,
-        friend: bool,
-    ) -> Result<Vec<MinimalUser>> {
-        let url = self.req_url(UrlBase::Lichess, "api/player/autocomplete");
+    pub async fn autocomplete_details(&self, term: &str, friend: bool) -> Result<Vec<MinimalUser>> {
+        let url = self.client.req_url(UrlBase::Lichess, "api/player/autocomplete");
         let builder =
             self.client
+                .client
                 .get(url)
                 .query(&(("term", term), ("object", true), ("friend", friend)));
 
-        Ok(self.to_model::<UserAutocomplete>(builder).await?.result)
+        Ok(self.client.to_model::<UserAutocomplete>(builder).await?.result)
     }
 
     /// Add a private note about the given account.
@@ -171,21 +189,25 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_notes_write(&self, username: &str, text: &str) -> Result<()> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
-        let builder = self.client.post(url).form(&[("text", text)]);
+    pub async fn notes_write(&self, username: &str, text: &str) -> Result<()> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
+        let builder = self.client.client.post(url).form(&[("text", text)]);
 
-        self.execute(builder).await
+        self.client.execute(builder).await
     }
 
     /// Get the private notes that you have added for a user.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn users_notes_read(&self, username: &str) -> Result<Vec<UserNote>> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
-        let builder = self.client.get(url);
+    pub async fn notes_read(&self, username: &str) -> Result<Vec<UserNote>> {
+        let url = self
+            .client
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
+        let builder = self.client.client.get(url);
 
-        self.to_model::<Vec<UserNote>>(builder).await
+        self.client.to_model::<Vec<UserNote>>(builder).await
     }
 }
