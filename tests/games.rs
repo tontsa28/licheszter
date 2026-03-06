@@ -38,7 +38,7 @@ async fn games_export_one() {
     // Create options and games for testing
     let games_options = ExtendedGameOptions::new().max(2);
     let games: Vec<Game> = LI
-        .games_export_user("Li", Some(&games_options))
+        .games().export_user("Li", Some(&games_options))
         .await
         .unwrap()
         .map(|event| event.unwrap())
@@ -55,21 +55,21 @@ async fn games_export_one() {
         .literate(true);
 
     // Run some test cases
-    let result = LI.games_export_one(&games[0].id, Some(&options)).await;
+    let result = LI.games().export_one(&games[0].id, Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to export game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_export_one(&games[1].id, None).await;
+    let result = LI.games().export_one(&games[1].id, None).await;
     assert!(
         result.is_ok(),
         "Failed to export game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_export_one("notvalid", None).await;
+    let result = LI.games().export_one("notvalid", None).await;
     assert!(result.is_err(), "Exporting one game did not fail: {:?}", result.unwrap());
 }
 
@@ -87,28 +87,28 @@ async fn games_export_ongoing_user() {
         .literate(true);
 
     // Run some test cases
-    let result = LI.games_export_ongoing_user("Li", Some(&options)).await;
+    let result = LI.games().export_ongoing_user("Li", Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to export ongoing game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_export_ongoing_user("Li", None).await;
+    let result = LI.games().export_ongoing_user("Li", None).await;
     assert!(
         result.is_ok(),
         "Failed to export ongoing game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_export_ongoing_user("Adriana", Some(&options)).await;
+    let result = LI.games().export_ongoing_user("Adriana", Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to export ongoing game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_export_ongoing_user("NoSuchUser", None).await;
+    let result = LI.games().export_ongoing_user("NoSuchUser", None).await;
     assert!(result.is_err(), "Exporting ongoing game did not fail: {:?}", result.unwrap());
 }
 
@@ -136,7 +136,7 @@ async fn games_export_user() {
         .sort(GameSortOrder::DateDesc);
 
     // Run some test cases
-    let mut result = LI.games_export_user("Li", Some(&options)).await.unwrap();
+    let mut result = LI.games().export_user("Li", Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -145,7 +145,7 @@ async fn games_export_user() {
         );
     }
 
-    let mut result = LI.games_export_user("Li", None).await.unwrap();
+    let mut result = LI.games().export_user("Li", None).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -154,7 +154,7 @@ async fn games_export_user() {
         );
     }
 
-    let mut result = LI.games_export_user("Adriana", Some(&options)).await.unwrap();
+    let mut result = LI.games().export_user("Adriana", Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -163,7 +163,7 @@ async fn games_export_user() {
         );
     }
 
-    let result = LI.games_export_user("NoSuchUser", None).await;
+    let result = LI.games().export_user("NoSuchUser", None).await;
     assert!(result.is_err(), "Exporting user games did not fail");
 }
 
@@ -172,7 +172,7 @@ async fn games_export() {
     // Create options and games for testing
     let games_options = ExtendedGameOptions::new().max(10);
     let games: Vec<Game> = LI
-        .games_export_user("Li", Some(&games_options))
+        .games().export_user("Li", Some(&games_options))
         .await
         .unwrap()
         .map(|event| event.unwrap())
@@ -190,7 +190,7 @@ async fn games_export() {
         .literate(true);
 
     // Run some test cases
-    let mut result = LI.games_export(&game_ids, Some(&options)).await.unwrap();
+    let mut result = LI.games().export(&game_ids, Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -199,7 +199,7 @@ async fn games_export() {
         );
     }
 
-    let mut result = LI.games_export(&game_ids, None).await.unwrap();
+    let mut result = LI.games().export(&game_ids, None).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -208,11 +208,11 @@ async fn games_export() {
         );
     }
 
-    let mut result = LI.games_export(&[], Some(&options)).await.unwrap();
+    let mut result = LI.games().export(&[], Some(&options)).await.unwrap();
     let next = result.next().await;
     assert!(next.is_none(), "Exporting games did not fail: {:?}", next.unwrap());
 
-    let mut result = LI.games_export(&[], None).await.unwrap();
+    let mut result = LI.games().export(&[], None).await.unwrap();
     let next = result.next().await;
     assert!(next.is_none(), "Exporting games did not fail: {:?}", next.unwrap());
 }
@@ -220,7 +220,7 @@ async fn games_export() {
 #[tokio::test]
 async fn games_users_connect() {
     // Run some test cases
-    let mut result = LI.games_users_connect(&["li", "bot0"], true).await.unwrap();
+    let mut result = LI.games().users_connect(&["li", "bot0"], true).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -233,7 +233,7 @@ async fn games_users_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_users_connect(&["li", "adriana"], true).await.unwrap();
+    let mut result = LI.games().users_connect(&["li", "adriana"], true).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -246,7 +246,7 @@ async fn games_users_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_users_connect(&["li", "bot0"], false).await.unwrap();
+    let mut result = LI.games().users_connect(&["li", "bot0"], false).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -259,7 +259,7 @@ async fn games_users_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_users_connect(&["li"], false).await.unwrap();
+    let mut result = LI.games().users_connect(&["li"], false).await.unwrap();
     let next = result.next().await;
     assert!(next.is_none(), "Streaming user games did not fail: {:?}", next.unwrap());
 }
@@ -268,7 +268,7 @@ async fn games_users_connect() {
 async fn games_connect() {
     // Get some game IDs for testing
     let games: Vec<StreamGame> = LI
-        .games_users_connect(&["li", "bot0", "adriana"], true)
+        .games().users_connect(&["li", "bot0", "adriana"], true)
         .await
         .unwrap()
         .take(3)
@@ -278,7 +278,7 @@ async fn games_connect() {
     let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
 
     // Run some test cases
-    let mut result = LI.games_connect("randomid", &game_ids).await.unwrap();
+    let mut result = LI.games().connect("randomid", &game_ids).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -291,7 +291,7 @@ async fn games_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_connect("randomid", &[]).await.unwrap();
+    let mut result = LI.games().connect("randomid", &[]).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -304,7 +304,7 @@ async fn games_connect() {
     .await
     .unwrap_err();
 
-    let result = LI.games_connect("", &[]).await;
+    let result = LI.games().connect("", &[]).await;
     assert!(result.is_err(), "Streaming games did not fail");
 }
 
@@ -313,7 +313,7 @@ async fn games_connect_add() {
     // Start a stream of games for testing
     let task = tokio::spawn(async {
         let games: Vec<StreamGame> = LI
-            .games_users_connect(&["li", "bot0", "adriana"], true)
+            .games().users_connect(&["li", "bot0", "adriana"], true)
             .await
             .unwrap()
             .take(3)
@@ -322,13 +322,13 @@ async fn games_connect_add() {
             .unwrap();
         let game_ids: Vec<&str> = games.iter().map(|game| game.id.as_str()).collect();
 
-        let mut stream = LI.games_connect("someid", &game_ids).await.unwrap();
+        let mut stream = LI.games().connect("someid", &game_ids).await.unwrap();
         while stream.next().await.is_some() {}
     });
 
     // Get some game IDs for testing
     let games: Vec<StreamGame> = LI
-        .games_users_connect(&["li", "bot0", "adriana"], true)
+        .games().users_connect(&["li", "bot0", "adriana"], true)
         .await
         .unwrap()
         .take(3)
@@ -339,28 +339,28 @@ async fn games_connect_add() {
     sleep(Duration::from_millis(100)).await;
 
     // Run some test cases
-    let result = LI.games_connect_add("someid", &game_ids).await;
+    let result = LI.games().connect_add("someid", &game_ids).await;
     assert!(
         result.is_ok(),
         "Failed to add game to stream: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_connect_add("someid", &[]).await;
+    let result = LI.games().connect_add("someid", &[]).await;
     assert!(
         result.is_ok(),
         "Failed to add game to stream: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_connect_add("someid", &["notvalid"]).await;
+    let result = LI.games().connect_add("someid", &["notvalid"]).await;
     assert!(
         result.is_ok(),
         "Failed to add game to stream: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_connect_add("invalid", &[]).await;
+    let result = LI.games().connect_add("invalid", &[]).await;
     assert!(result.is_err(), "Adding game to stream did not fail: {:?}", result.unwrap());
 
     task.abort();
@@ -369,14 +369,14 @@ async fn games_connect_add() {
 #[tokio::test]
 async fn games_ongoing() {
     // Run some test cases
-    let result = LI.games_ongoing(10).await;
+    let result = LI.games().ongoing(10).await;
     assert!(
         result.is_ok(),
         "Failed to get ongoing games: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.games_ongoing(10).await;
+    let result = BOT0.games().ongoing(10).await;
     assert!(
         result.is_ok(),
         "Failed to get ongoing games: {:?}",
@@ -387,11 +387,11 @@ async fn games_ongoing() {
 #[tokio::test]
 async fn games_moves_connect() {
     // Get some game IDs for testing
-    let games = LI.games_ongoing(2).await.unwrap();
+    let games = LI.games().ongoing(2).await.unwrap();
     let game_ids: Vec<&str> = games.iter().map(|game| game.game_id.as_str()).collect();
 
     // Run some test cases
-    let mut result = LI.games_moves_connect(game_ids[0]).await.unwrap();
+    let mut result = LI.games().moves_connect(game_ids[0]).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -404,7 +404,7 @@ async fn games_moves_connect() {
     .await
     .unwrap_err();
 
-    let mut result = LI.games_moves_connect(game_ids[1]).await.unwrap();
+    let mut result = LI.games().moves_connect(game_ids[1]).await.unwrap();
     timeout(Duration::from_secs(1), async {
         while let Some(event) = result.next().await {
             assert!(
@@ -417,7 +417,7 @@ async fn games_moves_connect() {
     .await
     .unwrap_err();
 
-    let result = LI.games_moves_connect("notvalid").await;
+    let result = LI.games().moves_connect("notvalid").await;
     assert!(result.is_err(), "Streaming moves of a game did not fail");
 }
 
@@ -449,35 +449,35 @@ async fn games_import_one() {
     1. f3 e5 2. g4 Qh4# { A00 Barnes Opening: Fool's Mate } { Black wins by checkmate. } 0-1"#;
 
     // Run some test cases
-    let result = LI.games_import_one(pgn).await;
+    let result = LI.games().import_one(pgn).await;
     assert!(
         result.is_ok(),
         "Failed to import game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.games_import_one(pgn).await;
+    let result = BOT0.games().import_one(pgn).await;
     assert!(
         result.is_ok(),
         "Failed to import game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.games_import_one("").await;
+    let result = LI.games().import_one("").await;
     assert!(result.is_err(), "Importing game did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
 async fn games_export_imported() {
     // Run some test cases
-    let result = LI.games_export_imported().await;
+    let result = LI.games().export_imported().await;
     assert!(
         result.is_ok(),
         "Failed to export imported games: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.games_export_imported().await;
+    let result = BOT0.games().export_imported().await;
     assert!(
         result.is_ok(),
         "Failed to export imported games: {:?}",
@@ -502,7 +502,7 @@ async fn games_export_bookmarked() {
         .sort(GameSortOrder::DateDesc);
 
     // Run some test cases
-    let mut result = LI.games_export_bookmarked(Some(&options)).await.unwrap();
+    let mut result = LI.games().export_bookmarked(Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),
@@ -511,7 +511,7 @@ async fn games_export_bookmarked() {
         );
     }
 
-    let mut result = BOT0.games_export_bookmarked(None).await.unwrap();
+    let mut result = BOT0.games().export_bookmarked(None).await.unwrap();
     while let Some(event) = result.next().await {
         assert!(
             event.is_ok(),

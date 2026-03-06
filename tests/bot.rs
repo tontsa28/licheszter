@@ -37,7 +37,7 @@ async fn bot_game_connect() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
-    let mut result = BOT0.bot_game_connect(&challenge.id).await.unwrap();
+    let mut result = BOT0.bot().game_connect(&challenge.id).await.unwrap();
     let thread = tokio::spawn(async move {
         while let Some(event) = result.next().await {
             assert!(
@@ -49,15 +49,15 @@ async fn bot_game_connect() {
     });
 
     // Play the game
-    BOT0.bot_play_move(&challenge.id, "e2e4", true).await.unwrap();
-    BOT1.bot_play_move(&challenge.id, "e7e5", true).await.unwrap();
-    BOT0.bot_play_move(&challenge.id, "g1f3", true).await.unwrap();
-    BOT1.bot_play_move(&challenge.id, "b1c3", true).await.unwrap();
+    BOT0.bot().play_move(&challenge.id, "e2e4", true).await.unwrap();
+    BOT1.bot().play_move(&challenge.id, "e7e5", true).await.unwrap();
+    BOT0.bot().play_move(&challenge.id, "g1f3", true).await.unwrap();
+    BOT1.bot().play_move(&challenge.id, "b1c3", true).await.unwrap();
 
-    BOT0.bot_chat_write(&challenge.id, ChatRoom::Player, "Good game!")
+    BOT0.bot().chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
-    BOT1.bot_chat_write(&challenge.id, ChatRoom::Player, "Good game!")
+    BOT1.bot().chat_write(&challenge.id, ChatRoom::Player, "Good game!")
         .await
         .unwrap();
 
@@ -77,38 +77,38 @@ async fn bot_play_move() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = BOT0.bot_play_move(&challenge.id, "e2e4", false).await;
+    let result = BOT0.bot().play_move(&challenge.id, "e2e4", false).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT1.bot_play_move(&challenge.id, "e7e5", true).await;
+    let result = BOT1.bot().play_move(&challenge.id, "e7e5", true).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_play_move(&challenge.id, "d1d3", true).await;
+    let result = BOT0.bot().play_move(&challenge.id, "d1d3", true).await;
     assert!(result.is_err(), "Playing a move did not fail: {:?}", result.unwrap());
 
-    let result = BOT0.bot_play_move(&challenge.id, "g1f3", true).await;
+    let result = BOT0.bot().play_move(&challenge.id, "g1f3", true).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT1.bot_play_move(&challenge.id, "b8c6", true).await;
+    let result = BOT1.bot().play_move(&challenge.id, "b8c6", true).await;
     assert!(
         result.is_ok(),
         "Failed to play a move: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_play_move("notvalid", "a1a3", false).await;
+    let result = BOT0.bot().play_move("notvalid", "a1a3", false).await;
     assert!(result.is_err(), "Playing a move did not fail: {:?}", result.unwrap());
 }
 
@@ -120,7 +120,7 @@ async fn bot_chat_write() {
 
     // Run some test cases
     let result = BOT0
-        .bot_chat_write(&challenge.id, ChatRoom::Player, "GLHF!")
+        .bot().chat_write(&challenge.id, ChatRoom::Player, "GLHF!")
         .await;
     assert!(
         result.is_ok(),
@@ -129,7 +129,7 @@ async fn bot_chat_write() {
     );
 
     let result = BOT1
-        .bot_chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
+        .bot().chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
         .await;
     assert!(
         result.is_ok(),
@@ -137,7 +137,7 @@ async fn bot_chat_write() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_chat_write("notvalid", ChatRoom::Player, "GLHF!").await;
+    let result = BOT0.bot().chat_write("notvalid", ChatRoom::Player, "GLHF!").await;
     assert!(result.is_err(), "Writing to chat did not fail: {:?}", result.unwrap());
 }
 
@@ -148,22 +148,22 @@ async fn bot_chat_read() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Write some messages to the chat
-    BOT0.bot_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+    BOT0.bot().chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
-    BOT1.bot_chat_write(&challenge.id, ChatRoom::Player, "GLHF")
+    BOT1.bot().chat_write(&challenge.id, ChatRoom::Player, "GLHF")
         .await
         .unwrap();
 
     // Run some test cases
-    let result = BOT0.bot_chat_read(&challenge.id).await;
+    let result = BOT0.bot().chat_read(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to read chat messages: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_chat_read("notvalid").await;
+    let result = BOT0.bot().chat_read("notvalid").await;
     assert!(result.is_err(), "Reading chat messages did not fail: {:?}", result.unwrap());
 }
 
@@ -174,14 +174,14 @@ async fn bot_game_abort() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = BOT0.bot_game_abort(&challenge.id).await;
+    let result = BOT0.bot().game_abort(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to abort game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT1.bot_game_abort(&challenge.id).await;
+    let result = BOT1.bot().game_abort(&challenge.id).await;
     assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
@@ -189,14 +189,14 @@ async fn bot_game_abort() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = BOT1.bot_game_abort(&challenge.id).await;
+    let result = BOT1.bot().game_abort(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to abort game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_game_abort("notvalid").await;
+    let result = BOT0.bot().game_abort("notvalid").await;
     assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
 }
 
@@ -207,14 +207,14 @@ async fn bot_game_resign() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = BOT0.bot_game_resign(&challenge.id).await;
+    let result = BOT0.bot().game_resign(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to resign game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT1.bot_game_resign(&challenge.id).await;
+    let result = BOT1.bot().game_resign(&challenge.id).await;
     assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
 
     // Create a game for testing
@@ -222,14 +222,14 @@ async fn bot_game_resign() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = BOT1.bot_game_resign(&challenge.id).await;
+    let result = BOT1.bot().game_resign(&challenge.id).await;
     assert!(
         result.is_ok(),
         "Failed to resign game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_game_resign("notvalid").await;
+    let result = BOT0.bot().game_resign("notvalid").await;
     assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
 }
 
@@ -240,7 +240,7 @@ async fn bot_handle_draws() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
-    let result = BOT0.bot_handle_draws(&challenge.id, true).await;
+    let result = BOT0.bot().handle_draws(&challenge.id, true).await;
     assert!(
         result.is_ok(),
         "Failed to handle draws: {:?}",
@@ -252,14 +252,14 @@ async fn bot_handle_draws() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = BOT0.bot_handle_draws(&challenge.id, false).await;
+    let result = BOT0.bot().handle_draws(&challenge.id, false).await;
     assert!(
         result.is_ok(),
         "Failed to handle draws: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_handle_draws("notvalid", true).await;
+    let result = BOT0.bot().handle_draws("notvalid", true).await;
     assert!(result.is_err(), "Handling draws did not fail: {:?}", result.unwrap());
 }
 
@@ -270,7 +270,7 @@ async fn bot_handle_takebacks() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
-    let result = BOT0.bot_handle_takebacks(&challenge.id, true).await;
+    let result = BOT0.bot().handle_takebacks(&challenge.id, true).await;
     assert!(
         result.is_ok(),
         "Failed to handle takebacks: {:?}",
@@ -282,14 +282,14 @@ async fn bot_handle_takebacks() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = BOT0.bot_handle_takebacks(&challenge.id, false).await;
+    let result = BOT0.bot().handle_takebacks(&challenge.id, false).await;
     assert!(
         result.is_ok(),
         "Failed to handle takebacks: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = BOT0.bot_handle_takebacks("notvalid", true).await;
+    let result = BOT0.bot().handle_takebacks("notvalid", true).await;
     assert!(result.is_err(), "Handling takebacks did not fail: {:?}", result.unwrap());
 }
 
@@ -301,15 +301,15 @@ async fn bot_claim_victory() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
-    BOT1.bot_play_move(&challenge.id, "e2e4", false).await.unwrap();
-    BOT0.bot_play_move(&challenge.id, "e7e5", false).await.unwrap();
+    BOT1.bot().play_move(&challenge.id, "e2e4", false).await.unwrap();
+    BOT0.bot().play_move(&challenge.id, "e7e5", false).await.unwrap();
 
     // Run some test cases
-    let mut stream = BOT0.bot_game_connect(&challenge.id).await.unwrap();
+    let mut stream = BOT0.bot().game_connect(&challenge.id).await.unwrap();
     while let Some(event) = stream.try_next().await.unwrap() {
         if let BoardState::OpponentGone(gone) = event {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
-                let result = BOT0.bot_claim_draw(&challenge.id).await;
+                let result = BOT0.bot().claim_draw(&challenge.id).await;
                 assert!(
                     result.is_ok(),
                     "Failed to claim draw of a game: {:?}",
@@ -321,14 +321,14 @@ async fn bot_claim_victory() {
         }
     }
 
-    let result = BOT1.bot_claim_victory(&challenge.id).await;
+    let result = BOT1.bot().claim_victory(&challenge.id).await;
     assert!(
         result.is_err(),
         "Claiming victory of a game did not fail: {:?}",
         result.unwrap()
     );
 
-    let result = BOT0.bot_claim_victory("notvalid").await;
+    let result = BOT0.bot().claim_victory("notvalid").await;
     assert!(
         result.is_err(),
         "Claiming victory of a game did not fail: {:?}",
@@ -344,15 +344,15 @@ async fn bot_claim_draw() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
-    BOT1.bot_play_move(&challenge.id, "e2e4", false).await.unwrap();
-    BOT0.bot_play_move(&challenge.id, "e7e5", false).await.unwrap();
+    BOT1.bot().play_move(&challenge.id, "e2e4", false).await.unwrap();
+    BOT0.bot().play_move(&challenge.id, "e7e5", false).await.unwrap();
 
     // Run some test cases
-    let mut stream = BOT0.bot_game_connect(&challenge.id).await.unwrap();
+    let mut stream = BOT0.bot().game_connect(&challenge.id).await.unwrap();
     while let Some(event) = stream.try_next().await.unwrap() {
         if let BoardState::OpponentGone(gone) = event {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
-                let result = BOT0.bot_claim_draw(&challenge.id).await;
+                let result = BOT0.bot().claim_draw(&challenge.id).await;
                 assert!(
                     result.is_ok(),
                     "Failed to claim draw of a game: {:?}",
@@ -364,9 +364,9 @@ async fn bot_claim_draw() {
         }
     }
 
-    let result = BOT1.bot_claim_draw(&challenge.id).await;
+    let result = BOT1.bot().claim_draw(&challenge.id).await;
     assert!(result.is_err(), "Claiming draw of a game did not fail: {:?}", result.unwrap());
 
-    let result = BOT0.bot_claim_draw("notvalid").await;
+    let result = BOT0.bot().claim_draw("notvalid").await;
     assert!(result.is_err(), "Claiming draw of a game did not fail: {:?}", result.unwrap());
 }
