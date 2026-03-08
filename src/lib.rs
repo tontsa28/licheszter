@@ -64,7 +64,7 @@
 //!
 //! For additional information, check the [GitHub repository](https://github.com/tontsa28/licheszter) and the official [Lichess API documentation](https://lichess.org/api).
 
-pub mod api;
+pub(crate) mod api;
 pub mod client;
 pub mod config;
 pub mod error;

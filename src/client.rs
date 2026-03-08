@@ -1,35 +1,37 @@
+// Re-export the API category structs so they're accessible as `licheszter::client::XxxApi`.
+// The `api` module itself is `pub(crate)` to keep it as an internal implementation detail.
 #[cfg(feature = "account")]
-use crate::api::account::AccountApi;
+pub use crate::api::account::AccountApi;
 #[cfg(feature = "analysis")]
-use crate::api::analysis::AnalysisApi;
+pub use crate::api::analysis::AnalysisApi;
 #[cfg(feature = "board")]
-use crate::api::board::BoardApi;
+pub use crate::api::board::BoardApi;
 #[cfg(feature = "bot")]
-use crate::api::bot::BotApi;
+pub use crate::api::bot::BotApi;
 #[cfg(feature = "challenges")]
-use crate::api::challenges::ChallengesApi;
+pub use crate::api::challenges::ChallengesApi;
 #[cfg(feature = "fide")]
-use crate::api::fide::FideApi;
+pub use crate::api::fide::FideApi;
 #[cfg(feature = "games")]
-use crate::api::games::GamesApi;
+pub use crate::api::games::GamesApi;
 #[cfg(feature = "messaging")]
-use crate::api::messaging::MessagingApi;
+pub use crate::api::messaging::MessagingApi;
 #[cfg(feature = "openings")]
-use crate::api::openings::OpeningsApi;
+pub use crate::api::openings::OpeningsApi;
 #[cfg(feature = "pairings")]
-use crate::api::pairings::BulkPairingsApi;
+pub use crate::api::pairings::BulkPairingsApi;
 #[cfg(feature = "puzzles")]
-use crate::api::puzzles::PuzzlesApi;
+pub use crate::api::puzzles::PuzzlesApi;
 #[cfg(feature = "relations")]
-use crate::api::relations::RelationsApi;
+pub use crate::api::relations::RelationsApi;
 #[cfg(feature = "simuls")]
-use crate::api::simuls::SimulsApi;
+pub use crate::api::simuls::SimulsApi;
 #[cfg(feature = "tablebase")]
-use crate::api::tablebase::TablebaseApi;
+pub use crate::api::tablebase::TablebaseApi;
 #[cfg(feature = "tv")]
-use crate::api::tv::TvApi;
+pub use crate::api::tv::TvApi;
 #[cfg(feature = "users")]
-use crate::api::users::UsersApi;
+pub use crate::api::users::UsersApi;
 use crate::{
     error::{LichessError, Result},
     models::common::OkResponse,
