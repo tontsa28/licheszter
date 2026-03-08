@@ -9,8 +9,8 @@ use crate::{
     },
 };
 
-use std::sync::Arc;
 use futures_util::Stream;
+use std::sync::Arc;
 
 /// A struct for accessing the Bot API endpoints.
 #[derive(Debug)]
@@ -44,11 +44,7 @@ impl BotApi {
         let url = self
             .inner
             .req_url(UrlBase::Lichess, &format!("api/bot/game/{game_id}/move/{uci_move}"));
-        let builder = self
-            .inner
-            .client
-            .post(url)
-            .query(&[("offeringDraw", draw_offer)]);
+        let builder = self.inner.client.post(url).query(&[("offeringDraw", draw_offer)]);
 
         self.inner.execute(builder).await
     }

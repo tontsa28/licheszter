@@ -255,9 +255,7 @@ impl GamesApi {
         &self,
         options: Option<&BookmarkedGameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self
-            .inner
-            .req_url(UrlBase::Lichess, "api/games/export/bookmarks");
+        let mut url = self.inner.req_url(UrlBase::Lichess, "api/games/export/bookmarks");
 
         // Add the options to the request if they are present
         if let Some(options) = options {

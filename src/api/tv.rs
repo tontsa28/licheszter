@@ -69,9 +69,7 @@ impl TvApi {
         channel: TvChannel,
         options: Option<&TvChannelOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/tv/{channel}"));
+        let mut url = self.inner.req_url(UrlBase::Lichess, &format!("api/tv/{channel}"));
 
         // Add the options to the request if they are present
         if let Some(options) = options {

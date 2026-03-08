@@ -10,8 +10,8 @@ use crate::{
     },
 };
 
-use std::sync::Arc;
 use futures_util::Stream;
+use std::sync::Arc;
 
 /// A struct for accessing the Openings API endpoints.
 #[derive(Debug)]
