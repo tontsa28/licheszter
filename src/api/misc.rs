@@ -20,10 +20,10 @@ impl Licheszter {
     /// Returns an error if the API request fails or the response stream cannot be created.
     #[cfg(feature = "streaming")]
     pub async fn connect(&self) -> Result<Pin<Box<dyn Stream<Item = Result<Event>> + Send>>> {
-        let url = self.req_url(UrlBase::Lichess, "api/stream/event");
-        let builder = self.client.get(url);
+        let url = self.inner.req_url(UrlBase::Lichess, "api/stream/event");
+        let builder = self.inner.client.get(url);
 
-        self.to_stream::<Event>(builder).await
+        self.inner.to_stream::<Event>(builder).await
     }
 
     /// Get online bots.
@@ -35,10 +35,10 @@ impl Licheszter {
         &self,
         bots: u8,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<BasicUser>> + Send>>> {
-        let url = self.req_url(UrlBase::Lichess, "api/bot/online");
-        let builder = self.client.get(url).query(&[("nb", bots)]);
+        let url = self.inner.req_url(UrlBase::Lichess, "api/bot/online");
+        let builder = self.inner.client.get(url).query(&[("nb", bots)]);
 
-        self.to_stream::<BasicUser>(builder).await
+        self.inner.to_stream::<BasicUser>(builder).await
     }
 
     /// Upgrade a Lichess player account into a bot account.
@@ -51,7 +51,7 @@ impl Licheszter {
     /// - The API request fails or the response cannot be deserialized
     /// - The authentication token contains invalid characters (non-visible ASCII, newlines, etc.)
     pub async fn bot_account_upgrade(&self, token: &str) -> Result<()> {
-        let url = self.req_url(UrlBase::Lichess, "api/bot/account/upgrade");
+        let url = self.inner.req_url(UrlBase::Lichess, "api/bot/account/upgrade");
 
         // Securely construct the authorization header
         let bearer = format!("Bearer {token}");
@@ -61,8 +61,8 @@ impl Licheszter {
         let mut headers = HeaderMap::new();
         headers.insert(header::AUTHORIZATION, auth_header);
 
-        let builder = self.client.post(url).headers(headers);
+        let builder = self.inner.client.post(url).headers(headers);
 
-        self.execute(builder).await
+        self.inner.execute(builder).await
     }
 }

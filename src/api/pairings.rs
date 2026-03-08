@@ -4,7 +4,7 @@ use futures_util::Stream;
 use reqwest::header;
 
 use crate::{
-    client::{Licheszter, UrlBase},
+    client::{LicheszterInner, UrlBase},
     config::{games::GameOptions, pairings::BulkPairingOptions},
     error::Result,
     models::{
@@ -13,21 +13,24 @@ use crate::{
     },
 };
 
+use std::sync::Arc;
+
 /// A struct for accessing the Bulk Pairings API endpoints.
-pub struct BulkPairingsApi<'a> {
-    pub(crate) client: &'a Licheszter,
+#[derive(Debug)]
+pub struct BulkPairingsApi {
+    pub(crate) inner: Arc<LicheszterInner>,
 }
 
-impl BulkPairingsApi<'_> {
+impl BulkPairingsApi {
     /// Get a list of bulk pairings you created.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn list(&self) -> Result<Vec<BulkPairing>> {
-        let url = self.client.req_url(UrlBase::Lichess, "api/bulk-pairing");
-        let builder = self.client.client.get(url);
+        let url = self.inner.req_url(UrlBase::Lichess, "api/bulk-pairing");
+        let builder = self.inner.client.get(url);
 
-        Ok(self.client.to_model::<BulkPairings>(builder).await?.bulks)
+        Ok(self.inner.to_model::<BulkPairings>(builder).await?.bulks)
     }
 
     /// Schedule many games at once, up to 24 hours in advance.
@@ -40,8 +43,8 @@ impl BulkPairingsApi<'_> {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn create(&self, options: &BulkPairingOptions) -> Result<BulkPairing> {
-        let url = self.client.req_url(UrlBase::Lichess, "api/bulk-pairing");
-        let mut builder = self.client.client.post(url);
+        let url = self.inner.req_url(UrlBase::Lichess, "api/bulk-pairing");
+        let mut builder = self.inner.client.post(url);
 
         // Add the options to the request
         let encoded = comma_serde_urlencoded::to_string(options)?;
@@ -49,7 +52,7 @@ impl BulkPairingsApi<'_> {
             .body(encoded)
             .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
 
-        self.client.to_model::<BulkPairing>(builder).await
+        self.inner.to_model::<BulkPairing>(builder).await
     }
 
     /// Immediately start all clocks of the games of a bulk pairing.
@@ -60,11 +63,11 @@ impl BulkPairingsApi<'_> {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn clocks_start(&self, bulk_id: &str) -> Result<()> {
         let url = self
-            .client
+            .inner
             .req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}/start-clocks"));
-        let builder = self.client.client.post(url);
+        let builder = self.inner.client.post(url);
 
-        self.client.execute(builder).await
+        self.inner.execute(builder).await
     }
 
     /// Get a single bulk pairing by its ID.
@@ -73,11 +76,11 @@ impl BulkPairingsApi<'_> {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn show(&self, bulk_id: &str) -> Result<BulkPairing> {
         let url = self
-            .client
+            .inner
             .req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
-        let builder = self.client.client.get(url);
+        let builder = self.inner.client.get(url);
 
-        self.client.to_model::<BulkPairing>(builder).await
+        self.inner.to_model::<BulkPairing>(builder).await
     }
 
     /// Cancel and delete a bulk pairing that is scheduled in the future.
@@ -87,11 +90,11 @@ impl BulkPairingsApi<'_> {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn cancel(&self, bulk_id: &str) -> Result<()> {
         let url = self
-            .client
+            .inner
             .req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}"));
-        let builder = self.client.client.delete(url);
+        let builder = self.inner.client.delete(url);
 
-        self.client.execute(builder).await
+        self.inner.execute(builder).await
     }
 
     /// Download games of a bulk pairing.
@@ -104,7 +107,7 @@ impl BulkPairingsApi<'_> {
         options: Option<&GameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
         let mut url = self
-            .client
+            .inner
             .req_url(UrlBase::Lichess, &format!("api/bulk-pairing/{bulk_id}/games"));
 
         // Add the options to the request if they are present
@@ -114,10 +117,10 @@ impl BulkPairingsApi<'_> {
         }
 
         let builder = self
-            .client
+            .inner
             .client
             .get(url)
             .header(header::ACCEPT, "application/x-ndjson");
-        self.client.to_stream::<Game>(builder).await
+        self.inner.to_stream::<Game>(builder).await
     }
 }

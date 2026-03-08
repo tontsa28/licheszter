@@ -1,15 +1,18 @@
 use crate::{
-    client::{Licheszter, UrlBase},
+    client::{LicheszterInner, UrlBase},
     error::Result,
     models::{analysis::CloudAnalysis, game::VariantMode},
 };
 
+use std::sync::Arc;
+
 /// A struct for accessing the Analysis API endpoints.
-pub struct AnalysisApi<'a> {
-    pub(crate) client: &'a Licheszter,
+#[derive(Debug)]
+pub struct AnalysisApi {
+    pub(crate) inner: Arc<LicheszterInner>,
 }
 
-impl AnalysisApi<'_> {
+impl AnalysisApi {
     /// Get the cached evaluation of a position, if available.
     /// Opening positions have higher chances of being available.
     /// There are about 320 million positions in the database.
@@ -25,9 +28,9 @@ impl AnalysisApi<'_> {
         multi_pv: Option<u8>,
         variant: Option<VariantMode>,
     ) -> Result<CloudAnalysis> {
-        let url = self.client.req_url(UrlBase::Lichess, "api/cloud-eval");
+        let url = self.inner.req_url(UrlBase::Lichess, "api/cloud-eval");
         let mut builder = self
-            .client
+            .inner
             .client
             .get(url)
             .query(&[("fen", fen.replace(" ", "_"))]);
@@ -42,6 +45,6 @@ impl AnalysisApi<'_> {
             builder = builder.query(&[("variant", variant)]);
         }
 
-        self.client.to_model::<CloudAnalysis>(builder).await
+        self.inner.to_model::<CloudAnalysis>(builder).await
     }
 }

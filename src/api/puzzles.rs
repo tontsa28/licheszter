@@ -3,27 +3,30 @@ use std::pin::Pin;
 use futures_util::Stream;
 
 use crate::{
-    client::{Licheszter, UrlBase},
+    client::{LicheszterInner, UrlBase},
     config::puzzles::PuzzleDifficulty,
     error::Result,
     models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard, PuzzleRace, PuzzleStormDashboard},
 };
 
+use std::sync::Arc;
+
 /// A struct for accessing the Puzzles API endpoints.
-pub struct PuzzlesApi<'a> {
-    pub(crate) client: &'a Licheszter,
+#[derive(Debug)]
+pub struct PuzzlesApi {
+    pub(crate) inner: Arc<LicheszterInner>,
 }
 
-impl PuzzlesApi<'_> {
+impl PuzzlesApi {
     /// Get the daily puzzle.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn daily(&self) -> Result<Puzzle> {
-        let url = self.client.req_url(UrlBase::Lichess, "api/puzzle/daily");
-        let builder = self.client.client.get(url);
+        let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/daily");
+        let builder = self.inner.client.get(url);
 
-        self.client.to_model::<Puzzle>(builder).await
+        self.inner.to_model::<Puzzle>(builder).await
     }
 
     /// Get a single puzzle by ID.
@@ -31,10 +34,10 @@ impl PuzzlesApi<'_> {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn show(&self, id: &str) -> Result<Puzzle> {
-        let url = self.client.req_url(UrlBase::Lichess, &format!("api/puzzle/{id}"));
-        let builder = self.client.client.get(url);
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/puzzle/{id}"));
+        let builder = self.inner.client.get(url);
 
-        self.client.to_model::<Puzzle>(builder).await
+        self.inner.to_model::<Puzzle>(builder).await
     }
 
     /// Get a random puzzle.
@@ -47,14 +50,14 @@ impl PuzzlesApi<'_> {
         angle: Option<&str>,
         difficulty: Option<PuzzleDifficulty>,
     ) -> Result<Puzzle> {
-        let url = self.client.req_url(UrlBase::Lichess, "api/puzzle/next");
+        let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/next");
         let builder = self
-            .client
+            .inner
             .client
             .get(url)
             .query(&(("angle", angle), ("difficulty", difficulty)));
 
-        self.client.to_model::<Puzzle>(builder).await
+        self.inner.to_model::<Puzzle>(builder).await
     }
 
     /// Get the puzzle activity of the logged in user.
@@ -66,14 +69,14 @@ impl PuzzlesApi<'_> {
         max: Option<u16>,
         before: Option<u64>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<PuzzleActivity>> + Send>>> {
-        let url = self.client.req_url(UrlBase::Lichess, "api/puzzle/activity");
+        let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/activity");
         let builder = self
-            .client
+            .inner
             .client
             .get(url)
             .query(&(("max", max), ("before", before)));
 
-        self.client.to_stream::<PuzzleActivity>(builder).await
+        self.inner.to_stream::<PuzzleActivity>(builder).await
     }
 
     /// Get the puzzle dashboard of the logged in user.
@@ -83,11 +86,11 @@ impl PuzzlesApi<'_> {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn dashboard(&self, days: u8) -> Result<PuzzleDashboard> {
         let url = self
-            .client
+            .inner
             .req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
-        let builder = self.client.client.get(url);
+        let builder = self.inner.client.get(url);
 
-        self.client.to_model::<PuzzleDashboard>(builder).await
+        self.inner.to_model::<PuzzleDashboard>(builder).await
     }
 
     /// Get the puzzle storm dashboard of any player.
@@ -102,11 +105,11 @@ impl PuzzlesApi<'_> {
         days: Option<u16>,
     ) -> Result<PuzzleStormDashboard> {
         let url = self
-            .client
+            .inner
             .req_url(UrlBase::Lichess, &format!("api/storm/dashboard/{username}"));
-        let builder = self.client.client.get(url).query(&[("days", days)]);
+        let builder = self.inner.client.get(url).query(&[("days", days)]);
 
-        self.client.to_model::<PuzzleStormDashboard>(builder).await
+        self.inner.to_model::<PuzzleStormDashboard>(builder).await
     }
 
     /// Create a new private puzzle race.
@@ -115,9 +118,9 @@ impl PuzzlesApi<'_> {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn race_create(&self) -> Result<PuzzleRace> {
-        let url = self.client.req_url(UrlBase::Lichess, "api/racer");
-        let builder = self.client.client.post(url);
+        let url = self.inner.req_url(UrlBase::Lichess, "api/racer");
+        let builder = self.inner.client.post(url);
 
-        self.client.to_model::<PuzzleRace>(builder).await
+        self.inner.to_model::<PuzzleRace>(builder).await
     }
 }

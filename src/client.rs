@@ -11,7 +11,7 @@ use reqwest::{
     Client, IntoUrl, RequestBuilder, Url,
 };
 use serde::de::DeserializeOwned;
-use std::fmt::Display;
+use std::{fmt::Display, sync::Arc};
 
 #[cfg(feature = "streaming")]
 use std::{io::Error as StdIoError, pin::Pin};
@@ -34,9 +34,17 @@ const TABLEBASE_URL: &str = "https://tablebase.lichess.org";
 // Default user agent
 const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
-/// [`Licheszter`] is used to connect to the Lichess API.
+/// Shared inner state for the Lichess client.
+///
+/// This struct holds the `reqwest` HTTP client and base URLs.
+/// It is wrapped in an [`Arc`] and shared between [`Licheszter`] and all API category structs.
+///
+/// Note: The `reqwest` [`Client`] itself uses `Arc` internally, so cloning it is very cheap
+/// (just incrementing a reference count). The connection pool and configuration are shared
+/// across all clones. This means passing the client around via `Arc<LicheszterInner>` adds
+/// virtually no overhead.
 #[derive(Debug)]
-pub struct Licheszter {
+pub(crate) struct LicheszterInner {
     pub(crate) client: Client,
     pub(crate) base_url: Url,
     #[cfg(feature = "openings")]
@@ -45,161 +53,7 @@ pub struct Licheszter {
     pub(crate) tablebase_url: Url,
 }
 
-impl Licheszter {
-    /// Constructs a new `Licheszter`.
-    ///
-    /// Use `Licheszter::builder()` instead if you want to configure the `Licheszter` instance.
-    #[must_use]
-    pub fn new() -> Licheszter {
-        LicheszterBuilder::new().build()
-    }
-
-    /// Creates a [`LicheszterBuilder`](struct@LicheszterBuilder) to configure a [`Licheszter`].
-    ///
-    /// This is the same as [`LicheszterBuilder::new()`](fn@LicheszterBuilder::new).
-    #[must_use]
-    pub fn builder() -> LicheszterBuilder {
-        LicheszterBuilder::default()
-    }
-
-    /// Get the base URL used in this `Licheszter` client.
-    #[must_use]
-    pub fn base_url(&self) -> Url {
-        self.base_url.clone()
-    }
-
-    /// Get the `reqwest` Client behind this `Licheszter` client.
-    #[must_use]
-    pub fn client(&self) -> Client {
-        self.client.clone()
-    }
-
-    /// Get the opening explorer server URL used in this `Licheszter` client.
-    #[cfg(feature = "openings")]
-    #[must_use]
-    pub fn openings_url(&self) -> Url {
-        self.openings_url.clone()
-    }
-
-    /// Get the tablebase server URL used in this `Licheszter` client.
-    #[cfg(feature = "tablebase")]
-    #[must_use]
-    pub fn tablebase_url(&self) -> Url {
-        self.tablebase_url.clone()
-    }
-
-    /// Access the Account API endpoints.
-    #[cfg(feature = "account")]
-    #[must_use]
-    pub fn account(&self) -> crate::api::account::AccountApi<'_> {
-        crate::api::account::AccountApi { client: self }
-    }
-
-    /// Access the Challenges API endpoints.
-    #[cfg(feature = "challenges")]
-    #[must_use]
-    pub fn challenges(&self) -> crate::api::challenges::ChallengesApi<'_> {
-        crate::api::challenges::ChallengesApi { client: self }
-    }
-
-    /// Access the Users API endpoints.
-    #[cfg(feature = "users")]
-    #[must_use]
-    pub fn users(&self) -> crate::api::users::UsersApi<'_> {
-        crate::api::users::UsersApi { client: self }
-    }
-
-    /// Access the Games API endpoints.
-    #[cfg(feature = "games")]
-    #[must_use]
-    pub fn games(&self) -> crate::api::games::GamesApi<'_> {
-        crate::api::games::GamesApi { client: self }
-    }
-
-    /// Access the Puzzles API endpoints.
-    #[cfg(feature = "puzzles")]
-    #[must_use]
-    pub fn puzzles(&self) -> crate::api::puzzles::PuzzlesApi<'_> {
-        crate::api::puzzles::PuzzlesApi { client: self }
-    }
-
-    /// Access the Bot API endpoints.
-    #[cfg(feature = "bot")]
-    #[must_use]
-    pub fn bot(&self) -> crate::api::bot::BotApi<'_> {
-        crate::api::bot::BotApi { client: self }
-    }
-
-    /// Access the Board API endpoints.
-    #[cfg(feature = "board")]
-    #[must_use]
-    pub fn board(&self) -> crate::api::board::BoardApi<'_> {
-        crate::api::board::BoardApi { client: self }
-    }
-
-    /// Access the Relations API endpoints.
-    #[cfg(feature = "relations")]
-    #[must_use]
-    pub fn relations(&self) -> crate::api::relations::RelationsApi<'_> {
-        crate::api::relations::RelationsApi { client: self }
-    }
-
-    /// Access the TV API endpoints.
-    #[cfg(feature = "tv")]
-    #[must_use]
-    pub fn tv(&self) -> crate::api::tv::TvApi<'_> {
-        crate::api::tv::TvApi { client: self }
-    }
-
-    /// Access the Messaging API endpoints.
-    #[cfg(feature = "messaging")]
-    #[must_use]
-    pub fn messaging(&self) -> crate::api::messaging::MessagingApi<'_> {
-        crate::api::messaging::MessagingApi { client: self }
-    }
-
-    /// Access the Bulk Pairings API endpoints.
-    #[cfg(feature = "pairings")]
-    #[must_use]
-    pub fn bulk_pairings(&self) -> crate::api::pairings::BulkPairingsApi<'_> {
-        crate::api::pairings::BulkPairingsApi { client: self }
-    }
-
-    /// Access the Simuls API endpoints.
-    #[cfg(feature = "simuls")]
-    #[must_use]
-    pub fn simuls(&self) -> crate::api::simuls::SimulsApi<'_> {
-        crate::api::simuls::SimulsApi { client: self }
-    }
-
-    /// Access the FIDE API endpoints.
-    #[cfg(feature = "fide")]
-    #[must_use]
-    pub fn fide(&self) -> crate::api::fide::FideApi<'_> {
-        crate::api::fide::FideApi { client: self }
-    }
-
-    /// Access the Analysis API endpoints.
-    #[cfg(feature = "analysis")]
-    #[must_use]
-    pub fn analysis(&self) -> crate::api::analysis::AnalysisApi<'_> {
-        crate::api::analysis::AnalysisApi { client: self }
-    }
-
-    /// Access the Openings API endpoints.
-    #[cfg(feature = "openings")]
-    #[must_use]
-    pub fn openings(&self) -> crate::api::openings::OpeningsApi<'_> {
-        crate::api::openings::OpeningsApi { client: self }
-    }
-
-    /// Access the Tablebase API endpoints.
-    #[cfg(feature = "tablebase")]
-    #[must_use]
-    pub fn tablebase(&self) -> crate::api::tablebase::TablebaseApi<'_> {
-        crate::api::tablebase::TablebaseApi { client: self }
-    }
-
+impl LicheszterInner {
     // Convert the API response into a deserialized model
     pub(crate) async fn to_model<T>(&self, builder: RequestBuilder) -> Result<T>
     where
@@ -298,6 +152,208 @@ impl Licheszter {
     }
 }
 
+/// [`Licheszter`] is used to connect to the Lichess API.
+///
+/// API endpoints are organized into categories, each accessible as a field
+/// through its corresponding accessor method (e.g., `client.account()`, `client.challenges()`).
+/// Each API category struct shares the underlying HTTP client and configuration
+/// via `Arc`, so accessing them is very cheap.
+#[derive(Debug)]
+pub struct Licheszter {
+    pub(crate) inner: Arc<LicheszterInner>,
+    #[cfg(feature = "account")]
+    account: crate::api::account::AccountApi,
+    #[cfg(feature = "analysis")]
+    analysis: crate::api::analysis::AnalysisApi,
+    #[cfg(feature = "board")]
+    board: crate::api::board::BoardApi,
+    #[cfg(feature = "bot")]
+    bot: crate::api::bot::BotApi,
+    #[cfg(feature = "challenges")]
+    challenges: crate::api::challenges::ChallengesApi,
+    #[cfg(feature = "fide")]
+    fide: crate::api::fide::FideApi,
+    #[cfg(feature = "games")]
+    games: crate::api::games::GamesApi,
+    #[cfg(feature = "messaging")]
+    messaging: crate::api::messaging::MessagingApi,
+    #[cfg(feature = "openings")]
+    openings: crate::api::openings::OpeningsApi,
+    #[cfg(feature = "pairings")]
+    pairings: crate::api::pairings::BulkPairingsApi,
+    #[cfg(feature = "puzzles")]
+    puzzles: crate::api::puzzles::PuzzlesApi,
+    #[cfg(feature = "relations")]
+    relations: crate::api::relations::RelationsApi,
+    #[cfg(feature = "simuls")]
+    simuls: crate::api::simuls::SimulsApi,
+    #[cfg(feature = "tablebase")]
+    tablebase: crate::api::tablebase::TablebaseApi,
+    #[cfg(feature = "tv")]
+    tv: crate::api::tv::TvApi,
+    #[cfg(feature = "users")]
+    users: crate::api::users::UsersApi,
+}
+
+impl Licheszter {
+    /// Constructs a new `Licheszter`.
+    ///
+    /// Use `Licheszter::builder()` instead if you want to configure the `Licheszter` instance.
+    #[must_use]
+    pub fn new() -> Licheszter {
+        LicheszterBuilder::new().build()
+    }
+
+    /// Creates a [`LicheszterBuilder`](struct@LicheszterBuilder) to configure a [`Licheszter`].
+    ///
+    /// This is the same as [`LicheszterBuilder::new()`](fn@LicheszterBuilder::new).
+    #[must_use]
+    pub fn builder() -> LicheszterBuilder {
+        LicheszterBuilder::default()
+    }
+
+    /// Get the base URL used in this `Licheszter` client.
+    #[must_use]
+    pub fn base_url(&self) -> Url {
+        self.inner.base_url.clone()
+    }
+
+    /// Get the `reqwest` Client behind this `Licheszter` client.
+    ///
+    /// Note: `reqwest::Client` uses `Arc` internally, so this clone is very cheap.
+    /// The returned client shares the same connection pool and configuration.
+    #[must_use]
+    pub fn client(&self) -> Client {
+        self.inner.client.clone()
+    }
+
+    /// Get the opening explorer server URL used in this `Licheszter` client.
+    #[cfg(feature = "openings")]
+    #[must_use]
+    pub fn openings_url(&self) -> Url {
+        self.inner.openings_url.clone()
+    }
+
+    /// Get the tablebase server URL used in this `Licheszter` client.
+    #[cfg(feature = "tablebase")]
+    #[must_use]
+    pub fn tablebase_url(&self) -> Url {
+        self.inner.tablebase_url.clone()
+    }
+
+    /// Access the Account API endpoints.
+    #[cfg(feature = "account")]
+    #[must_use]
+    pub fn account(&self) -> &crate::api::account::AccountApi {
+        &self.account
+    }
+
+    /// Access the Challenges API endpoints.
+    #[cfg(feature = "challenges")]
+    #[must_use]
+    pub fn challenges(&self) -> &crate::api::challenges::ChallengesApi {
+        &self.challenges
+    }
+
+    /// Access the Users API endpoints.
+    #[cfg(feature = "users")]
+    #[must_use]
+    pub fn users(&self) -> &crate::api::users::UsersApi {
+        &self.users
+    }
+
+    /// Access the Games API endpoints.
+    #[cfg(feature = "games")]
+    #[must_use]
+    pub fn games(&self) -> &crate::api::games::GamesApi {
+        &self.games
+    }
+
+    /// Access the Puzzles API endpoints.
+    #[cfg(feature = "puzzles")]
+    #[must_use]
+    pub fn puzzles(&self) -> &crate::api::puzzles::PuzzlesApi {
+        &self.puzzles
+    }
+
+    /// Access the Bot API endpoints.
+    #[cfg(feature = "bot")]
+    #[must_use]
+    pub fn bot(&self) -> &crate::api::bot::BotApi {
+        &self.bot
+    }
+
+    /// Access the Board API endpoints.
+    #[cfg(feature = "board")]
+    #[must_use]
+    pub fn board(&self) -> &crate::api::board::BoardApi {
+        &self.board
+    }
+
+    /// Access the Relations API endpoints.
+    #[cfg(feature = "relations")]
+    #[must_use]
+    pub fn relations(&self) -> &crate::api::relations::RelationsApi {
+        &self.relations
+    }
+
+    /// Access the TV API endpoints.
+    #[cfg(feature = "tv")]
+    #[must_use]
+    pub fn tv(&self) -> &crate::api::tv::TvApi {
+        &self.tv
+    }
+
+    /// Access the Messaging API endpoints.
+    #[cfg(feature = "messaging")]
+    #[must_use]
+    pub fn messaging(&self) -> &crate::api::messaging::MessagingApi {
+        &self.messaging
+    }
+
+    /// Access the Bulk Pairings API endpoints.
+    #[cfg(feature = "pairings")]
+    #[must_use]
+    pub fn bulk_pairings(&self) -> &crate::api::pairings::BulkPairingsApi {
+        &self.pairings
+    }
+
+    /// Access the Simuls API endpoints.
+    #[cfg(feature = "simuls")]
+    #[must_use]
+    pub fn simuls(&self) -> &crate::api::simuls::SimulsApi {
+        &self.simuls
+    }
+
+    /// Access the FIDE API endpoints.
+    #[cfg(feature = "fide")]
+    #[must_use]
+    pub fn fide(&self) -> &crate::api::fide::FideApi {
+        &self.fide
+    }
+
+    /// Access the Analysis API endpoints.
+    #[cfg(feature = "analysis")]
+    #[must_use]
+    pub fn analysis(&self) -> &crate::api::analysis::AnalysisApi {
+        &self.analysis
+    }
+
+    /// Access the Openings API endpoints.
+    #[cfg(feature = "openings")]
+    #[must_use]
+    pub fn openings(&self) -> &crate::api::openings::OpeningsApi {
+        &self.openings
+    }
+
+    /// Access the Tablebase API endpoints.
+    #[cfg(feature = "tablebase")]
+    #[must_use]
+    pub fn tablebase(&self) -> &crate::api::tablebase::TablebaseApi {
+        &self.tablebase
+    }
+}
+
 impl Default for Licheszter {
     /// Create an unauthenticated instance of Licheszter.
     fn default() -> Self {
@@ -328,13 +384,81 @@ impl LicheszterBuilder {
     /// Returns a [`Licheszter`](struct@Licheszter) that uses this [`LicheszterBuilder`] configuration.
     #[must_use]
     pub fn build(self) -> Licheszter {
-        Licheszter {
+        let inner = Arc::new(LicheszterInner {
             client: self.client,
             base_url: self.base_url,
             #[cfg(feature = "openings")]
             openings_url: self.openings_url,
             #[cfg(feature = "tablebase")]
             tablebase_url: self.tablebase_url,
+        });
+
+        Licheszter {
+            #[cfg(feature = "account")]
+            account: crate::api::account::AccountApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "analysis")]
+            analysis: crate::api::analysis::AnalysisApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "board")]
+            board: crate::api::board::BoardApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "bot")]
+            bot: crate::api::bot::BotApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "challenges")]
+            challenges: crate::api::challenges::ChallengesApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "fide")]
+            fide: crate::api::fide::FideApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "games")]
+            games: crate::api::games::GamesApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "messaging")]
+            messaging: crate::api::messaging::MessagingApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "openings")]
+            openings: crate::api::openings::OpeningsApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "pairings")]
+            pairings: crate::api::pairings::BulkPairingsApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "puzzles")]
+            puzzles: crate::api::puzzles::PuzzlesApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "relations")]
+            relations: crate::api::relations::RelationsApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "simuls")]
+            simuls: crate::api::simuls::SimulsApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "tablebase")]
+            tablebase: crate::api::tablebase::TablebaseApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "tv")]
+            tv: crate::api::tv::TvApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "users")]
+            users: crate::api::users::UsersApi {
+                inner: Arc::clone(&inner),
+            },
+            inner,
         }
     }
 
