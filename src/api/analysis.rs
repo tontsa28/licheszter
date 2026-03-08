@@ -33,7 +33,7 @@ impl AnalysisApi {
             .inner
             .client
             .get(url)
-            .query(&[("fen", fen.replace(" ", "_"))]);
+            .query(&[("fen", fen.replace(' ', "_"))]);
 
         // Add the multiPv amount as a query parameter if it's present
         if let Some(multi_pv) = multi_pv {
