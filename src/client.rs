@@ -1,3 +1,35 @@
+#[cfg(feature = "account")]
+use crate::api::account::AccountApi;
+#[cfg(feature = "analysis")]
+use crate::api::analysis::AnalysisApi;
+#[cfg(feature = "board")]
+use crate::api::board::BoardApi;
+#[cfg(feature = "bot")]
+use crate::api::bot::BotApi;
+#[cfg(feature = "challenges")]
+use crate::api::challenges::ChallengesApi;
+#[cfg(feature = "fide")]
+use crate::api::fide::FideApi;
+#[cfg(feature = "games")]
+use crate::api::games::GamesApi;
+#[cfg(feature = "messaging")]
+use crate::api::messaging::MessagingApi;
+#[cfg(feature = "openings")]
+use crate::api::openings::OpeningsApi;
+#[cfg(feature = "pairings")]
+use crate::api::pairings::BulkPairingsApi;
+#[cfg(feature = "puzzles")]
+use crate::api::puzzles::PuzzlesApi;
+#[cfg(feature = "relations")]
+use crate::api::relations::RelationsApi;
+#[cfg(feature = "simuls")]
+use crate::api::simuls::SimulsApi;
+#[cfg(feature = "tablebase")]
+use crate::api::tablebase::TablebaseApi;
+#[cfg(feature = "tv")]
+use crate::api::tv::TvApi;
+#[cfg(feature = "users")]
+use crate::api::users::UsersApi;
 use crate::{
     error::{LichessError, Result},
     models::common::OkResponse,
@@ -162,37 +194,37 @@ impl LicheszterInner {
 pub struct Licheszter {
     pub(crate) inner: Arc<LicheszterInner>,
     #[cfg(feature = "account")]
-    account: crate::api::account::AccountApi,
+    account: AccountApi,
     #[cfg(feature = "analysis")]
-    analysis: crate::api::analysis::AnalysisApi,
+    analysis: AnalysisApi,
     #[cfg(feature = "board")]
-    board: crate::api::board::BoardApi,
+    board: BoardApi,
     #[cfg(feature = "bot")]
-    bot: crate::api::bot::BotApi,
+    bot: BotApi,
     #[cfg(feature = "challenges")]
-    challenges: crate::api::challenges::ChallengesApi,
+    challenges: ChallengesApi,
     #[cfg(feature = "fide")]
-    fide: crate::api::fide::FideApi,
+    fide: FideApi,
     #[cfg(feature = "games")]
-    games: crate::api::games::GamesApi,
+    games: GamesApi,
     #[cfg(feature = "messaging")]
-    messaging: crate::api::messaging::MessagingApi,
+    messaging: MessagingApi,
     #[cfg(feature = "openings")]
-    openings: crate::api::openings::OpeningsApi,
+    openings: OpeningsApi,
     #[cfg(feature = "pairings")]
-    pairings: crate::api::pairings::BulkPairingsApi,
+    pairings: BulkPairingsApi,
     #[cfg(feature = "puzzles")]
-    puzzles: crate::api::puzzles::PuzzlesApi,
+    puzzles: PuzzlesApi,
     #[cfg(feature = "relations")]
-    relations: crate::api::relations::RelationsApi,
+    relations: RelationsApi,
     #[cfg(feature = "simuls")]
-    simuls: crate::api::simuls::SimulsApi,
+    simuls: SimulsApi,
     #[cfg(feature = "tablebase")]
-    tablebase: crate::api::tablebase::TablebaseApi,
+    tablebase: TablebaseApi,
     #[cfg(feature = "tv")]
-    tv: crate::api::tv::TvApi,
+    tv: TvApi,
     #[cfg(feature = "users")]
-    users: crate::api::users::UsersApi,
+    users: UsersApi,
 }
 
 impl Licheszter {
@@ -244,112 +276,112 @@ impl Licheszter {
     /// Access the Account API endpoints.
     #[cfg(feature = "account")]
     #[must_use]
-    pub fn account(&self) -> &crate::api::account::AccountApi {
+    pub fn account(&self) -> &AccountApi {
         &self.account
     }
 
     /// Access the Challenges API endpoints.
     #[cfg(feature = "challenges")]
     #[must_use]
-    pub fn challenges(&self) -> &crate::api::challenges::ChallengesApi {
+    pub fn challenges(&self) -> &ChallengesApi {
         &self.challenges
     }
 
     /// Access the Users API endpoints.
     #[cfg(feature = "users")]
     #[must_use]
-    pub fn users(&self) -> &crate::api::users::UsersApi {
+    pub fn users(&self) -> &UsersApi {
         &self.users
     }
 
     /// Access the Games API endpoints.
     #[cfg(feature = "games")]
     #[must_use]
-    pub fn games(&self) -> &crate::api::games::GamesApi {
+    pub fn games(&self) -> &GamesApi {
         &self.games
     }
 
     /// Access the Puzzles API endpoints.
     #[cfg(feature = "puzzles")]
     #[must_use]
-    pub fn puzzles(&self) -> &crate::api::puzzles::PuzzlesApi {
+    pub fn puzzles(&self) -> &PuzzlesApi {
         &self.puzzles
     }
 
     /// Access the Bot API endpoints.
     #[cfg(feature = "bot")]
     #[must_use]
-    pub fn bot(&self) -> &crate::api::bot::BotApi {
+    pub fn bot(&self) -> &BotApi {
         &self.bot
     }
 
     /// Access the Board API endpoints.
     #[cfg(feature = "board")]
     #[must_use]
-    pub fn board(&self) -> &crate::api::board::BoardApi {
+    pub fn board(&self) -> &BoardApi {
         &self.board
     }
 
     /// Access the Relations API endpoints.
     #[cfg(feature = "relations")]
     #[must_use]
-    pub fn relations(&self) -> &crate::api::relations::RelationsApi {
+    pub fn relations(&self) -> &RelationsApi {
         &self.relations
     }
 
     /// Access the TV API endpoints.
     #[cfg(feature = "tv")]
     #[must_use]
-    pub fn tv(&self) -> &crate::api::tv::TvApi {
+    pub fn tv(&self) -> &TvApi {
         &self.tv
     }
 
     /// Access the Messaging API endpoints.
     #[cfg(feature = "messaging")]
     #[must_use]
-    pub fn messaging(&self) -> &crate::api::messaging::MessagingApi {
+    pub fn messaging(&self) -> &MessagingApi {
         &self.messaging
     }
 
     /// Access the Bulk Pairings API endpoints.
     #[cfg(feature = "pairings")]
     #[must_use]
-    pub fn bulk_pairings(&self) -> &crate::api::pairings::BulkPairingsApi {
+    pub fn bulk_pairings(&self) -> &BulkPairingsApi {
         &self.pairings
     }
 
     /// Access the Simuls API endpoints.
     #[cfg(feature = "simuls")]
     #[must_use]
-    pub fn simuls(&self) -> &crate::api::simuls::SimulsApi {
+    pub fn simuls(&self) -> &SimulsApi {
         &self.simuls
     }
 
     /// Access the FIDE API endpoints.
     #[cfg(feature = "fide")]
     #[must_use]
-    pub fn fide(&self) -> &crate::api::fide::FideApi {
+    pub fn fide(&self) -> &FideApi {
         &self.fide
     }
 
     /// Access the Analysis API endpoints.
     #[cfg(feature = "analysis")]
     #[must_use]
-    pub fn analysis(&self) -> &crate::api::analysis::AnalysisApi {
+    pub fn analysis(&self) -> &AnalysisApi {
         &self.analysis
     }
 
     /// Access the Openings API endpoints.
     #[cfg(feature = "openings")]
     #[must_use]
-    pub fn openings(&self) -> &crate::api::openings::OpeningsApi {
+    pub fn openings(&self) -> &OpeningsApi {
         &self.openings
     }
 
     /// Access the Tablebase API endpoints.
     #[cfg(feature = "tablebase")]
     #[must_use]
-    pub fn tablebase(&self) -> &crate::api::tablebase::TablebaseApi {
+    pub fn tablebase(&self) -> &TablebaseApi {
         &self.tablebase
     }
 }
@@ -395,67 +427,67 @@ impl LicheszterBuilder {
 
         Licheszter {
             #[cfg(feature = "account")]
-            account: crate::api::account::AccountApi {
+            account: AccountApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "analysis")]
-            analysis: crate::api::analysis::AnalysisApi {
+            analysis: AnalysisApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "board")]
-            board: crate::api::board::BoardApi {
+            board: BoardApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "bot")]
-            bot: crate::api::bot::BotApi {
+            bot: BotApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "challenges")]
-            challenges: crate::api::challenges::ChallengesApi {
+            challenges: ChallengesApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "fide")]
-            fide: crate::api::fide::FideApi {
+            fide: FideApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "games")]
-            games: crate::api::games::GamesApi {
+            games: GamesApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "messaging")]
-            messaging: crate::api::messaging::MessagingApi {
+            messaging: MessagingApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "openings")]
-            openings: crate::api::openings::OpeningsApi {
+            openings: OpeningsApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "pairings")]
-            pairings: crate::api::pairings::BulkPairingsApi {
+            pairings: BulkPairingsApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "puzzles")]
-            puzzles: crate::api::puzzles::PuzzlesApi {
+            puzzles: PuzzlesApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "relations")]
-            relations: crate::api::relations::RelationsApi {
+            relations: RelationsApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "simuls")]
-            simuls: crate::api::simuls::SimulsApi {
+            simuls: SimulsApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "tablebase")]
-            tablebase: crate::api::tablebase::TablebaseApi {
+            tablebase: TablebaseApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "tv")]
-            tv: crate::api::tv::TvApi {
+            tv: TvApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "users")]
-            users: crate::api::users::UsersApi {
+            users: UsersApi {
                 inner: Arc::clone(&inner),
             },
             inner,
