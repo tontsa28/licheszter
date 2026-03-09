@@ -48,8 +48,13 @@ impl TvApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn channel_connect(&self, channel: TvChannel) -> Result<Pin<Box<dyn Stream<Item = Result<TvGameEvent>> + Send>>> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/tv/{channel}/feed"));
+    pub async fn channel_connect(
+        &self,
+        channel: TvChannel,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<TvGameEvent>> + Send>>> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/tv/{channel}/feed"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_stream::<TvGameEvent>(builder).await
@@ -64,7 +69,9 @@ impl TvApi {
         channel: TvChannel,
         options: Option<&TvChannelOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.inner.req_url(UrlBase::Lichess, &format!("api/tv/{channel}"));
+        let mut url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/tv/{channel}"));
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -72,7 +79,11 @@ impl TvApi {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.inner.client.get(url).header(header::ACCEPT, "application/json");
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/json");
         self.inner.to_stream::<Game>(builder).await
     }
 }

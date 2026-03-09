@@ -85,7 +85,9 @@ impl OpeningsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be read.
     pub async fn masters_otb_game(&self, game_id: &str) -> Result<String> {
-        let url = self.inner.req_url(UrlBase::Openings, &format!("masters/pgn/{game_id}"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Openings, &format!("masters/pgn/{game_id}"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_string(builder).await

@@ -19,7 +19,10 @@ static EXPLORER: LazyLock<Licheszter> = LazyLock::new(|| {
     dotenvy::dotenv().ok();
 
     let token = var("TEST_TOKEN").expect("TEST_TOKEN must be set for opening explorer tests");
-    Licheszter::builder().with_authentication(&token).unwrap().build()
+    Licheszter::builder()
+        .with_authentication(&token)
+        .unwrap()
+        .build()
 });
 
 #[tokio::test]
@@ -50,7 +53,11 @@ async fn openings_masters() {
 
     let options = options.play(&["d1d3"]);
     let result = EXPLORER.openings().masters(Some(&options)).await;
-    assert!(result.is_err(), "Fetching masters openings did not fail: {:?}", result.unwrap());
+    assert!(
+        result.is_err(),
+        "Fetching masters openings did not fail: {:?}",
+        result.unwrap()
+    );
 }
 
 #[tokio::test]
@@ -86,7 +93,11 @@ async fn openings_lichess() {
 
     let options = options.since("invalid-month");
     let result = EXPLORER.openings().lichess(Some(&options)).await;
-    assert!(result.is_err(), "Fetching Lichess openings did not fail: {:?}", result.unwrap());
+    assert!(
+        result.is_err(),
+        "Fetching Lichess openings did not fail: {:?}",
+        result.unwrap()
+    );
 }
 
 #[tokio::test]
@@ -106,9 +117,17 @@ async fn openings_player() {
 
     // Run some test cases
     let thread = tokio::spawn(async move {
-        let mut result = EXPLORER.openings().player("Cheszter", Color::White, None).await.unwrap();
+        let mut result = EXPLORER
+            .openings()
+            .player("Cheszter", Color::White, None)
+            .await
+            .unwrap();
         while let Some(event) = result.next().await {
-            assert!(event.is_ok(), "Failed to get player openings: {:?}", event.unwrap_err().source().unwrap());
+            assert!(
+                event.is_ok(),
+                "Failed to get player openings: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
         }
     });
     sleep(Duration::from_secs(1)).await;
@@ -119,9 +138,17 @@ async fn openings_player() {
     }
 
     let thread = tokio::spawn(async move {
-        let mut result = EXPLORER.openings().player("Cheszter", Color::White, Some(&options1)).await.unwrap();
+        let mut result = EXPLORER
+            .openings()
+            .player("Cheszter", Color::White, Some(&options1))
+            .await
+            .unwrap();
         while let Some(event) = result.next().await {
-            assert!(event.is_ok(), "Failed to get player openings: {:?}", event.unwrap_err().source().unwrap());
+            assert!(
+                event.is_ok(),
+                "Failed to get player openings: {:?}",
+                event.unwrap_err().source().unwrap()
+            );
         }
     });
     sleep(Duration::from_secs(1)).await;
@@ -131,7 +158,10 @@ async fn openings_player() {
         panic::resume_unwind(result.unwrap_err().into_panic());
     }
 
-    let result = EXPLORER.openings().player("NoSuchUser", Color::Black, Some(&options2)).await;
+    let result = EXPLORER
+        .openings()
+        .player("NoSuchUser", Color::Black, Some(&options2))
+        .await;
     assert!(result.is_err(), "Fetching player openings did not fail");
 }
 
@@ -146,5 +176,9 @@ async fn openings_masters_otb_game() {
     );
 
     let result = EXPLORER.openings().masters_otb_game("notvalid").await;
-    assert!(result.is_err(), "Getting masters OTB game did not fail: {:?}", result.unwrap());
+    assert!(
+        result.is_err(),
+        "Getting masters OTB game did not fail: {:?}",
+        result.unwrap()
+    );
 }

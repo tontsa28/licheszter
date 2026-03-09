@@ -21,7 +21,9 @@ impl RelationsApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn followed_users_list(&self) -> Result<Pin<Box<dyn Stream<Item = Result<User>> + Send>>> {
+    pub async fn followed_users_list(
+        &self,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<User>> + Send>>> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/rel/following");
         let builder = self.inner.client.get(url);
 
@@ -33,7 +35,9 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn follow(&self, username: &str) -> Result<()> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/follow/{username}"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/rel/follow/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await
@@ -44,7 +48,9 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn unfollow(&self, username: &str) -> Result<()> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/unfollow/{username}"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/rel/unfollow/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await
@@ -55,7 +61,9 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn block(&self, username: &str) -> Result<()> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/block/{username}"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/rel/block/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await
@@ -66,7 +74,9 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn unblock(&self, username: &str) -> Result<()> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/unblock/{username}"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/rel/unblock/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await

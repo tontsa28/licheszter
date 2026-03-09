@@ -40,7 +40,9 @@ impl AccountApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn preferences(&self) -> Result<Preferences> {
-        let url = self.inner.req_url(UrlBase::Lichess, "api/account/preferences");
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, "api/account/preferences");
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<Preferences>(builder).await
@@ -74,7 +76,11 @@ impl AccountApi {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn timeline(&self, since: Option<u64>, amount: Option<u8>) -> Result<Timeline> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/timeline");
-        let builder = self.inner.client.get(url).query(&(("since", since), ("nb", amount)));
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .query(&(("since", since), ("nb", amount)));
 
         self.inner.to_model::<Timeline>(builder).await
     }

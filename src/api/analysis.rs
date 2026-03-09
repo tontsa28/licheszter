@@ -22,9 +22,18 @@ impl AnalysisApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn cloud(&self, fen: &str, multi_pv: Option<u8>, variant: Option<VariantMode>) -> Result<CloudAnalysis> {
+    pub async fn cloud(
+        &self,
+        fen: &str,
+        multi_pv: Option<u8>,
+        variant: Option<VariantMode>,
+    ) -> Result<CloudAnalysis> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/cloud-eval");
-        let mut builder = self.inner.client.get(url).query(&[("fen", fen.replace(' ', "_"))]);
+        let mut builder = self
+            .inner
+            .client
+            .get(url)
+            .query(&[("fen", fen.replace(' ', "_"))]);
 
         // Add the multiPv amount as a query parameter if it's present
         if let Some(multi_pv) = multi_pv {

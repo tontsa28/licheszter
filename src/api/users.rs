@@ -3,8 +3,9 @@ use crate::{
     config::users::UserStatusOptions,
     error::Result,
     models::user::{
-        BasicUser, Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser, TopUser, TopUserLeaderboard, TopUsers, User,
-        UserActivity, UserAutocomplete, UserNote, UserPerformance,
+        BasicUser, Crosstable, MinimalUser, PerfType, RatingHistory, RealtimeUser, StreamingUser,
+        TopUser, TopUserLeaderboard, TopUsers, User, UserActivity, UserAutocomplete, UserNote,
+        UserPerformance,
     },
 };
 
@@ -22,7 +23,11 @@ impl UsersApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn status(&self, user_ids: &[&str], options: Option<&UserStatusOptions>) -> Result<Vec<RealtimeUser>> {
+    pub async fn status(
+        &self,
+        user_ids: &[&str],
+        options: Option<&UserStatusOptions>,
+    ) -> Result<Vec<RealtimeUser>> {
         let mut url = self.inner.req_url(UrlBase::Lichess, "api/users/status");
 
         // Add the options to the request if they are present
@@ -31,7 +36,11 @@ impl UsersApi {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.inner.client.get(url).query(&[("ids", user_ids.join(","))]);
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .query(&[("ids", user_ids.join(","))]);
         self.inner.to_model::<Vec<RealtimeUser>>(builder).await
     }
 
@@ -52,10 +61,17 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn leaderboard(&self, amount: u8, perf_type: PerfType) -> Result<Vec<TopUser>> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/player/top/{amount}/{perf_type}"));
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/player/top/{amount}/{perf_type}"),
+        );
         let builder = self.inner.client.get(url);
 
-        Ok(self.inner.to_model::<TopUserLeaderboard>(builder).await?.users)
+        Ok(self
+            .inner
+            .to_model::<TopUserLeaderboard>(builder)
+            .await?
+            .users)
     }
 
     /// Read public data of a user.
@@ -63,7 +79,9 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn profile(&self, username: &str, trophies: bool) -> Result<User> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/user/{username}"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}"));
         let builder = self.inner.client.get(url).query(&[("trophies", trophies)]);
 
         self.inner.to_model::<User>(builder).await
@@ -76,7 +94,10 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn rating_history(&self, username: &str) -> Result<Vec<RatingHistory>> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/user/{username}/rating-history"));
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/user/{username}/rating-history"),
+        );
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<Vec<RatingHistory>>(builder).await
@@ -87,7 +108,10 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn performance(&self, username: &str, perf: PerfType) -> Result<UserPerformance> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/user/{username}/perf/{perf}"));
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/user/{username}/perf/{perf}"),
+        );
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<UserPerformance>(builder).await
@@ -98,7 +122,9 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn activity(&self, username: &str) -> Result<Vec<UserActivity>> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/user/{username}/activity"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/activity"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<Vec<UserActivity>>(builder).await
@@ -133,7 +159,9 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn crosstable(&self, user1: &str, user2: &str, matchup: bool) -> Result<Crosstable> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/crosstable/{user1}/{user2}"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/crosstable/{user1}/{user2}"));
         let builder = self.inner.client.get(url).query(&[("matchup", matchup)]);
 
         self.inner.to_model::<Crosstable>(builder).await
@@ -144,8 +172,14 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn autocomplete(&self, term: &str, friend: bool) -> Result<Vec<String>> {
-        let url = self.inner.req_url(UrlBase::Lichess, "api/player/autocomplete");
-        let builder = self.inner.client.get(url).query(&(("term", term), ("friend", friend)));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, "api/player/autocomplete");
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .query(&(("term", term), ("friend", friend)));
 
         self.inner.to_model::<Vec<String>>(builder).await
     }
@@ -156,10 +190,20 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn autocomplete_details(&self, term: &str, friend: bool) -> Result<Vec<MinimalUser>> {
-        let url = self.inner.req_url(UrlBase::Lichess, "api/player/autocomplete");
-        let builder = self.inner.client.get(url).query(&(("term", term), ("object", true), ("friend", friend)));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, "api/player/autocomplete");
+        let builder = self.inner.client.get(url).query(&(
+            ("term", term),
+            ("object", true),
+            ("friend", friend),
+        ));
 
-        Ok(self.inner.to_model::<UserAutocomplete>(builder).await?.result)
+        Ok(self
+            .inner
+            .to_model::<UserAutocomplete>(builder)
+            .await?
+            .result)
     }
 
     /// Add a private note about the given account.
@@ -168,7 +212,9 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn notes_write(&self, username: &str, text: &str) -> Result<()> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
         let builder = self.inner.client.post(url).form(&[("text", text)]);
 
         self.inner.execute(builder).await
@@ -179,7 +225,9 @@ impl UsersApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn notes_read(&self, username: &str) -> Result<Vec<UserNote>> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/user/{username}/note"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<Vec<UserNote>>(builder).await

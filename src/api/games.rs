@@ -25,7 +25,9 @@ impl GamesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn export_one(&self, game_id: &str, options: Option<&GameOptions>) -> Result<Game> {
-        let mut url = self.inner.req_url(UrlBase::Lichess, &format!("game/export/{game_id}"));
+        let mut url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("game/export/{game_id}"));
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -33,7 +35,11 @@ impl GamesApi {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.inner.client.get(url).header(header::ACCEPT, "application/json");
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/json");
         self.inner.to_model::<Game>(builder).await
     }
 
@@ -42,8 +48,15 @@ impl GamesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn export_ongoing_user(&self, username: &str, options: Option<&GameOptions>) -> Result<Game> {
-        let mut url = self.inner.req_url(UrlBase::Lichess, &format!("api/user/{username}/current-game"));
+    pub async fn export_ongoing_user(
+        &self,
+        username: &str,
+        options: Option<&GameOptions>,
+    ) -> Result<Game> {
+        let mut url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/user/{username}/current-game"),
+        );
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -51,7 +64,11 @@ impl GamesApi {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.inner.client.get(url).header(header::ACCEPT, "application/json");
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/json");
         self.inner.to_model::<Game>(builder).await
     }
 
@@ -65,7 +82,9 @@ impl GamesApi {
         username: &str,
         options: Option<&ExtendedGameOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.inner.req_url(UrlBase::Lichess, &format!("api/games/user/{username}"));
+        let mut url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/games/user/{username}"));
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -73,7 +92,11 @@ impl GamesApi {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.inner.client.get(url).header(header::ACCEPT, "application/x-ndjson");
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/x-ndjson");
         self.inner.to_stream::<Game>(builder).await
     }
 
@@ -84,8 +107,14 @@ impl GamesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn export(&self, game_ids: &[&str], options: Option<&GameOptions>) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.inner.req_url(UrlBase::Lichess, "api/games/export/_ids");
+    pub async fn export(
+        &self,
+        game_ids: &[&str],
+        options: Option<&GameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self
+            .inner
+            .req_url(UrlBase::Lichess, "api/games/export/_ids");
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -110,8 +139,14 @@ impl GamesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn users_connect(&self, user_ids: &[&str], with_current_games: bool) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
-        let url = self.inner.req_url(UrlBase::Lichess, "api/stream/games-by-users");
+    pub async fn users_connect(
+        &self,
+        user_ids: &[&str],
+        with_current_games: bool,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, "api/stream/games-by-users");
         let builder = self
             .inner
             .client
@@ -129,8 +164,14 @@ impl GamesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn connect(&self, stream_id: &str, game_ids: &[&str]) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}"));
+    pub async fn connect(
+        &self,
+        stream_id: &str,
+        game_ids: &[&str],
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamGame>> + Send>>> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}"));
         let builder = self.inner.client.post(url).body(game_ids.join(","));
 
         self.inner.to_stream::<StreamGame>(builder).await
@@ -142,7 +183,10 @@ impl GamesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn connect_add(&self, stream_id: &str, game_ids: &[&str]) -> Result<()> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/stream/games/{stream_id}/add"));
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/stream/games/{stream_id}/add"),
+        );
         let builder = self.inner.client.post(url).body(game_ids.join(","));
 
         self.inner.execute(builder).await
@@ -169,8 +213,13 @@ impl GamesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn moves_connect(&self, game_id: &str) -> Result<Pin<Box<dyn Stream<Item = Result<StreamMoves>> + Send>>> {
-        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/stream/game/{game_id}"));
+    pub async fn moves_connect(
+        &self,
+        game_id: &str,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<StreamMoves>> + Send>>> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/stream/game/{game_id}"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_stream::<StreamMoves>(builder).await
@@ -197,7 +246,9 @@ impl GamesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
     pub async fn export_imported(&self) -> Result<String> {
-        let url = self.inner.req_url(UrlBase::Lichess, "api/games/export/imports");
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, "api/games/export/imports");
         let builder = self.inner.client.get(url);
 
         self.inner.to_string(builder).await
@@ -208,8 +259,13 @@ impl GamesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn export_bookmarked(&self, options: Option<&BookmarkedGameOptions>) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
-        let mut url = self.inner.req_url(UrlBase::Lichess, "api/games/export/bookmarks");
+    pub async fn export_bookmarked(
+        &self,
+        options: Option<&BookmarkedGameOptions>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<Game>> + Send>>> {
+        let mut url = self
+            .inner
+            .req_url(UrlBase::Lichess, "api/games/export/bookmarks");
 
         // Add the options to the request if they are present
         if let Some(options) = options {
@@ -217,7 +273,11 @@ impl GamesApi {
             url.set_query(Some(&encoded));
         }
 
-        let builder = self.inner.client.get(url).header(header::ACCEPT, "application/x-ndjson");
+        let builder = self
+            .inner
+            .client
+            .get(url)
+            .header(header::ACCEPT, "application/x-ndjson");
         self.inner.to_stream::<Game>(builder).await
     }
 }

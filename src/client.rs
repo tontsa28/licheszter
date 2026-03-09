@@ -107,7 +107,10 @@ impl LicheszterInner {
 
     // Convert API response into a deserialized stream model
     #[cfg(feature = "streaming")]
-    pub(crate) async fn to_stream<T>(&self, builder: RequestBuilder) -> Result<Pin<Box<dyn Stream<Item = Result<T>> + Send>>>
+    pub(crate) async fn to_stream<T>(
+        &self,
+        builder: RequestBuilder,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<T>> + Send>>>
     where
         T: DeserializeOwned,
     {
@@ -426,37 +429,69 @@ impl LicheszterBuilder {
 
         Licheszter {
             #[cfg(feature = "account")]
-            account: AccountApi { inner: Arc::clone(&inner) },
+            account: AccountApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "analysis")]
-            analysis: AnalysisApi { inner: Arc::clone(&inner) },
+            analysis: AnalysisApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "board")]
-            board: BoardApi { inner: Arc::clone(&inner) },
+            board: BoardApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "bot")]
-            bot: BotApi { inner: Arc::clone(&inner) },
+            bot: BotApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "challenges")]
-            challenges: ChallengesApi { inner: Arc::clone(&inner) },
+            challenges: ChallengesApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "fide")]
-            fide: FideApi { inner: Arc::clone(&inner) },
+            fide: FideApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "games")]
-            games: GamesApi { inner: Arc::clone(&inner) },
+            games: GamesApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "messaging")]
-            messaging: MessagingApi { inner: Arc::clone(&inner) },
+            messaging: MessagingApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "openings")]
-            openings: OpeningsApi { inner: Arc::clone(&inner) },
+            openings: OpeningsApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "pairings")]
-            pairings: BulkPairingsApi { inner: Arc::clone(&inner) },
+            pairings: BulkPairingsApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "puzzles")]
-            puzzles: PuzzlesApi { inner: Arc::clone(&inner) },
+            puzzles: PuzzlesApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "relations")]
-            relations: RelationsApi { inner: Arc::clone(&inner) },
+            relations: RelationsApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "simuls")]
-            simuls: SimulsApi { inner: Arc::clone(&inner) },
+            simuls: SimulsApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "tablebase")]
-            tablebase: TablebaseApi { inner: Arc::clone(&inner) },
+            tablebase: TablebaseApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "tv")]
-            tv: TvApi { inner: Arc::clone(&inner) },
+            tv: TvApi {
+                inner: Arc::clone(&inner),
+            },
             #[cfg(feature = "users")]
-            users: UsersApi { inner: Arc::clone(&inner) },
+            users: UsersApi {
+                inner: Arc::clone(&inner),
+            },
             inner,
         }
     }
