@@ -88,7 +88,7 @@ pub enum GameSortOrder {
     DateDesc,
 }
 
-/// Optional configuration for exporting user games using [`Licheszter::games_export_user()`](fn@crate::client::Licheszter::games_export_user).
+/// Optional configuration for exporting user games using [`games().export_user()`](fn@crate::client::GamesApi::export_user).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct ExtendedGameOptions {
@@ -266,7 +266,7 @@ impl ExtendedGameOptions {
     }
 }
 
-/// Optional configuration for exporting bookmarked games using [`Licheszter::games_export_bookmarked()`](fn@crate::client::Licheszter::games_export_bookmarked).
+/// Optional configuration for exporting bookmarked games using [`games().export_bookmarked()`](fn@crate::client::GamesApi::export_bookmarked).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct BookmarkedGameOptions {

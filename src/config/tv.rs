@@ -46,7 +46,7 @@ impl Display for TvChannel {
     }
 }
 
-/// Optional configuration for watching TV channel games using [`Licheszter::tv_channel_games()`](fn@crate::client::Licheszter::tv_channel_games).
+/// Optional configuration for watching TV channel games using [`tv().channel_games()`](fn@crate::client::TvApi::channel_games).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct TvChannelOptions {

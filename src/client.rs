@@ -230,9 +230,9 @@ pub struct Licheszter {
 }
 
 impl Licheszter {
-    /// Constructs a new `Licheszter`.
+    /// Constructs a new [`Licheszter`].
     ///
-    /// Use `Licheszter::builder()` instead if you want to configure the `Licheszter` instance.
+    /// Use [`Licheszter::builder()`] instead if you want to configure the [`Licheszter`] instance.
     #[must_use]
     pub fn new() -> Licheszter {
         LicheszterBuilder::new().build()
@@ -246,13 +246,13 @@ impl Licheszter {
         LicheszterBuilder::default()
     }
 
-    /// Get the base URL used in this `Licheszter` client.
+    /// Get the base URL used in this [`Licheszter`] client.
     #[must_use]
     pub fn base_url(&self) -> Url {
         self.inner.base_url.clone()
     }
 
-    /// Get the `reqwest` Client behind this `Licheszter` client.
+    /// Get the `reqwest::Client` behind this [`Licheszter`] instance.
     ///
     /// Note: `reqwest::Client` uses `Arc` internally, so this clone is very cheap.
     /// The returned client shares the same connection pool and configuration.
@@ -261,14 +261,14 @@ impl Licheszter {
         self.inner.client.clone()
     }
 
-    /// Get the opening explorer server URL used in this `Licheszter` client.
+    /// Get the opening explorer server URL used in this [`Licheszter`] client.
     #[cfg(feature = "openings")]
     #[must_use]
     pub fn openings_url(&self) -> Url {
         self.inner.openings_url.clone()
     }
 
-    /// Get the tablebase server URL used in this `Licheszter` client.
+    /// Get the tablebase server URL used in this [`Licheszter`] client.
     #[cfg(feature = "tablebase")]
     #[must_use]
     pub fn tablebase_url(&self) -> Url {
@@ -407,7 +407,7 @@ pub struct LicheszterBuilder {
 }
 
 impl LicheszterBuilder {
-    /// Constructs a new `LicheszterBuilder`.
+    /// Constructs a new [`LicheszterBuilder`].
     ///
     /// This is the same as [`Licheszter::builder()`](fn@Licheszter::builder).
     #[must_use]
@@ -530,7 +530,7 @@ impl LicheszterBuilder {
     /// This can be useful, for example, when hosting your own server for debugging purposes.
     ///
     /// # Errors
-    /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
+    /// Returns an error if the given URL cannot be converted into a [`reqwest::Url`].
     pub fn with_base_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.base_url = url.into_url()?;
         Ok(self)
@@ -540,7 +540,7 @@ impl LicheszterBuilder {
     /// This can be useful, for example, when hosting your own server for debugging purposes.
     ///
     /// # Errors
-    /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
+    /// Returns an error if the given URL cannot be converted into a [`reqwest::Url`].
     #[cfg(feature = "openings")]
     pub fn with_openings_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.openings_url = url.into_url()?;
@@ -551,7 +551,7 @@ impl LicheszterBuilder {
     /// This can be useful, for example, when hosting your own server for debugging purposes.
     ///
     /// # Errors
-    /// If the given URL cannot be converted into a [`url::Url`], a [`url::ParseError`] will be returned.
+    /// Returns an error if the given URL cannot be converted into a [`reqwest::Url`].
     #[cfg(feature = "tablebase")]
     pub fn with_tablebase_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
         self.tablebase_url = url.into_url()?;

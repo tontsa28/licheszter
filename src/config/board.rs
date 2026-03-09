@@ -6,7 +6,7 @@ use crate::models::{
     game::{CorrespondenceDays, VariantMode},
 };
 
-/// Optional configuration for seeking opponents using [`Licheszter::board_seek()`](fn@crate::client::Licheszter::board_seek).
+/// Optional configuration for seeking opponents using [`board().seek_create()`](fn@crate::client::BoardApi::seek_create).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct SeekOptions {
@@ -21,7 +21,7 @@ pub struct SeekOptions {
 }
 
 impl SeekOptions {
-    /// Create a new instance of [`ChallengeOptions`] with default configuration.
+    /// Create a new instance of [`SeekOptions`] with default configuration.
     #[must_use]
     pub fn new() -> Self {
         Self::default()

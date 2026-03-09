@@ -3,7 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::models::game::{CorrespondenceDays, Rules, VariantMode};
 
-/// Configuration for creating bulk pairings using [`Licheszter::bulk_pairings_create()`](fn@crate::client::Licheszter::bulk_pairings_create).
+/// Configuration for creating bulk pairings using [`bulk_pairings().create()`](fn@crate::client::BulkPairingsApi::create).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]

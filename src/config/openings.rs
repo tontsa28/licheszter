@@ -6,7 +6,7 @@ use crate::models::{
     openings::OpeningRatings,
 };
 
-/// Optional configuration for querying Masters openings using [`Licheszter::openings_masters()`](fn@crate::client::Licheszter::openings_masters).
+/// Optional configuration for querying Masters openings using [`openings().masters()`](fn@crate::client::OpeningsApi::masters).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct MastersOpeningsOptions {
@@ -85,7 +85,7 @@ impl MastersOpeningsOptions {
     }
 }
 
-/// Optional configuration for querying Lichess openings using [`Licheszter::openings_lichess()`](fn@crate::client::Licheszter::openings_lichess).
+/// Optional configuration for querying Lichess openings using [`openings().lichess()`](fn@crate::client::OpeningsApi::lichess).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename = "camelCase")]
@@ -188,7 +188,7 @@ impl LichessOpeningsOptions {
     }
 }
 
-/// Optional configuration for querying player openings using [`Licheszter::openings_player()`](fn@crate::client::Licheszter::openings_player).
+/// Optional configuration for querying player openings using [`openings().player()`](fn@crate::client::OpeningsApi::player).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename = "camelCase")]

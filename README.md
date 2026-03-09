@@ -39,6 +39,10 @@ async fn main() {
         .with_authentication("lip_exampletoken")
         .expect("Invalid token")
         .build();
+    
+    // API endpoints are grouped by category and accessed via namespaced methods
+    let profile = client.account().profile().await.unwrap();
+    let daily = client.puzzles().daily().await.unwrap();
 
     // Use the client to fetch online bots, for example...
     let bots = client.bots_online(10).await.unwrap();

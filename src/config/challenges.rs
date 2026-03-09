@@ -6,7 +6,7 @@ use crate::models::{
     game::{CorrespondenceDays, Rules, VariantMode},
 };
 
-/// Optional configuration for creating challenges using [`Licheszter::challenge_ai()`](fn@crate::client::Licheszter::challenge_ai).
+/// Optional configuration for creating challenges using [`challenges().ai()`](fn@crate::api::challenges::ChallengesApi::ai).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct AIChallengeOptions {
@@ -72,7 +72,7 @@ impl AIChallengeOptions {
     }
 }
 
-/// Optional configuration for creating challenges using [`Licheszter::challenge_create()`](fn@crate::client::Licheszter::challenge_create).
+/// Optional configuration for creating challenges using [`challenges().create()`](fn@crate::client::ChallengesApi::create).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct ChallengeOptions {
@@ -150,7 +150,7 @@ impl ChallengeOptions {
     }
 }
 
-/// Optional configuration for creating challenges using [`Licheszter::challenge_create_open()`](fn@crate::client::Licheszter::challenge_create_open).
+/// Optional configuration for creating challenges using [`challenges().create_open()`](fn@crate::client::ChallengesApi::create_open).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 pub struct OpenChallengeOptions {

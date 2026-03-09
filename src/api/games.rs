@@ -155,7 +155,7 @@ impl GamesApi {
     /// Create a stream of games with a custom ID.
     /// The stream first outputs the games that already exist, then emits an event each time a game is started or finished.
     /// Up to 500 games using anonymous requests or 1000 games using authenticated requests can be streamed at a time.
-    /// It is possible to add new games to the stream while it is open using [`games_connect_add`](fn@Licheszter::games_connect_add).
+    /// It is possible to add new games to the stream while it is open using [`games().connect_add()`](fn@crate::client::GamesApi::connect_add).
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
