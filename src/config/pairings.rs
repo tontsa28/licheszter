@@ -3,7 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::models::game::{CorrespondenceDays, Rules, VariantMode};
 
-/// Configuration for creating bulk pairings using [`Licheszter::bulk_pairings_create()`](fn@crate::client::Licheszter::bulk_pairings_create).
+/// Configuration for creating bulk pairings using [`bulk_pairings().create()`](fn@crate::client::BulkPairingsApi::create).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -81,12 +81,7 @@ impl BulkPairingOptions {
     /// The correct order is `vec![("white1", "black1"), ("white2", "black2")]`, where the number represents the game.
     #[must_use]
     pub fn players(mut self, players: &[(&str, &str)]) -> Self {
-        self.players = Some(
-            players
-                .iter()
-                .map(|(white, black)| format!("{white}:{black}"))
-                .collect(),
-        );
+        self.players = Some(players.iter().map(|(white, black)| format!("{white}:{black}")).collect());
         self
     }
 

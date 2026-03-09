@@ -3,33 +3,41 @@ use std::pin::Pin;
 use futures_util::Stream;
 
 use crate::{
-    client::{Licheszter, UrlBase},
+    client::{LicheszterInner, UrlBase},
     config::puzzles::PuzzleDifficulty,
     error::Result,
     models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard, PuzzleRace, PuzzleStormDashboard},
 };
 
-impl Licheszter {
+use std::sync::Arc;
+
+/// A struct for accessing the Puzzles API endpoints.
+#[derive(Debug)]
+pub struct PuzzlesApi {
+    pub(crate) inner: Arc<LicheszterInner>,
+}
+
+impl PuzzlesApi {
     /// Get the daily puzzle.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn puzzle_daily(&self) -> Result<Puzzle> {
-        let url = self.req_url(UrlBase::Lichess, "api/puzzle/daily");
-        let builder = self.client.get(url);
+    pub async fn daily(&self) -> Result<Puzzle> {
+        let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/daily");
+        let builder = self.inner.client.get(url);
 
-        self.to_model::<Puzzle>(builder).await
+        self.inner.to_model::<Puzzle>(builder).await
     }
 
     /// Get a single puzzle by ID.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn puzzle_show(&self, id: &str) -> Result<Puzzle> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/{id}"));
-        let builder = self.client.get(url);
+    pub async fn show(&self, id: &str) -> Result<Puzzle> {
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/puzzle/{id}"));
+        let builder = self.inner.client.get(url);
 
-        self.to_model::<Puzzle>(builder).await
+        self.inner.to_model::<Puzzle>(builder).await
     }
 
     /// Get a random puzzle.
@@ -37,33 +45,22 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn puzzle_next(
-        &self,
-        angle: Option<&str>,
-        difficulty: Option<PuzzleDifficulty>,
-    ) -> Result<Puzzle> {
-        let url = self.req_url(UrlBase::Lichess, "api/puzzle/next");
-        let builder = self
-            .client
-            .get(url)
-            .query(&(("angle", angle), ("difficulty", difficulty)));
+    pub async fn next(&self, angle: Option<&str>, difficulty: Option<PuzzleDifficulty>) -> Result<Puzzle> {
+        let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/next");
+        let builder = self.inner.client.get(url).query(&(("angle", angle), ("difficulty", difficulty)));
 
-        self.to_model::<Puzzle>(builder).await
+        self.inner.to_model::<Puzzle>(builder).await
     }
 
     /// Get the puzzle activity of the logged in user.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn puzzle_activity(
-        &self,
-        max: Option<u16>,
-        before: Option<u64>,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<PuzzleActivity>> + Send>>> {
-        let url = self.req_url(UrlBase::Lichess, "api/puzzle/activity");
-        let builder = self.client.get(url).query(&(("max", max), ("before", before)));
+    pub async fn activity(&self, max: Option<u16>, before: Option<u64>) -> Result<Pin<Box<dyn Stream<Item = Result<PuzzleActivity>> + Send>>> {
+        let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/activity");
+        let builder = self.inner.client.get(url).query(&(("max", max), ("before", before)));
 
-        self.to_stream::<PuzzleActivity>(builder).await
+        self.inner.to_stream::<PuzzleActivity>(builder).await
     }
 
     /// Get the puzzle dashboard of the logged in user.
@@ -71,11 +68,11 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn puzzle_dashboard(&self, days: u8) -> Result<PuzzleDashboard> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
-        let builder = self.client.get(url);
+    pub async fn dashboard(&self, days: u8) -> Result<PuzzleDashboard> {
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
+        let builder = self.inner.client.get(url);
 
-        self.to_model::<PuzzleDashboard>(builder).await
+        self.inner.to_model::<PuzzleDashboard>(builder).await
     }
 
     /// Get the puzzle storm dashboard of any player.
@@ -84,15 +81,11 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn puzzle_dashboard_storm(
-        &self,
-        username: &str,
-        days: Option<u16>,
-    ) -> Result<PuzzleStormDashboard> {
-        let url = self.req_url(UrlBase::Lichess, &format!("api/storm/dashboard/{username}"));
-        let builder = self.client.get(url).query(&[("days", days)]);
+    pub async fn dashboard_storm(&self, username: &str, days: Option<u16>) -> Result<PuzzleStormDashboard> {
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/storm/dashboard/{username}"));
+        let builder = self.inner.client.get(url).query(&[("days", days)]);
 
-        self.to_model::<PuzzleStormDashboard>(builder).await
+        self.inner.to_model::<PuzzleStormDashboard>(builder).await
     }
 
     /// Create a new private puzzle race.
@@ -100,10 +93,10 @@ impl Licheszter {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn puzzle_race_create(&self) -> Result<PuzzleRace> {
-        let url = self.req_url(UrlBase::Lichess, "api/racer");
-        let builder = self.client.post(url);
+    pub async fn race_create(&self) -> Result<PuzzleRace> {
+        let url = self.inner.req_url(UrlBase::Lichess, "api/racer");
+        let builder = self.inner.client.post(url);
 
-        self.to_model::<PuzzleRace>(builder).await
+        self.inner.to_model::<PuzzleRace>(builder).await
     }
 }

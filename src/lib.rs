@@ -43,6 +43,10 @@
 //!         .expect("Invalid token")
 //!         .build();
 //!
+//!     // API endpoints are grouped by category and accessed via namespaced methods
+//!     let profile = client.account().profile().await.unwrap();
+//!     let daily = client.puzzles().daily().await.unwrap();
+//!
 //!     // Use the client to fetch online bots, for example...
 //!     let bots = client.bots_online(10).await.unwrap();
 //!
@@ -60,7 +64,7 @@
 //!
 //! For additional information, check the [GitHub repository](https://github.com/tontsa28/licheszter) and the official [Lichess API documentation](https://lichess.org/api).
 
-pub mod api;
+pub(crate) mod api;
 pub mod client;
 pub mod config;
 pub mod error;

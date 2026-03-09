@@ -26,14 +26,14 @@ static ADRIANA: LazyLock<Licheszter> = LazyLock::new(|| {
 #[tokio::test]
 async fn simuls_current() {
     // Run some test cases
-    let result = LI.simuls_current().await;
+    let result = LI.simuls().current().await;
     assert!(
         result.is_ok(),
         "Failed to get current simuls: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = ADRIANA.simuls_current().await;
+    let result = ADRIANA.simuls().current().await;
     assert!(
         result.is_ok(),
         "Failed to get current simuls: {:?}",

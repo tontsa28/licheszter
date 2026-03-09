@@ -34,14 +34,14 @@ async fn openings_masters() {
         .top_games(10);
 
     // Run some test cases
-    let result = EXPLORER.openings_masters(None).await;
+    let result = EXPLORER.openings().masters(None).await;
     assert!(
         result.is_ok(),
         "Failed to get masters openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = EXPLORER.openings_masters(Some(&options)).await;
+    let result = EXPLORER.openings().masters(Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to get masters openings: {:?}",
@@ -49,7 +49,7 @@ async fn openings_masters() {
     );
 
     let options = options.play(&["d1d3"]);
-    let result = EXPLORER.openings_masters(Some(&options)).await;
+    let result = EXPLORER.openings().masters(Some(&options)).await;
     assert!(result.is_err(), "Fetching masters openings did not fail: {:?}", result.unwrap());
 }
 
@@ -70,14 +70,14 @@ async fn openings_lichess() {
         .history(true);
 
     // Run some test cases
-    let result = EXPLORER.openings_lichess(None).await;
+    let result = EXPLORER.openings().lichess(None).await;
     assert!(
         result.is_ok(),
         "Failed to get Lichess openings: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = EXPLORER.openings_lichess(Some(&options)).await;
+    let result = EXPLORER.openings().lichess(Some(&options)).await;
     assert!(
         result.is_ok(),
         "Failed to get Lichess openings: {:?}",
@@ -85,7 +85,7 @@ async fn openings_lichess() {
     );
 
     let options = options.since("invalid-month");
-    let result = EXPLORER.openings_lichess(Some(&options)).await;
+    let result = EXPLORER.openings().lichess(Some(&options)).await;
     assert!(result.is_err(), "Fetching Lichess openings did not fail: {:?}", result.unwrap());
 }
 
@@ -106,16 +106,9 @@ async fn openings_player() {
 
     // Run some test cases
     let thread = tokio::spawn(async move {
-        let mut result = EXPLORER
-            .openings_player("Cheszter", Color::White, None)
-            .await
-            .unwrap();
+        let mut result = EXPLORER.openings().player("Cheszter", Color::White, None).await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to get player openings: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to get player openings: {:?}", event.unwrap_err().source().unwrap());
         }
     });
     sleep(Duration::from_secs(1)).await;
@@ -126,16 +119,9 @@ async fn openings_player() {
     }
 
     let thread = tokio::spawn(async move {
-        let mut result = EXPLORER
-            .openings_player("Cheszter", Color::White, Some(&options1))
-            .await
-            .unwrap();
+        let mut result = EXPLORER.openings().player("Cheszter", Color::White, Some(&options1)).await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to get player openings: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to get player openings: {:?}", event.unwrap_err().source().unwrap());
         }
     });
     sleep(Duration::from_secs(1)).await;
@@ -145,22 +131,20 @@ async fn openings_player() {
         panic::resume_unwind(result.unwrap_err().into_panic());
     }
 
-    let result = EXPLORER
-        .openings_player("NoSuchUser", Color::Black, Some(&options2))
-        .await;
+    let result = EXPLORER.openings().player("NoSuchUser", Color::Black, Some(&options2)).await;
     assert!(result.is_err(), "Fetching player openings did not fail");
 }
 
 #[tokio::test]
 async fn openings_masters_otb_game() {
     // Run some test cases
-    let result = EXPLORER.openings_masters_otb_game("aAbqI4ey").await;
+    let result = EXPLORER.openings().masters_otb_game("aAbqI4ey").await;
     assert!(
         result.is_ok(),
         "Failed to get masters OTB game: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
-    let result = EXPLORER.openings_masters_otb_game("notvalid").await;
+    let result = EXPLORER.openings().masters_otb_game("notvalid").await;
     assert!(result.is_err(), "Getting masters OTB game did not fail: {:?}", result.unwrap());
 }

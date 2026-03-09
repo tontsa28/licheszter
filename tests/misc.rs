@@ -29,11 +29,7 @@ async fn connect() {
     let thread = tokio::spawn(async move {
         let mut result = LI.connect().await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
         }
     });
     sleep(Duration::from_secs(1)).await;
@@ -46,11 +42,7 @@ async fn connect() {
     let thread = tokio::spawn(async move {
         let mut result = BOT0.connect().await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
         }
     });
     sleep(Duration::from_secs(1)).await;
@@ -66,11 +58,7 @@ async fn bots_online() {
     // Run some test cases
     let mut result = LI.bots_online(10).await.unwrap();
     while let Some(event) = result.next().await {
-        assert!(
-            event.is_ok(),
-            "Failed to get online bots: {:?}",
-            event.unwrap_err().source().unwrap()
-        );
+        assert!(event.is_ok(), "Failed to get online bots: {:?}", event.unwrap_err().source().unwrap());
     }
 
     let result = LI.bots_online(0).await;

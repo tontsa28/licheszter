@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-/// Optional configuration for user statuses using [`Licheszter::users_status()`](fn@crate::client::Licheszter::users_status).
+/// Optional configuration for user statuses using [`users().status()`](fn@crate::client::UsersApi::status).
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
