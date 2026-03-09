@@ -18,9 +18,7 @@ impl FideApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn player(&self, player_id: u32) -> Result<FidePlayer> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/fide/player/{player_id}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/fide/player/{player_id}"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<FidePlayer>(builder).await

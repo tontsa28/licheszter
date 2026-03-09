@@ -58,9 +58,7 @@ async fn bulk_pairings_create() {
         .rated(true)
         .rules(&[Rules::NoRematch, Rules::NoEarlyDraw])
         .variant(VariantMode::FromPosition);
-    let options2 = BulkPairingOptions::new()
-        .clock(24897, 255)
-        .players(&[("lip_bot0", "lip_bot1")]);
+    let options2 = BulkPairingOptions::new().clock(24897, 255).players(&[("lip_bot0", "lip_bot1")]);
 
     // Run some test cases
     let result = LI.bulk_pairings().create(&options1).await;
@@ -84,9 +82,7 @@ async fn bulk_pairings_create() {
 #[tokio::test]
 async fn bulk_pairings_clocks_start() {
     // Create options and bulk pairings for testing
-    let options = BulkPairingOptions::new()
-        .clock(24897, 255)
-        .players(&[("lip_bot0", "lip_bot1")]);
+    let options = BulkPairingOptions::new().clock(24897, 255).players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings().create(&options).await.unwrap();
 
     // Run some test cases
@@ -98,35 +94,21 @@ async fn bulk_pairings_clocks_start() {
     );
 
     let result = BOT0.bulk_pairings().clocks_start(&bulk.id).await;
-    assert!(
-        result.is_err(),
-        "Starting bulk pairing clocks did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Starting bulk pairing clocks did not fail: {:?}", result.unwrap());
 
     let result = LI.bulk_pairings().clocks_start("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Starting bulk pairing clocks did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Starting bulk pairing clocks did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
 async fn bulk_pairings_show() {
     // Create options and bulk pairings for testing
-    let options = BulkPairingOptions::new()
-        .clock(24897, 255)
-        .players(&[("lip_bot0", "lip_bot1")]);
+    let options = BulkPairingOptions::new().clock(24897, 255).players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings().create(&options).await.unwrap();
 
     // Run some test cases
     let result = LI.bulk_pairings().show(&bulk.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to get bulk pairing: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to get bulk pairing: {:?}", result.unwrap_err().source().unwrap());
 
     let result = BOT0.bulk_pairings().show(&bulk.id).await;
     assert!(result.is_err(), "Getting bulk pairing did not fail: {:?}", result.unwrap());
@@ -138,9 +120,7 @@ async fn bulk_pairings_show() {
 #[tokio::test]
 async fn bulk_pairings_cancel() {
     // Create options and bulk pairings for testing
-    let options = BulkPairingOptions::new()
-        .clock(24897, 255)
-        .players(&[("lip_bot0", "lip_bot1")]);
+    let options = BulkPairingOptions::new().clock(24897, 255).players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings().create(&options).await.unwrap();
 
     // Run some test cases
@@ -160,9 +140,7 @@ async fn bulk_pairings_cancel() {
 
 #[tokio::test]
 async fn bulk_pairings_export() {
-    let bulk_options = BulkPairingOptions::new()
-        .clock(24897, 255)
-        .players(&[("lip_bot0", "lip_bot1")]);
+    let bulk_options = BulkPairingOptions::new().clock(24897, 255).players(&[("lip_bot0", "lip_bot1")]);
     let bulk = LI.bulk_pairings().create(&bulk_options).await.unwrap();
     let options = GameOptions::new()
         .moves(true)
@@ -177,20 +155,12 @@ async fn bulk_pairings_export() {
     // Run some test cases
     let mut result = LI.bulk_pairings().export(&bulk.id, Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
-        assert!(
-            event.is_ok(),
-            "Failed to export bulk pairing: {:?}",
-            event.unwrap_err().source().unwrap()
-        );
+        assert!(event.is_ok(), "Failed to export bulk pairing: {:?}", event.unwrap_err().source().unwrap());
     }
 
     let mut result = LI.bulk_pairings().export(&bulk.id, None).await.unwrap();
     while let Some(event) = result.next().await {
-        assert!(
-            event.is_ok(),
-            "Failed to export bulk pairing: {:?}",
-            event.unwrap_err().source().unwrap()
-        );
+        assert!(event.is_ok(), "Failed to export bulk pairing: {:?}", event.unwrap_err().source().unwrap());
     }
 
     let result = BOT0.bulk_pairings().export(&bulk.id, Some(&options)).await;

@@ -81,12 +81,7 @@ impl BulkPairingOptions {
     /// The correct order is `vec![("white1", "black1"), ("white2", "black2")]`, where the number represents the game.
     #[must_use]
     pub fn players(mut self, players: &[(&str, &str)]) -> Self {
-        self.players = Some(
-            players
-                .iter()
-                .map(|(white, black)| format!("{white}:{black}"))
-                .collect(),
-        );
+        self.players = Some(players.iter().map(|(white, black)| format!("{white}:{black}")).collect());
         self
     }
 

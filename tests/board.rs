@@ -43,22 +43,14 @@ async fn board_seek_create() {
     let thread1 = tokio::spawn(async move {
         let mut result = LI.board().seek_create(Some(&options1)).await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to seek for a game: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to seek for a game: {:?}", event.unwrap_err().source().unwrap());
         }
     });
 
     let thread2 = tokio::spawn(async move {
         let mut result = ADRIANA.board().seek_create(Some(&options2)).await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to seek for a game: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to seek for a game: {:?}", event.unwrap_err().source().unwrap());
         }
     });
 
@@ -88,37 +80,18 @@ async fn board_game_connect() {
     let mut result = LI.board().game_connect(&challenge.id).await.unwrap();
     let thread = tokio::spawn(async move {
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
         }
     });
 
     // Play the game
     LI.board().play_move(&challenge.id, "e2e4", true).await.unwrap();
-    ADRIANA
-        .board()
-        .play_move(&challenge.id, "e7e5", true)
-        .await
-        .unwrap();
+    ADRIANA.board().play_move(&challenge.id, "e7e5", true).await.unwrap();
     LI.board().play_move(&challenge.id, "g1f3", true).await.unwrap();
-    ADRIANA
-        .board()
-        .play_move(&challenge.id, "b1c3", true)
-        .await
-        .unwrap();
+    ADRIANA.board().play_move(&challenge.id, "b1c3", true).await.unwrap();
 
-    LI.board()
-        .chat_write(&challenge.id, ChatRoom::Player, "Good game!")
-        .await
-        .unwrap();
-    ADRIANA
-        .board()
-        .chat_write(&challenge.id, ChatRoom::Player, "Good game!")
-        .await
-        .unwrap();
+    LI.board().chat_write(&challenge.id, ChatRoom::Player, "Good game!").await.unwrap();
+    ADRIANA.board().chat_write(&challenge.id, ChatRoom::Player, "Good game!").await.unwrap();
 
     sleep(Duration::from_secs(1)).await;
     thread.abort();
@@ -137,35 +110,19 @@ async fn board_play_move() {
 
     // Run some test cases
     let result = LI.board().play_move(&challenge.id, "e2e4", false).await;
-    assert!(
-        result.is_ok(),
-        "Failed to play a move: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to play a move: {:?}", result.unwrap_err().source().unwrap());
 
     let result = ADRIANA.board().play_move(&challenge.id, "e7e5", true).await;
-    assert!(
-        result.is_ok(),
-        "Failed to play a move: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to play a move: {:?}", result.unwrap_err().source().unwrap());
 
     let result = LI.board().play_move(&challenge.id, "d1d3", true).await;
     assert!(result.is_err(), "Playing a move did not fail: {:?}", result.unwrap());
 
     let result = LI.board().play_move(&challenge.id, "g1f3", true).await;
-    assert!(
-        result.is_ok(),
-        "Failed to play a move: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to play a move: {:?}", result.unwrap_err().source().unwrap());
 
     let result = ADRIANA.board().play_move(&challenge.id, "b8c6", true).await;
-    assert!(
-        result.is_ok(),
-        "Failed to play a move: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to play a move: {:?}", result.unwrap_err().source().unwrap());
 
     let result = LI.board().play_move("notvalid", "a1a3", false).await;
     assert!(result.is_err(), "Playing a move did not fail: {:?}", result.unwrap());
@@ -178,25 +135,11 @@ async fn board_chat_write() {
     ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run some test cases
-    let result = LI
-        .board()
-        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
-        .await;
-    assert!(
-        result.is_ok(),
-        "Failed to write to chat: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    let result = LI.board().chat_write(&challenge.id, ChatRoom::Player, "GLHF").await;
+    assert!(result.is_ok(), "Failed to write to chat: {:?}", result.unwrap_err().source().unwrap());
 
-    let result = ADRIANA
-        .board()
-        .chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!")
-        .await;
-    assert!(
-        result.is_ok(),
-        "Failed to write to chat: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    let result = ADRIANA.board().chat_write(&challenge.id, ChatRoom::Spectator, "GLHF!").await;
+    assert!(result.is_ok(), "Failed to write to chat: {:?}", result.unwrap_err().source().unwrap());
 
     let result = LI.board().chat_write("notvalid", ChatRoom::Player, "GLHF!").await;
     assert!(result.is_err(), "Writing to chat did not fail: {:?}", result.unwrap());
@@ -209,15 +152,8 @@ async fn board_chat_read() {
     ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Write some messages to the chat
-    LI.board()
-        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
-        .await
-        .unwrap();
-    ADRIANA
-        .board()
-        .chat_write(&challenge.id, ChatRoom::Player, "GLHF")
-        .await
-        .unwrap();
+    LI.board().chat_write(&challenge.id, ChatRoom::Player, "GLHF").await.unwrap();
+    ADRIANA.board().chat_write(&challenge.id, ChatRoom::Player, "GLHF").await.unwrap();
 
     // Run some test cases
     let result = LI.board().chat_read(&challenge.id).await;
@@ -239,11 +175,7 @@ async fn board_game_abort() {
 
     // Run some test cases
     let result = LI.board().game_abort(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to abort game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to abort game: {:?}", result.unwrap_err().source().unwrap());
 
     let result = ADRIANA.board().game_abort(&challenge.id).await;
     assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
@@ -254,11 +186,7 @@ async fn board_game_abort() {
 
     // Run some test cases
     let result = ADRIANA.board().game_abort(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to abort game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to abort game: {:?}", result.unwrap_err().source().unwrap());
 
     let result = LI.board().game_abort("notvalid").await;
     assert!(result.is_err(), "Aborting game did not fail: {:?}", result.unwrap());
@@ -272,11 +200,7 @@ async fn board_game_resign() {
 
     // Run some test cases
     let result = LI.board().game_resign(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to resign game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to resign game: {:?}", result.unwrap_err().source().unwrap());
 
     let result = ADRIANA.board().game_resign(&challenge.id).await;
     assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
@@ -287,11 +211,7 @@ async fn board_game_resign() {
 
     // Run some test cases
     let result = ADRIANA.board().game_resign(&challenge.id).await;
-    assert!(
-        result.is_ok(),
-        "Failed to resign game: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to resign game: {:?}", result.unwrap_err().source().unwrap());
 
     let result = LI.board().game_resign("notvalid").await;
     assert!(result.is_err(), "Resigning game did not fail: {:?}", result.unwrap());
@@ -305,11 +225,7 @@ async fn board_handle_draws() {
 
     // Run a test case
     let result = LI.board().handle_draws(&challenge.id, true).await;
-    assert!(
-        result.is_ok(),
-        "Failed to handle draws: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to handle draws: {:?}", result.unwrap_err().source().unwrap());
 
     // Create a game for testing
     let challenge = LI.challenges().create("Adriana", None).await.unwrap();
@@ -317,11 +233,7 @@ async fn board_handle_draws() {
 
     // Run some test cases
     let result = LI.board().handle_draws(&challenge.id, false).await;
-    assert!(
-        result.is_ok(),
-        "Failed to handle draws: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to handle draws: {:?}", result.unwrap_err().source().unwrap());
 
     let result = LI.board().handle_draws("notvalid", true).await;
     assert!(result.is_err(), "Handling draws did not fail: {:?}", result.unwrap());
@@ -335,11 +247,7 @@ async fn board_handle_takebacks() {
 
     // Run a test case
     let result = LI.board().handle_takebacks(&challenge.id, true).await;
-    assert!(
-        result.is_ok(),
-        "Failed to handle takebacks: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to handle takebacks: {:?}", result.unwrap_err().source().unwrap());
 
     // Create a game for testing
     let challenge = LI.challenges().create("Adriana", None).await.unwrap();
@@ -347,11 +255,7 @@ async fn board_handle_takebacks() {
 
     // Run some test cases
     let result = LI.board().handle_takebacks(&challenge.id, false).await;
-    assert!(
-        result.is_ok(),
-        "Failed to handle takebacks: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
+    assert!(result.is_ok(), "Failed to handle takebacks: {:?}", result.unwrap_err().source().unwrap());
 
     let result = LI.board().handle_takebacks("notvalid", true).await;
     assert!(result.is_err(), "Handling takebacks did not fail: {:?}", result.unwrap());
@@ -365,11 +269,7 @@ async fn board_claim_victory() {
     ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
-    ADRIANA
-        .board()
-        .play_move(&challenge.id, "e2e4", false)
-        .await
-        .unwrap();
+    ADRIANA.board().play_move(&challenge.id, "e2e4", false).await.unwrap();
     LI.board().play_move(&challenge.id, "e7e5", false).await.unwrap();
 
     // Run some test cases
@@ -390,18 +290,10 @@ async fn board_claim_victory() {
     }
 
     let result = ADRIANA.board().claim_victory(&challenge.id).await;
-    assert!(
-        result.is_err(),
-        "Claiming victory of a game did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Claiming victory of a game did not fail: {:?}", result.unwrap());
 
     let result = LI.board().claim_victory("notvalid").await;
-    assert!(
-        result.is_err(),
-        "Claiming victory of a game did not fail: {:?}",
-        result.unwrap()
-    );
+    assert!(result.is_err(), "Claiming victory of a game did not fail: {:?}", result.unwrap());
 }
 
 #[tokio::test]
@@ -412,11 +304,7 @@ async fn board_claim_draw() {
     ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Play some moves to get the game going
-    ADRIANA
-        .board()
-        .play_move(&challenge.id, "e2e4", false)
-        .await
-        .unwrap();
+    ADRIANA.board().play_move(&challenge.id, "e2e4", false).await.unwrap();
     LI.board().play_move(&challenge.id, "e7e5", false).await.unwrap();
 
     // Run some test cases

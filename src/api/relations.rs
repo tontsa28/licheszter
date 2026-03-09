@@ -33,9 +33,7 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn follow(&self, username: &str) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/rel/follow/{username}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/follow/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await
@@ -46,9 +44,7 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn unfollow(&self, username: &str) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/rel/unfollow/{username}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/unfollow/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await
@@ -59,9 +55,7 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn block(&self, username: &str) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/rel/block/{username}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/block/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await
@@ -72,9 +66,7 @@ impl RelationsApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn unblock(&self, username: &str) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/rel/unblock/{username}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/rel/unblock/{username}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await

@@ -29,11 +29,7 @@ async fn tv_connect() {
     let thread = tokio::spawn(async move {
         let mut result = LICHESS.tv().connect().await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
         }
     });
     sleep(Duration::from_secs(3)).await;
@@ -50,11 +46,7 @@ async fn tv_channel_connect() {
     let thread = tokio::spawn(async move {
         let mut result = LICHESS.tv().channel_connect(TvChannel::Bullet).await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
         }
     });
     sleep(Duration::from_secs(3)).await;
@@ -67,11 +59,7 @@ async fn tv_channel_connect() {
     let thread = tokio::spawn(async move {
         let mut result = LICHESS.tv().channel_connect(TvChannel::Bot).await.unwrap();
         while let Some(event) = result.next().await {
-            assert!(
-                event.is_ok(),
-                "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
-            );
+            assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
         }
     });
     sleep(Duration::from_secs(3)).await;
@@ -85,33 +73,16 @@ async fn tv_channel_connect() {
 #[tokio::test]
 async fn tv_channel_games() {
     // Create options for testing
-    let options = TvChannelOptions::new()
-        .amount(5)
-        .moves(true)
-        .tags(true)
-        .clocks(true)
-        .opening(true);
+    let options = TvChannelOptions::new().amount(5).moves(true).tags(true).clocks(true).opening(true);
 
     // Run some test cases
     let mut result = LICHESS.tv().channel_games(TvChannel::Bullet, None).await.unwrap();
     while let Some(event) = result.next().await {
-        assert!(
-            event.is_ok(),
-            "Failed to parse an event: {:?}",
-            event.unwrap_err().source().unwrap()
-        );
+        assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
     }
 
-    let mut result = LICHESS
-        .tv()
-        .channel_games(TvChannel::Bullet, Some(&options))
-        .await
-        .unwrap();
+    let mut result = LICHESS.tv().channel_games(TvChannel::Bullet, Some(&options)).await.unwrap();
     while let Some(event) = result.next().await {
-        assert!(
-            event.is_ok(),
-            "Failed to parse an event: {:?}",
-            event.unwrap_err().source().unwrap()
-        );
+        assert!(event.is_ok(), "Failed to parse an event: {:?}", event.unwrap_err().source().unwrap());
     }
 }

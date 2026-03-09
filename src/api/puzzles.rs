@@ -45,17 +45,9 @@ impl PuzzlesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn next(
-        &self,
-        angle: Option<&str>,
-        difficulty: Option<PuzzleDifficulty>,
-    ) -> Result<Puzzle> {
+    pub async fn next(&self, angle: Option<&str>, difficulty: Option<PuzzleDifficulty>) -> Result<Puzzle> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/next");
-        let builder = self
-            .inner
-            .client
-            .get(url)
-            .query(&(("angle", angle), ("difficulty", difficulty)));
+        let builder = self.inner.client.get(url).query(&(("angle", angle), ("difficulty", difficulty)));
 
         self.inner.to_model::<Puzzle>(builder).await
     }
@@ -64,17 +56,9 @@ impl PuzzlesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
-    pub async fn activity(
-        &self,
-        max: Option<u16>,
-        before: Option<u64>,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<PuzzleActivity>> + Send>>> {
+    pub async fn activity(&self, max: Option<u16>, before: Option<u64>) -> Result<Pin<Box<dyn Stream<Item = Result<PuzzleActivity>> + Send>>> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/puzzle/activity");
-        let builder = self
-            .inner
-            .client
-            .get(url)
-            .query(&(("max", max), ("before", before)));
+        let builder = self.inner.client.get(url).query(&(("max", max), ("before", before)));
 
         self.inner.to_stream::<PuzzleActivity>(builder).await
     }
@@ -85,9 +69,7 @@ impl PuzzlesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn dashboard(&self, days: u8) -> Result<PuzzleDashboard> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/puzzle/dashboard/{days}"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<PuzzleDashboard>(builder).await
@@ -99,14 +81,8 @@ impl PuzzlesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn dashboard_storm(
-        &self,
-        username: &str,
-        days: Option<u16>,
-    ) -> Result<PuzzleStormDashboard> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/storm/dashboard/{username}"));
+    pub async fn dashboard_storm(&self, username: &str, days: Option<u16>) -> Result<PuzzleStormDashboard> {
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/storm/dashboard/{username}"));
         let builder = self.inner.client.get(url).query(&[("days", days)]);
 
         self.inner.to_model::<PuzzleStormDashboard>(builder).await

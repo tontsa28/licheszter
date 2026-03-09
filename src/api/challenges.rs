@@ -8,9 +8,7 @@ use crate::{
     config::challenges::{AIChallengeOptions, ChallengeOptions, OpenChallengeOptions},
     error::Result,
     models::{
-        challenge::{
-            AIChallenge, Challenge, ChallengeComplete, ChallengeDeclineReason, Challenges, OpenChallenge,
-        },
+        challenge::{AIChallenge, Challenge, ChallengeComplete, ChallengeDeclineReason, Challenges, OpenChallenge},
         game::AILevel,
     },
 };
@@ -42,17 +40,13 @@ impl ChallengesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn create(&self, username: &str, options: Option<&ChallengeOptions>) -> Result<Challenge> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
         let mut builder = self.inner.client.post(url);
 
         // Add the options to the request if they are present
         if let Some(options) = options {
             let encoded = comma_serde_urlencoded::to_string(options)?.replace('_', ".");
-            builder = builder
-                .body(encoded)
-                .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
+            builder = builder.body(encoded).header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
 
         self.inner.to_model::<Challenge>(builder).await
@@ -70,18 +64,13 @@ impl ChallengesApi {
         username: &str,
         options: Option<&ChallengeOptions>,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<ChallengeComplete>> + Send>>> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/challenge/{username}"));
         let mut builder = self.inner.client.post(url).form(&[("keepAliveStream", true)]);
 
         // Add the options to the request if they are present
         if let Some(options) = options {
-            let encoded = "keepAliveStream=true&".to_string()
-                + &comma_serde_urlencoded::to_string(options)?.replace('_', ".");
-            builder = builder
-                .body(encoded)
-                .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
+            let encoded = "keepAliveStream=true&".to_string() + &comma_serde_urlencoded::to_string(options)?.replace('_', ".");
+            builder = builder.body(encoded).header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
 
         self.inner.to_stream::<ChallengeComplete>(builder).await
@@ -92,9 +81,7 @@ impl ChallengesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn show(&self, challenge_id: &str) -> Result<Challenge> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/show"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/show"));
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<Challenge>(builder).await
@@ -105,9 +92,7 @@ impl ChallengesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn accept(&self, challenge_id: &str) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/accept"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/accept"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await
@@ -117,14 +102,8 @@ impl ChallengesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn decline(
-        &self,
-        challenge_id: &str,
-        reason: Option<ChallengeDeclineReason>,
-    ) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/decline"));
+    pub async fn decline(&self, challenge_id: &str, reason: Option<ChallengeDeclineReason>) -> Result<()> {
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/decline"));
         let builder = self
             .inner
             .client
@@ -140,9 +119,7 @@ impl ChallengesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn cancel(&self, challenge_id: &str, opponent_token: Option<&str>) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/cancel"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/challenge/{challenge_id}/cancel"));
         let mut builder = self.inner.client.post(url);
 
         // Add the opponent token as a query parameter if it's present
@@ -184,9 +161,7 @@ impl ChallengesApi {
         // Add the options to the request if they are present
         if let Some(options) = options {
             let encoded = comma_serde_urlencoded::to_string(options)?.replace('_', ".");
-            builder = builder
-                .body(encoded)
-                .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
+            builder = builder.body(encoded).header(header::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
 
         self.inner.to_model::<OpenChallenge>(builder).await
@@ -200,14 +175,8 @@ impl ChallengesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn game_clocks_start(&self, game_id: &str, token1: &str, token2: &str) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/challenge/{game_id}/start-clocks"));
-        let builder = self
-            .inner
-            .client
-            .post(url)
-            .query(&[("token1", token1), ("token2", token2)]);
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/challenge/{game_id}/start-clocks"));
+        let builder = self.inner.client.post(url).query(&[("token1", token1), ("token2", token2)]);
 
         self.inner.execute(builder).await
     }
@@ -218,9 +187,7 @@ impl ChallengesApi {
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn opponent_clock_increment(&self, game_id: &str, seconds: u32) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/round/{game_id}/add-time/{seconds}"));
+        let url = self.inner.req_url(UrlBase::Lichess, &format!("api/round/{game_id}/add-time/{seconds}"));
         let builder = self.inner.client.post(url);
 
         self.inner.execute(builder).await

@@ -24,14 +24,12 @@ pub mod variants;
 // Re-export commonly used types for convenience
 pub use core::{Email, KidMode, Preferences, User, UserPreferences};
 pub use perf::{
-    PerfCount, PerfDetails, PerfGlicko, PerfPlayStreak, PerfPoint, PerfRecord, PerfRecords,
-    PerfResultStreak, PerfStats, PerfStreak, PerfStreakDate, PerfStreakRecord, PerfType, RatingHistory,
-    UserName, UserPerf, UserPerformance, UserPerfs, UserPuzzleModePerf,
+    PerfCount, PerfDetails, PerfGlicko, PerfPlayStreak, PerfPoint, PerfRecord, PerfRecords, PerfResultStreak, PerfStats, PerfStreak, PerfStreakDate,
+    PerfStreakRecord, PerfType, RatingHistory, UserName, UserPerf, UserPerformance, UserPerfs, UserPuzzleModePerf,
 };
 pub use top::{TopUser, TopUserLeaderboard, TopUserPerf, TopUsers, Trophy};
 pub use variants::{
-    BasicUser, ChallengeUser, LightUser, MinimalUser, PlayTime, Profile, RealtimeUser,
-    RealtimeUserPlaying, StreamingUser, UserAutocomplete,
+    BasicUser, ChallengeUser, LightUser, MinimalUser, PlayTime, Profile, RealtimeUser, RealtimeUserPlaying, StreamingUser, UserAutocomplete,
 };
 
 // Activity and social types are currently defined in this module.

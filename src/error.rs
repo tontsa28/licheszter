@@ -18,10 +18,7 @@ impl Error {
     where
         E: Into<Box<dyn StdError + Send + Sync + 'static>>,
     {
-        Error {
-            kind,
-            source: source.into(),
-        }
+        Error { kind, source: source.into() }
     }
 
     /// Returns true if the error is an [`IO` error](struct@std::io::Error).

@@ -31,10 +31,7 @@ impl Licheszter {
     /// # Errors
     /// Returns an error if the API request fails or the response stream cannot be created.
     #[cfg(feature = "streaming")]
-    pub async fn bots_online(
-        &self,
-        bots: u8,
-    ) -> Result<Pin<Box<dyn Stream<Item = Result<BasicUser>> + Send>>> {
+    pub async fn bots_online(&self, bots: u8) -> Result<Pin<Box<dyn Stream<Item = Result<BasicUser>> + Send>>> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/bot/online");
         let builder = self.inner.client.get(url).query(&[("nb", bots)]);
 
