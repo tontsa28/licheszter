@@ -30,10 +30,12 @@ pub struct PuzzleGame {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
 pub struct PuzzleDetails {
+    pub fen: Option<String>,
     pub id: String,
-    #[serde(rename = "initialPly")]
     pub initial_ply: u16,
+    pub last_move: Option<String>,
     pub plays: u32,
     pub rating: u16,
     pub solution: Vec<String>,
