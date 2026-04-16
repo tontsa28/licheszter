@@ -362,6 +362,7 @@ pub struct UserGame {
     pub is_my_turn: bool,
     pub seconds_left: Option<u32>,
     pub status: FullGameStatus,
+    pub rating: u16,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -414,6 +415,7 @@ pub struct GameEventInfo {
     pub is_my_turn: bool,
     pub seconds_left: Option<u32>,
     pub status: FullGameStatus,
+    pub rating: u16,
     pub compat: Option<GameCompatibility>,
 }
 
