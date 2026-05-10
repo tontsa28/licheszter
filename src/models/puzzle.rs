@@ -66,10 +66,11 @@ pub struct PuzzleUser {
     pub title: Option<Title>,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct PuzzleAuthUser {
-    pub id: String,
+    pub id: Option<String>,
     pub rating: u16,
     #[serde(default)]
     pub provisional: bool,
