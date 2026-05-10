@@ -17,6 +17,7 @@ pub struct FidePlayer {
     pub standard: Option<u16>,
     pub rapid: Option<u16>,
     pub blitz: Option<u16>,
+    pub gender: Option<FideGender>,
     pub photo: Option<FidePhoto>,
 }
 
@@ -27,4 +28,12 @@ pub struct FidePhoto {
     pub small: String,
     pub medium: String,
     pub credit: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+pub enum FideGender {
+    #[serde(rename = "M")]
+    Male,
+    #[serde(rename = "F")]
+    Female,
 }
