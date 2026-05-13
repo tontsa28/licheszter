@@ -233,6 +233,31 @@ async fn puzzle_activity() {
 }
 
 #[tokio::test]
+async fn puzzle_replay() {
+    // Run some test cases
+    let result = LI.puzzles().replay(90, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle replays: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.puzzles().replay(90, Some("mix")).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle replays: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.puzzles().replay(0, None).await;
+    assert!(
+        result.is_err(),
+        "Getting puzzle replays did not fail: {:?}",
+        result.unwrap()
+    );
+}
+
+#[tokio::test]
 async fn puzzle_dashboard() {
     // Run some test cases
     let result = LI.puzzles().dashboard(90).await;

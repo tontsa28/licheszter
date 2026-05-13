@@ -197,3 +197,28 @@ pub struct PuzzleRounds {
     #[serde(rename = "ratingDiff")]
     pub rating_diff: i16,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleReplays {
+    pub replay: PuzzleReplay,
+    pub angle: PuzzleAngle,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleReplay {
+    pub days: u8,
+    #[serde(rename = "nb")]
+    pub amount: u8,
+    pub remaining: Vec<String>,
+    pub theme: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleAngle {
+    pub desc: String,
+    pub key: String,
+    pub name: String,
+}
