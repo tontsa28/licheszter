@@ -10,7 +10,7 @@ use crate::{
         common::FinalColor,
         puzzle::{
             Puzzle, PuzzleActivity, PuzzleCollection, PuzzleCollectionSolved, PuzzleDashboard,
-            PuzzleRace, PuzzleStormDashboard,
+            PuzzleRace, PuzzleReplays, PuzzleStormDashboard,
         },
     },
 };
@@ -138,6 +138,21 @@ impl PuzzlesApi {
             .query(&(("max", max), ("before", before)));
 
         self.inner.to_stream::<PuzzleActivity>(builder).await
+    }
+
+    /// Get the IDs of puzzles to be reattempted.
+    /// `theme` defaults to `"mix"` if not provided.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response stream cannot be created.
+    pub async fn replay(&self, days: u8, theme: Option<&str>) -> Result<PuzzleReplays> {
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/puzzle/replay/{days}/{}", theme.unwrap_or("mix")),
+        );
+        let builder = self.inner.client.get(url);
+
+        self.inner.to_model::<PuzzleReplays>(builder).await
     }
 
     /// Get the puzzle dashboard of the logged in user.
