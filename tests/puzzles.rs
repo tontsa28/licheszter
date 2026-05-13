@@ -4,7 +4,9 @@ use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;
 use licheszter::{
-    client::Licheszter, config::puzzles::PuzzleDifficulty, models::common::FinalColor,
+    client::Licheszter,
+    config::puzzles::{PuzzleDifficulty, PuzzleSolution},
+    models::common::FinalColor,
 };
 
 // Connect to test clients
@@ -149,6 +151,38 @@ async fn puzzle_batch_show() {
     );
 
     let result = DEFAULT.puzzles().batch_show(None, None, None, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle batch: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
+async fn puzzle_batch_solve() {
+    // Run some test cases
+    let result = LI.puzzles().batch_solve(&[], None, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle batch: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI
+        .puzzles()
+        .batch_solve(
+            &[PuzzleSolution::new("notvalid", true, true)],
+            Some("mix"),
+            Some(1),
+        )
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle batch: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = DEFAULT.puzzles().batch_solve(&[], None, None).await;
     assert!(
         result.is_ok(),
         "Failed to get puzzle batch: {:?}",
