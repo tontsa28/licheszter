@@ -3,7 +3,9 @@
 use std::{error::Error, sync::LazyLock};
 
 use futures_util::StreamExt;
-use licheszter::{client::Licheszter, config::puzzles::PuzzleDifficulty};
+use licheszter::{
+    client::Licheszter, config::puzzles::PuzzleDifficulty, models::common::FinalColor,
+};
 
 // Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
@@ -102,6 +104,54 @@ async fn puzzle_next() {
     assert!(
         result.is_ok(),
         "Failed to get next puzzle: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}
+
+#[tokio::test]
+async fn puzzle_batch_show() {
+    // Run some test cases
+    let result = LI.puzzles().batch_show(None, None, None, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle batch: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI
+        .puzzles()
+        .batch_show(
+            Some("mix"),
+            Some(PuzzleDifficulty::Normal),
+            Some(1),
+            Some(FinalColor::White),
+        )
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle batch: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI
+        .puzzles()
+        .batch_show(
+            None,
+            Some(PuzzleDifficulty::Hardest),
+            Some(255),
+            Some(FinalColor::Black),
+        )
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle batch: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = DEFAULT.puzzles().batch_show(None, None, None, None).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle batch: {:?}",
         result.unwrap_err().source().unwrap()
     );
 }

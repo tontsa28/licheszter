@@ -162,3 +162,20 @@ pub struct PuzzleRace {
     pub id: String,
     pub url: String,
 }
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleCollection {
+    pub puzzles: Vec<Puzzle>,
+    pub glicko: Option<PuzzleGlicko>,
+}
+
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleGlicko {
+    pub rating: u16,
+    pub deviation: f32,
+    #[serde(default)]
+    pub provisional: bool,
+}
