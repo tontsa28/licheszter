@@ -171,6 +171,15 @@ pub struct PuzzleCollection {
     pub glicko: Option<PuzzleGlicko>,
 }
 
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleCollectionSolved {
+    pub puzzles: Vec<Puzzle>,
+    pub glicko: Option<PuzzleGlicko>,
+    pub rounds: Vec<PuzzleRounds>,
+}
+
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct PuzzleGlicko {
@@ -178,4 +187,13 @@ pub struct PuzzleGlicko {
     pub deviation: f32,
     #[serde(default)]
     pub provisional: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleRounds {
+    pub id: String,
+    pub win: bool,
+    #[serde(rename = "ratingDiff")]
+    pub rating_diff: i16,
 }

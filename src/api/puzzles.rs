@@ -4,13 +4,13 @@ use futures_util::Stream;
 
 use crate::{
     client::{LicheszterInner, UrlBase},
-    config::puzzles::PuzzleDifficulty,
+    config::puzzles::{PuzzleDifficulty, PuzzleSolution, PuzzleSolutions},
     error::Result,
     models::{
         common::FinalColor,
         puzzle::{
-            Puzzle, PuzzleActivity, PuzzleCollection, PuzzleDashboard, PuzzleRace,
-            PuzzleStormDashboard,
+            Puzzle, PuzzleActivity, PuzzleCollection, PuzzleCollectionSolved, PuzzleDashboard,
+            PuzzleRace, PuzzleStormDashboard,
         },
     },
 };
@@ -70,7 +70,7 @@ impl PuzzlesApi {
 
     /// Get a batch of random puzzles.
     /// If authenticated, only returns puzzles that the user has never seen before.
-    /// If `angle` is not provided, defaults to `"mix"`.
+    /// `angle` defaults to `"mix"` if not provided.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
@@ -92,6 +92,33 @@ impl PuzzlesApi {
         ));
 
         self.inner.to_model::<PuzzleCollection>(builder).await
+    }
+
+    /// Set a batch of puzzles as solved and update ratings.
+    /// `angle` defaults to `"mix"` if not provided.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn batch_solve(
+        &self,
+        solutions: &[PuzzleSolution],
+        angle: Option<&str>,
+        amount: Option<u8>,
+    ) -> Result<PuzzleCollectionSolved> {
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/puzzle/batch/{}", angle.unwrap_or("mix")),
+        );
+        let builder = self
+            .inner
+            .client
+            .post(url)
+            .query(&[("nb", amount)])
+            .json(&PuzzleSolutions {
+                solutions: solutions.into(),
+            });
+
+        self.inner.to_model::<PuzzleCollectionSolved>(builder).await
     }
 
     /// Get the puzzle activity of the logged in user.
