@@ -37,3 +37,11 @@ pub enum FideGender {
     #[serde(rename = "F")]
     Female,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct FideRatingHistory {
+    pub blitz: Vec<u32>,
+    pub rapid: Vec<u32>,
+    pub standard: Vec<u32>,
+}

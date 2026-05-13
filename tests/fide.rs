@@ -33,6 +33,33 @@ async fn fide_player() {
 }
 
 #[tokio::test]
+async fn fide_rating_history() {
+    // Run some test cases
+    let result = LICHESS.fide().rating_history(1503014).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch FIDE rating history: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LICHESS.fide().rating_history(509825).await;
+    assert!(
+        result.is_ok(),
+        "Failed to fetch FIDE rating history: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LICHESS.fide().rating_history(999999).await;
+    assert!(
+        result.as_ref().is_ok_and(|ratings| ratings.blitz.is_empty()
+            && ratings.rapid.is_empty()
+            && ratings.standard.is_empty()),
+        "Fetching FIDE rating history did not fail: {:?}",
+        result.unwrap()
+    );
+}
+
+#[tokio::test]
 async fn fide_search() {
     // Run some test cases
     let result = LICHESS.fide().search("Carlsen").await;

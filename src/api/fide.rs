@@ -1,7 +1,7 @@
 use crate::{
     client::{LicheszterInner, UrlBase},
     error::Result,
-    models::fide::FidePlayer,
+    models::fide::{FidePlayer, FideRatingHistory},
 };
 
 use std::sync::Arc;
@@ -24,6 +24,20 @@ impl FideApi {
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<FidePlayer>(builder).await
+    }
+
+    /// Historical standard, rapid and blitz ratings of a FIDE player.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn rating_history(&self, player_id: u32) -> Result<FideRatingHistory> {
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/fide/player/{player_id}/ratings"),
+        );
+        let builder = self.inner.client.get(url);
+
+        self.inner.to_model::<FideRatingHistory>(builder).await
     }
 
     /// Search for FIDE players. Only player names can be searched for.
