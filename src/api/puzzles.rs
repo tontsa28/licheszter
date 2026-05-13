@@ -6,7 +6,13 @@ use crate::{
     client::{LicheszterInner, UrlBase},
     config::puzzles::PuzzleDifficulty,
     error::Result,
-    models::puzzle::{Puzzle, PuzzleActivity, PuzzleDashboard, PuzzleRace, PuzzleStormDashboard},
+    models::{
+        common::FinalColor,
+        puzzle::{
+            Puzzle, PuzzleActivity, PuzzleCollection, PuzzleDashboard, PuzzleRace,
+            PuzzleStormDashboard,
+        },
+    },
 };
 
 use std::sync::Arc;
@@ -60,6 +66,32 @@ impl PuzzlesApi {
             .query(&(("angle", angle), ("difficulty", difficulty)));
 
         self.inner.to_model::<Puzzle>(builder).await
+    }
+
+    /// Get a batch of random puzzles.
+    /// If authenticated, only returns puzzles that the user has never seen before.
+    /// If `angle` is not provided, defaults to `"mix"`.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn batch_show(
+        &self,
+        angle: Option<&str>,
+        difficulty: Option<PuzzleDifficulty>,
+        amount: Option<u8>,
+        color: Option<FinalColor>,
+    ) -> Result<PuzzleCollection> {
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/puzzle/batch/{}", angle.unwrap_or("mix")),
+        );
+        let builder = self.inner.client.get(url).query(&(
+            ("difficulty", difficulty),
+            ("nb", amount),
+            ("color", color),
+        ));
+
+        self.inner.to_model::<PuzzleCollection>(builder).await
     }
 
     /// Get the puzzle activity of the logged in user.
