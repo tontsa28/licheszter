@@ -222,3 +222,40 @@ pub struct PuzzleAngle {
     pub key: String,
     pub name: String,
 }
+
+#[serde_as]
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct PuzzleRaceResults {
+    #[serde_as(as = "Option<TimestampMilliSeconds>")]
+    pub finishes_at: Option<PrimitiveDateTime>,
+    pub id: String,
+    pub owner: String,
+    pub players: Vec<PuzzlePlayer>,
+    pub puzzles: Vec<PuzzleRacePuzzle>,
+    #[serde_as(as = "Option<TimestampMilliSeconds>")]
+    pub starts_at: Option<PrimitiveDateTime>,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzlePlayer {
+    pub name: String,
+    pub score: u16,
+    pub flair: Option<String>,
+    pub id: Option<String>,
+    #[serde(rename = "patronColor")]
+    pub patron_color: Option<u8>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct PuzzleRacePuzzle {
+    pub fen: String,
+    pub id: String,
+    pub line: String,
+    pub rating: u16,
+}

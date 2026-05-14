@@ -317,3 +317,31 @@ async fn puzzle_race_create() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn puzzle_race_results() {
+    // Create a puzzle race for testing
+    let id = LI.puzzles().race_create().await.unwrap().id;
+
+    // Run some test cases
+    let result = LI.puzzles().race_results(&id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle race results: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = DEFAULT.puzzles().race_results(&id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get puzzle race results: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.puzzles().race_results("notvalid").await;
+    assert!(
+        result.is_err(),
+        "Getting puzzle race results did not fail: {:?}",
+        result.unwrap()
+    );
+}
