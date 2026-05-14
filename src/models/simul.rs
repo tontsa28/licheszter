@@ -15,8 +15,8 @@ pub struct Simuls {
     pub finished: Vec<Simul>,
 }
 
-#[skip_serializing_none]
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
