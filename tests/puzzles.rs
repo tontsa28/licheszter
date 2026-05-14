@@ -249,7 +249,7 @@ async fn puzzle_replay() {
         result.unwrap_err().source().unwrap()
     );
 
-    let result = LI.puzzles().replay(0, None).await;
+    let result = DEFAULT.puzzles().replay(0, None).await;
     assert!(
         result.is_err(),
         "Getting puzzle replays did not fail: {:?}",
