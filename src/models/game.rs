@@ -219,8 +219,8 @@ pub struct StreamGame {
     pub days_per_turn: Option<u8>,
 }
 
-#[skip_serializing_none]
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
@@ -286,8 +286,8 @@ pub struct GameState {
     pub winner: Option<Color>,
 }
 
-#[skip_serializing_none]
 #[serde_as]
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
