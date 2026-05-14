@@ -10,7 +10,7 @@ use crate::{
         common::FinalColor,
         puzzle::{
             Puzzle, PuzzleActivity, PuzzleCollection, PuzzleCollectionSolved, PuzzleDashboard,
-            PuzzleRace, PuzzleReplays, PuzzleStormDashboard,
+            PuzzleRace, PuzzleRaceResults, PuzzleReplays, PuzzleStormDashboard,
         },
     },
 };
@@ -198,5 +198,21 @@ impl PuzzlesApi {
         let builder = self.inner.client.post(url);
 
         self.inner.to_model::<PuzzleRace>(builder).await
+    }
+
+    /// Get the results of a puzzle race.
+    /// Returns information about players, puzzles, and the current status of the race.
+    /// Note that Lichess puzzle races are not persistent, and are only available for 30 minutes.
+    /// After the delay, they are permanently deleted.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn race_results(&self, id: &str) -> Result<PuzzleRaceResults> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/racer/{id}"));
+        let builder = self.inner.client.get(url);
+
+        self.inner.to_model::<PuzzleRaceResults>(builder).await
     }
 }
