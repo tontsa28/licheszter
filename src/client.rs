@@ -10,6 +10,8 @@ pub use crate::api::board::BoardApi;
 pub use crate::api::bot::BotApi;
 #[cfg(feature = "challenges")]
 pub use crate::api::challenges::ChallengesApi;
+#[cfg(feature = "engine")]
+pub use crate::api::engine::ExternalEngineApi;
 #[cfg(feature = "fide")]
 pub use crate::api::fide::FideApi;
 #[cfg(feature = "games")]
@@ -205,6 +207,8 @@ pub struct Licheszter {
     bot: BotApi,
     #[cfg(feature = "challenges")]
     challenges: ChallengesApi,
+    #[cfg(feature = "engine")]
+    engine: ExternalEngineApi,
     #[cfg(feature = "fide")]
     fide: FideApi,
     #[cfg(feature = "games")]
@@ -373,6 +377,13 @@ impl Licheszter {
         &self.analysis
     }
 
+    /// Access the External engine API endpoints.
+    #[cfg(feature = "engine")]
+    #[must_use]
+    pub fn external_engine(&self) -> &ExternalEngineApi {
+        &self.engine
+    }
+
     /// Access the Openings API endpoints.
     #[cfg(feature = "openings")]
     #[must_use]
@@ -446,6 +457,10 @@ impl LicheszterBuilder {
             },
             #[cfg(feature = "challenges")]
             challenges: ChallengesApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "engine")]
+            engine: ExternalEngineApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "fide")]

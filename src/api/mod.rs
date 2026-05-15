@@ -7,6 +7,9 @@ pub mod analysis;
 #[cfg(feature = "challenges")]
 pub mod challenges;
 
+#[cfg(feature = "engine")]
+pub mod engine;
+
 #[cfg(feature = "fide")]
 pub mod fide;
 
