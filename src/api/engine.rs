@@ -38,4 +38,17 @@ impl ExternalEngineApi {
 
         self.inner.to_model::<ExternalEngine>(builder).await
     }
+
+    /// Get properties and credentials of an external engine.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn show(&self, id: &str) -> Result<ExternalEngine> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/external-engine/{id}"));
+        let builder = self.inner.client.get(url);
+
+        self.inner.to_model::<ExternalEngine>(builder).await
+    }
 }

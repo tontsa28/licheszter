@@ -101,3 +101,39 @@ async fn external_engine_create() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn external_engine_show() {
+    // Get engine lists for testing
+    let list1 = LI.external_engine().list().await.unwrap();
+    let list2 = BOT0.external_engine().list().await.unwrap();
+
+    // Run some test cases
+    let result = LI.external_engine().show(&list1[0].id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get external engine: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.external_engine().show(&list2[0].id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get external engine: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.external_engine().show("notvalid").await;
+    assert!(
+        result.is_err(),
+        "Getting external engine did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = DEFAULT.external_engine().show(&list1[0].id).await;
+    assert!(
+        result.is_err(),
+        "Getting external engine did not fail: {:?}",
+        result.unwrap()
+    );
+}
