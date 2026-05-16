@@ -152,28 +152,28 @@ async fn external_engine_update() {
     let result = LI.external_engine().update(&list1[0].id, &options1).await;
     assert!(
         result.is_ok(),
-        "Failed to get external engine: {:?}",
+        "Failed to update external engine: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = BOT0.external_engine().update(&list2[0].id, &options1).await;
     assert!(
         result.is_ok(),
-        "Failed to get external engine: {:?}",
+        "Failed to update external engine: {:?}",
         result.unwrap_err().source().unwrap()
     );
 
     let result = LI.external_engine().update(&list1[0].id, &options2).await;
     assert!(
         result.is_err(),
-        "Getting external engine did not fail: {:?}",
+        "Updating external engine did not fail: {:?}",
         result.unwrap()
     );
 
     let result = LI.external_engine().update("notvalid", &options1).await;
     assert!(
         result.is_err(),
-        "Getting external engine did not fail: {:?}",
+        "Updating external engine did not fail: {:?}",
         result.unwrap()
     );
 
@@ -183,7 +183,51 @@ async fn external_engine_update() {
         .await;
     assert!(
         result.is_err(),
-        "Getting external engine did not fail: {:?}",
+        "Updating external engine did not fail: {:?}",
+        result.unwrap()
+    );
+}
+
+#[tokio::test]
+async fn external_engine_delete() {
+    // Create engines for testing
+    let options = ExternalEngineOptions::new(1, 1, "Test", "afullysecuresecrettoken");
+    let engine1 = LI.external_engine().create(&options).await.unwrap();
+    let engine2 = BOT0.external_engine().create(&options).await.unwrap();
+
+    // Run some test cases
+    let result = LI.external_engine().delete(&engine1.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to delete external engine: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.external_engine().delete(&engine2.id).await;
+    assert!(
+        result.is_ok(),
+        "Failed to delete external engine: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.external_engine().delete(&engine1.id).await;
+    assert!(
+        result.is_err(),
+        "Deleting external engine did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = LI.external_engine().delete("notvalid").await;
+    assert!(
+        result.is_err(),
+        "Deleting external engine did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = DEFAULT.external_engine().delete(&engine1.id).await;
+    assert!(
+        result.is_err(),
+        "Deleting external engine did not fail: {:?}",
         result.unwrap()
     );
 }

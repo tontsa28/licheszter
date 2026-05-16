@@ -4,7 +4,7 @@ use crate::{
     client::{LicheszterInner, UrlBase},
     config::engine::ExternalEngineOptions,
     error::Result,
-    models::engine::ExternalEngine,
+    models::{common::OkResponse, engine::ExternalEngine},
 };
 
 /// A struct for accessing the External engine API endpoints.
@@ -67,5 +67,19 @@ impl ExternalEngineApi {
         let builder = self.inner.client.put(url).json(options);
 
         self.inner.to_model::<ExternalEngine>(builder).await
+    }
+
+    /// Unregisters an external engine.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn delete(&self, id: &str) -> Result<()> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Lichess, &format!("api/external-engine/{id}"));
+        let builder = self.inner.client.delete(url);
+
+        self.inner.to_model::<OkResponse>(builder).await?;
+        Ok(())
     }
 }
