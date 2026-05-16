@@ -4,6 +4,9 @@ pub mod board;
 #[cfg(feature = "challenges")]
 pub mod challenges;
 
+#[cfg(feature = "engine")]
+pub mod engine;
+
 #[cfg(feature = "games")]
 pub mod games;
 
