@@ -137,3 +137,53 @@ async fn external_engine_show() {
         result.unwrap()
     );
 }
+
+#[tokio::test]
+async fn external_engine_update() {
+    // Get engine lists and create options for testing
+    let list1 = LI.external_engine().list().await.unwrap();
+    let list2 = BOT0.external_engine().list().await.unwrap();
+    let options1 = ExternalEngineOptions::new(32, 2, "PerchUpdate", "afullysecuresecrettoken")
+        .provider_data("morearbitrarydata")
+        .variants(&[UciVariant::Chess]);
+    let options2 = ExternalEngineOptions::new(0, 0, "", "");
+
+    // Run some test cases
+    let result = LI.external_engine().update(&list1[0].id, &options1).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get external engine: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = BOT0.external_engine().update(&list2[0].id, &options1).await;
+    assert!(
+        result.is_ok(),
+        "Failed to get external engine: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+
+    let result = LI.external_engine().update(&list1[0].id, &options2).await;
+    assert!(
+        result.is_err(),
+        "Getting external engine did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = LI.external_engine().update("notvalid", &options1).await;
+    assert!(
+        result.is_err(),
+        "Getting external engine did not fail: {:?}",
+        result.unwrap()
+    );
+
+    let result = DEFAULT
+        .external_engine()
+        .update(&list1[0].id, &options2)
+        .await;
+    assert!(
+        result.is_err(),
+        "Getting external engine did not fail: {:?}",
+        result.unwrap()
+    );
+}
