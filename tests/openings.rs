@@ -113,20 +113,20 @@ async fn openings_player() {
         .until("2024-01")
         .moves(20)
         .recent_games(1);
-    let options2 = options1.to_owned().since("invalid-month");
+    let options2 = options1.clone().since("invalid-month");
 
     // Run some test cases
     let thread = tokio::spawn(async move {
-        let mut result = EXPLORER
+        let mut stream = EXPLORER
             .openings()
             .player("Cheszter", Color::White, None)
             .await
             .unwrap();
-        while let Some(event) = result.next().await {
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to get player openings: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });
@@ -138,16 +138,16 @@ async fn openings_player() {
     }
 
     let thread = tokio::spawn(async move {
-        let mut result = EXPLORER
+        let mut stream = EXPLORER
             .openings()
             .player("Cheszter", Color::White, Some(&options1))
             .await
             .unwrap();
-        while let Some(event) = result.next().await {
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to get player openings: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });

@@ -1,10 +1,17 @@
-use std::sync::Arc;
+use std::{pin::Pin, sync::Arc};
+
+use futures_util::Stream;
 
 use crate::{
     client::{LicheszterInner, UrlBase},
-    config::engine::ExternalEngineOptions,
+    config::engine::{
+        ExternalEngineAnalysisBody, ExternalEngineAnalysisOptions, ExternalEngineOptions,
+    },
     error::Result,
-    models::{common::OkResponse, engine::ExternalEngine},
+    models::{
+        common::OkResponse,
+        engine::{ExternalEngine, ExternalEngineAnalysis},
+    },
 };
 
 /// A struct for accessing the External engine API endpoints.
@@ -81,5 +88,35 @@ impl ExternalEngineApi {
 
         self.inner.to_model::<OkResponse>(builder).await?;
         Ok(())
+    }
+
+    /// Request analysis from an external engine.
+    /// The properties are based on the UCI specification.
+    /// Analysis stops when the client disconnects, the requested limit is reached, or the provider goes away.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn analysis_request(
+        &self,
+        id: &str,
+        secret: &str,
+        options: &ExternalEngineAnalysisOptions,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<ExternalEngineAnalysis>> + Send>>> {
+        let url = self.inner.req_url(
+            UrlBase::Engine,
+            &format!("api/external-engine/{id}/analyse"),
+        );
+        let builder = self
+            .inner
+            .client
+            .post(url)
+            .json(&ExternalEngineAnalysisBody {
+                client_secret: secret.to_string(),
+                work: options.clone(),
+            });
+
+        self.inner
+            .to_stream::<ExternalEngineAnalysis>(builder)
+            .await
     }
 }

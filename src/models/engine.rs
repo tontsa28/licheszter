@@ -29,3 +29,22 @@ pub enum UciVariant {
     #[serde(rename = "3check")]
     ThreeCheck,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ExternalEngineAnalysis {
+    pub depth: u8,
+    pub nodes: u64,
+    pub pvs: Vec<ExternalEnginePv>,
+    pub time: u32,
+}
+
+#[skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ExternalEnginePv {
+    pub depth: u8,
+    pub moves: Vec<String>,
+    pub cp: Option<u32>,
+    pub mate: Option<u8>,
+}

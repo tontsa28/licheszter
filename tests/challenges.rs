@@ -109,32 +109,32 @@ async fn challenge_create_connect() {
         .fen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
 
     // Run some test cases
-    let mut result = LI.challenges().create_connect("Bot0", None).await.unwrap();
-    while let Some(event) = result.next().await {
+    let mut stream = LI.challenges().create_connect("Bot0", None).await.unwrap();
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to create a streamed challenge: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
         sleep(Duration::from_secs(1)).await;
-        if let ChallengeComplete::Challenge(challenge) = event.unwrap() {
+        if let ChallengeComplete::Challenge(challenge) = result.unwrap() {
             BOT0.challenges().accept(&challenge.id).await.unwrap();
         }
     }
 
-    let mut result = LI
+    let mut stream = LI
         .challenges()
         .create_connect("Bot0", Some(&options))
         .await
         .unwrap();
-    while let Some(event) = result.next().await {
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to create a streamed challenge: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
         sleep(Duration::from_secs(1)).await;
-        if let ChallengeComplete::Challenge(challenge) = event.unwrap() {
+        if let ChallengeComplete::Challenge(challenge) = result.unwrap() {
             BOT0.challenges().accept(&challenge.id).await.unwrap();
         }
     }

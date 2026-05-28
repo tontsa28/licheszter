@@ -67,6 +67,9 @@ const OPENINGS_URL: &str = "https://explorer.lichess.org";
 #[cfg(feature = "tablebase")]
 const TABLEBASE_URL: &str = "https://tablebase.lichess.org";
 
+#[cfg(feature = "engine")]
+const ENGINE_URL: &str = "https://engine.lichess.ovh";
+
 // Default user agent
 const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
@@ -87,6 +90,8 @@ pub(crate) struct LicheszterInner {
     pub(crate) openings_url: Url,
     #[cfg(feature = "tablebase")]
     pub(crate) tablebase_url: Url,
+    #[cfg(feature = "engine")]
+    pub(crate) engine_url: Url,
 }
 
 impl LicheszterInner {
@@ -182,6 +187,8 @@ impl LicheszterInner {
             UrlBase::Openings => self.openings_url.clone(),
             #[cfg(feature = "tablebase")]
             UrlBase::Tablebase => self.tablebase_url.clone(),
+            #[cfg(feature = "engine")]
+            UrlBase::Engine => self.engine_url.clone(),
         };
         base.set_path(path);
         base
@@ -277,6 +284,13 @@ impl Licheszter {
     #[must_use]
     pub fn tablebase_url(&self) -> Url {
         self.inner.tablebase_url.clone()
+    }
+
+    /// Get the external engine server URL used in this [`Licheszter`] client.
+    #[cfg(feature = "engine")]
+    #[must_use]
+    pub fn engine_url(&self) -> Url {
+        self.inner.engine_url.clone()
     }
 
     /// Access the Account API endpoints.
@@ -415,6 +429,8 @@ pub struct LicheszterBuilder {
     openings_url: Url,
     #[cfg(feature = "tablebase")]
     tablebase_url: Url,
+    #[cfg(feature = "engine")]
+    engine_url: Url,
 }
 
 impl LicheszterBuilder {
@@ -436,6 +452,8 @@ impl LicheszterBuilder {
             openings_url: self.openings_url,
             #[cfg(feature = "tablebase")]
             tablebase_url: self.tablebase_url,
+            #[cfg(feature = "engine")]
+            engine_url: self.engine_url,
         });
 
         Licheszter {
@@ -572,6 +590,17 @@ impl LicheszterBuilder {
         self.tablebase_url = url.into_url()?;
         Ok(self)
     }
+
+    /// Insert a valid URL of a custom external engine server.
+    /// This can be useful, for example, when hosting your own server for debugging purposes.
+    ///
+    /// # Errors
+    /// Returns an error if the given URL cannot be converted into a [`reqwest::Url`].
+    #[cfg(feature = "engine")]
+    pub fn with_engine_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
+        self.engine_url = url.into_url()?;
+        Ok(self)
+    }
 }
 
 impl Default for LicheszterBuilder {
@@ -588,6 +617,8 @@ impl Default for LicheszterBuilder {
             openings_url: Url::parse(OPENINGS_URL).expect("OPENINGS_URL constant is not a valid URL"),
             #[cfg(feature = "tablebase")]
             tablebase_url: Url::parse(TABLEBASE_URL).expect("TABLEBASE_URL constant is not a valid URL"),
+            #[cfg(feature = "engine")]
+            engine_url: Url::parse(ENGINE_URL).expect("ENGINE_URL constant is not a valid URL"),
         }
     }
 }
@@ -599,4 +630,6 @@ pub(crate) enum UrlBase {
     Openings,
     #[cfg(feature = "tablebase")]
     Tablebase,
+    #[cfg(feature = "engine")]
+    Engine,
 }

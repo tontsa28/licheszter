@@ -3,13 +3,17 @@
 use std::{error::Error, sync::LazyLock};
 
 use licheszter::{
-    client::Licheszter, config::engine::ExternalEngineOptions, models::engine::UciVariant,
+    client::Licheszter,
+    config::engine::{ExternalEngineAnalysisOptions, ExternalEngineOptions},
+    models::engine::UciVariant,
 };
 
 // Connect to test clients
 static LI: LazyLock<Licheszter> = LazyLock::new(|| {
     Licheszter::builder()
         .with_base_url("http://localhost:8080")
+        .unwrap()
+        .with_engine_url("http://localhost:9666")
         .unwrap()
         .with_authentication("lip_li")
         .unwrap()
@@ -20,6 +24,8 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
     Licheszter::builder()
         .with_base_url("http://localhost:8080")
         .unwrap()
+        .with_engine_url("http://localhost:9666")
+        .unwrap()
         .with_authentication("lip_bot0")
         .unwrap()
         .build()
@@ -28,6 +34,8 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
 static DEFAULT: LazyLock<Licheszter> = LazyLock::new(|| {
     Licheszter::builder()
         .with_base_url("http://localhost:8080")
+        .unwrap()
+        .with_engine_url("http://localhost:9666")
         .unwrap()
         .build()
 });
@@ -229,5 +237,79 @@ async fn external_engine_delete() {
         result.is_err(),
         "Deleting external engine did not fail: {:?}",
         result.unwrap()
+    );
+}
+
+#[tokio::test]
+async fn external_engine_analyse() {
+    // Create engines for testing
+    let engine_options = ExternalEngineOptions::new(128, 4, "Stockfish", "secretstockfishtoken");
+    let engine1 = LI.external_engine().create(&engine_options).await.unwrap();
+    let engine2 = BOT0
+        .external_engine()
+        .create(&engine_options)
+        .await
+        .unwrap();
+
+    // Create options for testing
+    let options1 = ExternalEngineAnalysisOptions::new(
+        64,
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        &[],
+        1,
+        "",
+        1,
+        UciVariant::Chess,
+    )
+    .depth(5);
+    let options2 =
+        ExternalEngineAnalysisOptions::new(1024, "", &["e2e4"], 6, "testing", 8, UciVariant::Chess)
+            .movetime(1000);
+
+    // Run some test cases
+    // TODO: Provider does not pick up work
+    let stream = LI
+        .external_engine()
+        .analysis_request(&engine1.id, &engine1.client_secret, &options1)
+        .await;
+    assert!(
+        stream.is_err(),
+        "Analysing with external engine did not fail"
+    );
+
+    let stream = BOT0
+        .external_engine()
+        .analysis_request(&engine2.id, &engine2.client_secret, &options1)
+        .await;
+    assert!(
+        stream.is_err(),
+        "Analysing with external engine did not fail"
+    );
+
+    let stream = LI
+        .external_engine()
+        .analysis_request(&engine1.id, &engine1.client_secret, &options2)
+        .await;
+    assert!(
+        stream.is_err(),
+        "Analysing with external engine did not fail"
+    );
+
+    let stream = LI
+        .external_engine()
+        .analysis_request("notvalid", &engine1.client_secret, &options1)
+        .await;
+    assert!(
+        stream.is_err(),
+        "Analysing with external engine did not fail"
+    );
+
+    let stream = DEFAULT
+        .external_engine()
+        .analysis_request(&engine1.id, &engine1.client_secret, &options1)
+        .await;
+    assert!(
+        stream.is_err(),
+        "Analysing with external engine did not fail"
     );
 }

@@ -27,12 +27,12 @@ static BOT0: LazyLock<Licheszter> = LazyLock::new(|| {
 async fn connect() {
     // Run some test cases
     let thread = tokio::spawn(async move {
-        let mut result = LI.connect().await.unwrap();
-        while let Some(event) = result.next().await {
+        let mut stream = LI.connect().await.unwrap();
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });
@@ -44,12 +44,12 @@ async fn connect() {
     }
 
     let thread = tokio::spawn(async move {
-        let mut result = BOT0.connect().await.unwrap();
-        while let Some(event) = result.next().await {
+        let mut stream = BOT0.connect().await.unwrap();
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });
@@ -64,12 +64,12 @@ async fn connect() {
 #[tokio::test]
 async fn bots_online() {
     // Run some test cases
-    let mut result = LI.bots_online(10).await.unwrap();
-    while let Some(event) = result.next().await {
+    let mut stream = LI.bots_online(10).await.unwrap();
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to get online bots: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 
