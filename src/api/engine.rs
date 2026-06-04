@@ -1,6 +1,7 @@
 use std::{pin::Pin, sync::Arc};
 
 use futures_util::Stream;
+use reqwest::header;
 use serde_json::json;
 
 use crate::{
@@ -51,10 +52,11 @@ impl ExternalEngineApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn show(&self, id: &str) -> Result<ExternalEngine> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/external-engine/{id}"));
+    pub async fn show(&self, engine_id: &str) -> Result<ExternalEngine> {
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/external-engine/{engine_id}"),
+        );
         let builder = self.inner.client.get(url);
 
         self.inner.to_model::<ExternalEngine>(builder).await
@@ -66,12 +68,13 @@ impl ExternalEngineApi {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn update(
         &self,
-        id: &str,
+        engine_id: &str,
         options: &ExternalEngineOptions,
     ) -> Result<ExternalEngine> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/external-engine/{id}"));
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/external-engine/{engine_id}"),
+        );
         let builder = self.inner.client.put(url).json(options);
 
         self.inner.to_model::<ExternalEngine>(builder).await
@@ -81,10 +84,11 @@ impl ExternalEngineApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn delete(&self, id: &str) -> Result<()> {
-        let url = self
-            .inner
-            .req_url(UrlBase::Lichess, &format!("api/external-engine/{id}"));
+    pub async fn delete(&self, engine_id: &str) -> Result<()> {
+        let url = self.inner.req_url(
+            UrlBase::Lichess,
+            &format!("api/external-engine/{engine_id}"),
+        );
         let builder = self.inner.client.delete(url);
 
         self.inner.to_model::<OkResponse>(builder).await?;
@@ -99,13 +103,13 @@ impl ExternalEngineApi {
     /// Returns an error if the API request fails or the response cannot be deserialized.
     pub async fn analysis_request(
         &self,
-        id: &str,
+        engine_id: &str,
         client_secret: &str,
         options: &ExternalEngineAnalysisOptions,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<ExternalEngineAnalysis>> + Send>>> {
         let url = self.inner.req_url(
             UrlBase::Engine,
-            &format!("api/external-engine/{id}/analyse"),
+            &format!("api/external-engine/{engine_id}/analyse"),
         );
         let builder = self
             .inner
@@ -143,5 +147,36 @@ impl ExternalEngineApi {
         self.inner
             .to_model_optional::<ExternalEngineAnalysisRequest>(builder)
             .await
+    }
+
+    /// Submit a stream of analysis as UCI output.
+    ///
+    /// - The engine should always be in `UCI_Chess960` mode.
+    /// - `UCI_AnalyseMode` enabled if available.
+    /// - It produces `info` with at least:
+    ///     - `depth`
+    ///     - `multipv` (between 1 and 5)
+    ///     - `score`
+    ///     - `nodes`
+    ///     - `time`
+    ///     - `pv`
+    ///
+    /// The server may close the connection at any time, indicating that the requester has gone away and analysis should be stopped.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn analysis_submit(&self, analysis_id: &str, result: &str) -> Result<()> {
+        let url = self.inner.req_url(
+            UrlBase::Engine,
+            &format!("api/external-engine/work/{analysis_id}"),
+        );
+        let builder = self
+            .inner
+            .client
+            .post(url)
+            .body(result.to_string())
+            .header(header::CONTENT_TYPE, "text/plain");
+
+        self.inner.to_empty(builder).await
     }
 }

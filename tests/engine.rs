@@ -337,3 +337,17 @@ async fn external_engine_analysis_acquire() {
         result.unwrap_err().source().unwrap()
     );
 }
+
+#[tokio::test]
+async fn external_engine_analysis_submit() {
+    let engine_options = ExternalEngineOptions::new(128, 4, "Stockfish", "secretstockfishtoken");
+    let engine = LI.external_engine().create(&engine_options).await.unwrap();
+
+    // Run some test cases
+    let result = LI.external_engine().analysis_submit(&engine.id, "info depth 1 seldepth 2 multipv 1 score cp -1 nodes 20 nps 20000 hashfull 0 tbhits 0 time 1 pv e2e4").await;
+    assert!(
+        result.is_ok(),
+        "Failed to submit external engine analysis data: {:?}",
+        result.unwrap_err().source().unwrap()
+    );
+}

@@ -180,7 +180,6 @@ impl LicheszterInner {
     // Convert the API response into a string
     #[cfg(any(feature = "games", feature = "openings"))]
     pub(crate) async fn to_string(&self, builder: RequestBuilder) -> Result<String> {
-        // Send the request & get the response
         let response = builder.send().await?;
 
         // Return an error if the request failed
@@ -189,6 +188,19 @@ impl LicheszterInner {
         }
 
         Ok(response.text().await?)
+    }
+
+    // Convert the API response into a unit type
+    #[cfg(feature = "engine")]
+    pub(crate) async fn to_empty(&self, builder: RequestBuilder) -> Result<()> {
+        let response = builder.send().await?;
+
+        // Return an error if the request failed
+        if !response.status().is_success() {
+            return Err(LichessError::from_response(response).await?.into());
+        }
+
+        Ok(())
     }
 
     // Execute a request that returns an OkResponse and discard the response body
