@@ -1,6 +1,7 @@
 use std::{pin::Pin, sync::Arc};
 
 use futures_util::Stream;
+use serde_json::json;
 
 use crate::{
     client::{LicheszterInner, UrlBase},
@@ -10,7 +11,7 @@ use crate::{
     error::Result,
     models::{
         common::OkResponse,
-        engine::{ExternalEngine, ExternalEngineAnalysis},
+        engine::{ExternalEngine, ExternalEngineAnalysis, ExternalEngineAnalysisRequest},
     },
 };
 
@@ -99,7 +100,7 @@ impl ExternalEngineApi {
     pub async fn analysis_request(
         &self,
         id: &str,
-        secret: &str,
+        client_secret: &str,
         options: &ExternalEngineAnalysisOptions,
     ) -> Result<Pin<Box<dyn Stream<Item = Result<ExternalEngineAnalysis>> + Send>>> {
         let url = self.inner.req_url(
@@ -111,12 +112,36 @@ impl ExternalEngineApi {
             .client
             .post(url)
             .json(&ExternalEngineAnalysisBody {
-                client_secret: secret.to_string(),
+                client_secret: client_secret.to_string(),
                 work: options.clone(),
             });
 
         self.inner
             .to_stream::<ExternalEngineAnalysis>(builder)
+            .await
+    }
+
+    /// Wait for an analysis request to any of the external engines that have been registered with the given `secret`.
+    /// Uses long polling.
+    /// After acquiring a request, the provider should immediately start streaming the results.
+    ///
+    /// # Errors
+    /// Returns an error if the API request fails or the response cannot be deserialized.
+    pub async fn analysis_acquire(
+        &self,
+        provider_secret: &str,
+    ) -> Result<Option<ExternalEngineAnalysisRequest>> {
+        let url = self
+            .inner
+            .req_url(UrlBase::Engine, "api/external-engine/work");
+        let builder = self
+            .inner
+            .client
+            .post(url)
+            .json(&json!({ "providerSecret": provider_secret }));
+
+        self.inner
+            .to_model_optional::<ExternalEngineAnalysisRequest>(builder)
             .await
     }
 }

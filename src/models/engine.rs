@@ -48,3 +48,34 @@ pub struct ExternalEnginePv {
     pub cp: Option<u32>,
     pub mate: Option<u8>,
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ExternalEngineAnalysisRequest {
+    pub id: String,
+    pub engine: ExternalEngine,
+    pub work: ExternalEngineAnalysisWork,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
+pub struct ExternalEngineAnalysisWork {
+    #[serde(flatten)]
+    pub search: SearchMethod,
+    pub hash: u32,
+    pub initial_fen: String,
+    pub moves: Vec<String>,
+    pub multi_pv: u8,
+    pub session_id: String,
+    pub threads: u16,
+    pub variant: UciVariant,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum SearchMethod {
+    Movetime(u32),
+    Depth(u8),
+    Nodes(u64),
+}

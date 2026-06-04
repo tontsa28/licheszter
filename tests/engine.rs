@@ -5,7 +5,7 @@ use std::{error::Error, sync::LazyLock};
 use licheszter::{
     client::Licheszter,
     config::engine::{ExternalEngineAnalysisOptions, ExternalEngineOptions},
-    models::engine::UciVariant,
+    models::engine::{SearchMethod, UciVariant},
 };
 
 // Connect to test clients
@@ -241,7 +241,7 @@ async fn external_engine_delete() {
 }
 
 #[tokio::test]
-async fn external_engine_analyse() {
+async fn external_engine_analysis_request() {
     // Create engines for testing
     let engine_options = ExternalEngineOptions::new(128, 4, "Stockfish", "secretstockfishtoken");
     let engine1 = LI.external_engine().create(&engine_options).await.unwrap();
@@ -253,6 +253,7 @@ async fn external_engine_analyse() {
 
     // Create options for testing
     let options1 = ExternalEngineAnalysisOptions::new(
+        SearchMethod::Depth(5),
         64,
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
         &[],
@@ -260,11 +261,17 @@ async fn external_engine_analyse() {
         "",
         1,
         UciVariant::Chess,
-    )
-    .depth(5);
-    let options2 =
-        ExternalEngineAnalysisOptions::new(1024, "", &["e2e4"], 6, "testing", 8, UciVariant::Chess)
-            .movetime(1000);
+    );
+    let options2 = ExternalEngineAnalysisOptions::new(
+        SearchMethod::Movetime(1000),
+        1024,
+        "",
+        &["e2e4"],
+        6,
+        "testing",
+        8,
+        UciVariant::Chess,
+    );
 
     // Run some test cases
     // TODO: Provider does not pick up work
@@ -311,5 +318,22 @@ async fn external_engine_analyse() {
     assert!(
         stream.is_err(),
         "Analysing with external engine did not fail"
+    );
+}
+
+#[tokio::test]
+async fn external_engine_analysis_acquire() {
+    let engine_options = ExternalEngineOptions::new(128, 4, "Stockfish", "secretstockfishtoken");
+    LI.external_engine().create(&engine_options).await.unwrap();
+
+    // Run some test cases
+    let result = LI
+        .external_engine()
+        .analysis_acquire("secretstockfishtoken")
+        .await;
+    assert!(
+        result.is_ok(),
+        "Failed to acquire external engine analysis request: {:?}",
+        result.unwrap_err().source().unwrap()
     );
 }

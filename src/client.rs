@@ -44,7 +44,7 @@ use futures_util::{stream, Stream, TryStreamExt};
 
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
-    Client, IntoUrl, RequestBuilder, Url,
+    Client, IntoUrl, RequestBuilder, StatusCode, Url,
 };
 use serde::de::DeserializeOwned;
 use std::{fmt::Display, sync::Arc};
@@ -100,7 +100,6 @@ impl LicheszterInner {
     where
         T: DeserializeOwned,
     {
-        // Send the request & get the response
         let response = builder.send().await?;
 
         // Return an error if the request failed
@@ -112,6 +111,26 @@ impl LicheszterInner {
         serde_json::from_slice::<T>(&response.bytes().await?).map_err(Into::into)
     }
 
+    // Convert the API response into a deserialized model, returning None on HTTP 204.
+    pub(crate) async fn to_model_optional<T>(&self, builder: RequestBuilder) -> Result<Option<T>>
+    where
+        T: DeserializeOwned,
+    {
+        let response = builder.send().await?;
+
+        if response.status() == StatusCode::NO_CONTENT {
+            return Ok(None);
+        }
+
+        // Return an error if the request failed
+        if !response.status().is_success() {
+            return Err(LichessError::from_response(response).await?.into());
+        }
+
+        // Deserialize the response data into JSON
+        Ok(Some(serde_json::from_slice::<T>(&response.bytes().await?)?))
+    }
+
     // Convert API response into a deserialized stream model
     #[cfg(feature = "streaming")]
     pub(crate) async fn to_stream<T>(
@@ -121,7 +140,6 @@ impl LicheszterInner {
     where
         T: DeserializeOwned,
     {
-        // Send the request
         let response = builder.send().await?;
 
         // Return an error if the request failed

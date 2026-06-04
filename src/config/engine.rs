@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::models::engine::UciVariant;
+use crate::models::engine::{SearchMethod, UciVariant};
 
 /// Partially optional configuration for creating external engines using [`external_engine().create()`](fn@crate::api::engine::ExternalEngineApi::create).
 #[skip_serializing_none]
@@ -56,13 +56,12 @@ impl ExternalEngineOptions {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExternalEngineAnalysisOptions {
-    depth: Option<u8>,
+    #[serde(flatten)]
+    search: SearchMethod,
     hash: u32,
     initial_fen: String,
     moves: Vec<String>,
-    movetime: Option<u32>,
     multi_pv: u8,
-    nodes: Option<u64>,
     session_id: String,
     threads: u16,
     variant: UciVariant,
@@ -72,15 +71,14 @@ impl ExternalEngineAnalysisOptions {
     /// Create a new instance of [`ExternalEngineAnalysisOptions`] with provided configuration.
     ///
     /// API constraints:
-    /// - `depth` must be at least 1.
+    /// - `search` must be at least 1 (milliseconds in movetime).
     /// - `hash` must be at least 1 (MiB).
     /// - `initial_fen`, `moves`, `session_id`, and `variant` are required.
-    /// - `movetime` must be at least 1 ms when provided.
     /// - `multi_pv` must be between 1 and 5.
-    /// - `nodes` must be at least 1.
     /// - `threads` must be at least 1.
     #[must_use]
     pub fn new(
+        search: SearchMethod,
         hash: u32,
         initial_fen: &str,
         moves: &[&str],
@@ -90,47 +88,15 @@ impl ExternalEngineAnalysisOptions {
         variant: UciVariant,
     ) -> Self {
         ExternalEngineAnalysisOptions {
-            depth: None,
+            search,
             hash,
             initial_fen: initial_fen.to_string(),
             moves: moves.iter().map(|s| s.to_string()).collect::<Vec<String>>(),
-            movetime: None,
             multi_pv,
-            nodes: None,
             session_id: session_id.to_string(),
             threads,
             variant,
         }
-    }
-
-    /// Set the target depth for the engine analysis.
-    /// Please note that this method overrides the `movetime` and `nodes` parameters.
-    #[must_use]
-    pub fn depth(mut self, depth: u8) -> Self {
-        self.depth = Some(depth);
-        self.movetime = None;
-        self.nodes = None;
-        self
-    }
-
-    /// Set how long a position will be analysed.
-    /// Please note that this method removes the `depth` and `nodes` parameters.
-    #[must_use]
-    pub fn movetime(mut self, movetime: u32) -> Self {
-        self.movetime = Some(movetime);
-        self.depth = None;
-        self.nodes = None;
-        self
-    }
-
-    /// Set how many nodes will be analysed in a position.
-    /// Please note that this method overrides the `depth` and `movetime` parameters.
-    #[must_use]
-    pub fn nodes(mut self, nodes: u64) -> Self {
-        self.nodes = Some(nodes);
-        self.depth = None;
-        self.movetime = None;
-        self
     }
 }
 
