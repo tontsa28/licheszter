@@ -436,7 +436,11 @@ async fn games_ongoing() {
 async fn games_moves_connect() {
     // Get some game IDs for testing
     let games = LI.games().ongoing(2).await.unwrap();
-    let game_ids: Vec<&str> = games.iter().map(|game| game.game_id.as_str()).collect();
+    let game_ids: Vec<&str> = games
+        .now_playing
+        .iter()
+        .map(|game| game.game_id.as_str())
+        .collect();
 
     // Run some test cases
     let mut result = LI.games().moves_connect(game_ids[0]).await.unwrap();
