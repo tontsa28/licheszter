@@ -338,8 +338,9 @@ pub struct Perf {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+#[serde(rename_all = "camelCase")]
 pub struct UserGames {
-    #[serde(rename = "nowPlaying")]
+    pub nb_my_turn: u8,
     pub now_playing: Vec<UserGame>,
 }
 

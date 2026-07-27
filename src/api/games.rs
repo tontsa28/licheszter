@@ -7,7 +7,7 @@ use crate::{
     client::{LicheszterInner, UrlBase},
     config::games::{BookmarkedGameOptions, ExtendedGameOptions, GameOptions},
     error::Result,
-    models::game::{Game, ImportGame, StreamGame, StreamMoves, UserGame, UserGames},
+    models::game::{Game, ImportGame, StreamGame, StreamMoves, UserGames},
 };
 
 use std::sync::Arc;
@@ -197,11 +197,11 @@ impl GamesApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn ongoing(&self, games: u8) -> Result<Vec<UserGame>> {
+    pub async fn ongoing(&self, games: u8) -> Result<UserGames> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/account/playing");
         let builder = self.inner.client.get(url).query(&[("nb", games)]);
 
-        Ok(self.inner.to_model::<UserGames>(builder).await?.now_playing)
+        self.inner.to_model::<UserGames>(builder).await
     }
 
     /// Stream positions and moves of any ongoing game.
