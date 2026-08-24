@@ -1,7 +1,8 @@
 #![cfg(feature = "engine")]
 
-use std::{error::Error, sync::LazyLock};
+use std::{error::Error, panic, sync::LazyLock};
 
+use futures_util::StreamExt;
 use licheszter::{
     client::Licheszter,
     config::engine::{ExternalEngineAnalysisOptions, ExternalEngineOptions},
@@ -241,7 +242,7 @@ async fn external_engine_delete() {
 }
 
 #[tokio::test]
-async fn external_engine_analysis_request() {
+async fn external_engine_analysis() {
     // Create engines for testing
     let engine_options = ExternalEngineOptions::new(128, 4, "Stockfish", "secretstockfishtoken");
     let engine1 = LI.external_engine().create(&engine_options).await.unwrap();
@@ -250,6 +251,8 @@ async fn external_engine_analysis_request() {
         .create(&engine_options)
         .await
         .unwrap();
+    let engine3 = engine1.clone();
+    let engine4 = engine2.clone();
 
     // Create options for testing
     let options1 = ExternalEngineAnalysisOptions::new(
@@ -264,90 +267,188 @@ async fn external_engine_analysis_request() {
     );
     let options2 = ExternalEngineAnalysisOptions::new(
         SearchMethod::Movetime(1000),
-        1024,
-        "",
+        64,
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
         &["e2e4"],
-        6,
+        1,
         "testing",
-        8,
+        1,
         UciVariant::Chess,
     );
+    let options3 = options1.clone();
+    let options4 = options2.clone();
 
     // Run some test cases
-    // TODO: Provider does not pick up work
-    let stream = LI
+    let client_task = tokio::spawn(async move {
+        let mut request_stream = LI
+            .external_engine()
+            .analysis_request(&engine1.id, &engine1.client_secret, &options1)
+            .await
+            .unwrap();
+        if let Some(request_result) = request_stream.next().await {
+            assert!(
+                request_result.is_ok(),
+                "Failed to analyse with external engine: {:?}",
+                request_result.unwrap_err().source().unwrap()
+            );
+        }
+    });
+
+    let provider_task = tokio::spawn(async move {
+        let acquire_result = LI
+            .external_engine()
+            .analysis_acquire("secretstockfishtoken")
+            .await;
+        assert!(
+            acquire_result.as_ref().is_ok_and(|option| option.is_some()),
+            "Failed to analyse with external engine: {:?}",
+            acquire_result.unwrap_err().source().unwrap()
+        );
+
+        let submit_result = LI
+            .external_engine()
+            .analysis_submit(&acquire_result.unwrap().unwrap().id,
+                "info depth 1 seldepth 2 multipv 1 score cp -1 nodes 20 nps 20000 hashfull 0 tbhits 0 time 1 pv e2e4"
+            )
+            .await;
+        assert!(
+            submit_result.is_ok(),
+            "Failed to submit external engine analysis data: {:?}",
+            submit_result.unwrap_err().source().unwrap()
+        );
+    });
+
+    let provider_result = provider_task.await;
+    let client_result = client_task.await;
+    if provider_result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(provider_result.unwrap_err().into_panic());
+    }
+    if client_result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(client_result.unwrap_err().into_panic());
+    }
+
+    let client_task = tokio::spawn(async move {
+        let mut request_stream = BOT0
+            .external_engine()
+            .analysis_request(&engine2.id, &engine2.client_secret, &options2)
+            .await
+            .unwrap();
+        if let Some(request_result) = request_stream.next().await {
+            assert!(
+                request_result.is_ok(),
+                "Failed to analyse with external engine: {:?}",
+                request_result.unwrap_err().source().unwrap()
+            );
+        }
+    });
+
+    let provider_task = tokio::spawn(async move {
+        let acquire_result = BOT0
+            .external_engine()
+            .analysis_acquire("secretstockfishtoken")
+            .await;
+        assert!(
+            acquire_result.as_ref().is_ok_and(|option| option.is_some()),
+            "Failed to analyse with external engine: {:?}",
+            acquire_result.unwrap_err().source().unwrap()
+        );
+
+        let submit_result = BOT0
+            .external_engine()
+            .analysis_submit(&acquire_result.unwrap().unwrap().id,
+                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+            )
+            .await;
+        assert!(
+            submit_result.is_ok(),
+            "Failed to submit external engine analysis data: {:?}",
+            submit_result.unwrap_err().source().unwrap()
+        );
+    });
+
+    let provider_result = provider_task.await;
+    let client_result = client_task.await;
+    if provider_result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(provider_result.unwrap_err().into_panic());
+    }
+    if client_result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(client_result.unwrap_err().into_panic());
+    }
+
+    let client_task = tokio::spawn(async move {
+        let mut request_stream = DEFAULT
+            .external_engine()
+            .analysis_request(&engine3.id, &engine3.client_secret, &options3)
+            .await
+            .unwrap();
+        if let Some(request_result) = request_stream.next().await {
+            assert!(
+                request_result.is_ok(),
+                "Failed to analyse with external engine: {:?}",
+                request_result.unwrap_err().source().unwrap()
+            );
+        }
+    });
+
+    let provider_task = tokio::spawn(async move {
+        let acquire_result = DEFAULT
+            .external_engine()
+            .analysis_acquire("secretstockfishtoken")
+            .await;
+        assert!(
+            acquire_result.as_ref().is_ok_and(|option| option.is_some()),
+            "Failed to analyse with external engine: {:?}",
+            acquire_result.unwrap_err().source().unwrap()
+        );
+
+        let submit_result = DEFAULT
+            .external_engine()
+            .analysis_submit(&acquire_result.unwrap().unwrap().id,
+                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+            )
+            .await;
+        assert!(
+            submit_result.is_ok(),
+            "Failed to submit external engine analysis data: {:?}",
+            submit_result.unwrap_err().source().unwrap()
+        );
+    });
+
+    let provider_result = provider_task.await;
+    let client_result = client_task.await;
+    if provider_result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(provider_result.unwrap_err().into_panic());
+    }
+    if client_result.as_ref().is_err_and(|e| e.is_panic()) {
+        panic::resume_unwind(client_result.unwrap_err().into_panic());
+    }
+
+    let request_stream = LI
         .external_engine()
-        .analysis_request(&engine1.id, &engine1.client_secret, &options1)
+        .analysis_request("notvalid", &engine4.client_secret, &options4)
         .await;
     assert!(
-        stream.is_err(),
+        request_stream.is_err(),
         "Analysing with external engine did not fail"
     );
 
-    let stream = BOT0
-        .external_engine()
-        .analysis_request(&engine2.id, &engine2.client_secret, &options1)
-        .await;
+    let acquire_result = LI.external_engine().analysis_acquire("nosuchtoken").await;
     assert!(
-        stream.is_err(),
-        "Analysing with external engine did not fail"
+        acquire_result.as_ref().is_ok_and(|option| option.is_none())
+            || acquire_result.as_ref().is_err(),
+        "Analysing with external engine did not fail: {:?}",
+        acquire_result.as_ref().err().and_then(|e| e.source())
     );
 
-    let stream = LI
+    let submit_result = LI
         .external_engine()
-        .analysis_request(&engine1.id, &engine1.client_secret, &options2)
+        .analysis_submit("nosuchid",
+            "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+        )
         .await;
     assert!(
-        stream.is_err(),
-        "Analysing with external engine did not fail"
-    );
-
-    let stream = LI
-        .external_engine()
-        .analysis_request("notvalid", &engine1.client_secret, &options1)
-        .await;
-    assert!(
-        stream.is_err(),
-        "Analysing with external engine did not fail"
-    );
-
-    let stream = DEFAULT
-        .external_engine()
-        .analysis_request(&engine1.id, &engine1.client_secret, &options1)
-        .await;
-    assert!(
-        stream.is_err(),
-        "Analysing with external engine did not fail"
-    );
-}
-
-#[tokio::test]
-async fn external_engine_analysis_acquire() {
-    let engine_options = ExternalEngineOptions::new(128, 4, "Stockfish", "secretstockfishtoken");
-    LI.external_engine().create(&engine_options).await.unwrap();
-
-    // Run some test cases
-    let result = LI
-        .external_engine()
-        .analysis_acquire("secretstockfishtoken")
-        .await;
-    assert!(
-        result.is_ok(),
-        "Failed to acquire external engine analysis request: {:?}",
-        result.unwrap_err().source().unwrap()
-    );
-}
-
-#[tokio::test]
-async fn external_engine_analysis_submit() {
-    let engine_options = ExternalEngineOptions::new(128, 4, "Stockfish", "secretstockfishtoken");
-    let engine = LI.external_engine().create(&engine_options).await.unwrap();
-
-    // Run some test cases
-    let result = LI.external_engine().analysis_submit(&engine.id, "info depth 1 seldepth 2 multipv 1 score cp -1 nodes 20 nps 20000 hashfull 0 tbhits 0 time 1 pv e2e4").await;
-    assert!(
-        result.is_ok(),
-        "Failed to submit external engine analysis data: {:?}",
-        result.unwrap_err().source().unwrap()
+        submit_result.is_err(),
+        "Submitting external engine analysis data did not fail: {:?}",
+        submit_result.unwrap()
     );
 }

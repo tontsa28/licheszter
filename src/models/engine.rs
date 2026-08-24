@@ -45,8 +45,8 @@ pub struct ExternalEngineAnalysis {
 pub struct ExternalEnginePv {
     pub depth: u8,
     pub moves: Vec<String>,
-    pub cp: Option<u32>,
-    pub mate: Option<u8>,
+    pub cp: Option<i32>,
+    pub mate: Option<i16>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
