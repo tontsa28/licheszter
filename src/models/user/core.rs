@@ -66,8 +66,6 @@ pub struct User {
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct UserPreferences {
-    pub dark: bool,
-    pub transp: bool,
     pub bg_img: Option<String>,
     pub is_3d: bool,
     pub theme: String,
