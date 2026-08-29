@@ -32,7 +32,7 @@ jobs:
         options: --restart=always --name lila-engine
         ports:
           - 9666:9666
-        command: --bind 0.0.0.0:9666 --mongodb mongodb://localhost:27017
+        command: --bind 0.0.0.0:9666 --mongodb mongodb://lila:27017
 
     steps:
       - uses: actions/checkout@v4
