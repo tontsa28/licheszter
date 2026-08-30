@@ -34,21 +34,21 @@ static DEFAULT: LazyLock<Licheszter> = LazyLock::new(|| {
 #[tokio::test]
 async fn relations_followed_users_list() {
     // Run some test cases
-    let mut result = LI.relations().followed_users_list().await.unwrap();
-    while let Some(event) = result.next().await {
+    let mut stream = LI.relations().followed_users_list().await.unwrap();
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to get followers: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 
-    let mut result = BOT0.relations().followed_users_list().await.unwrap();
-    while let Some(event) = result.next().await {
+    let mut stream = BOT0.relations().followed_users_list().await.unwrap();
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to get followers: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 

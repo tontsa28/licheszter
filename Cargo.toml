@@ -58,6 +58,7 @@ messaging = []
 simuls = []
 fide = ["url-encoding"]
 analysis = []
+engine = []
 openings = ["streaming", "url-encoding"]
 tablebase = []
 
@@ -68,4 +69,4 @@ bot = ["streaming"]
 board = ["streaming", "url-encoding"]
 
 # Convenience feature to enable all API categories at once.
-all = ["account", "users", "relations", "games", "tv", "puzzles", "challenges", "pairings", "messaging", "simuls", "fide", "analysis", "bot", "board", "openings", "tablebase"]
+all = ["account", "users", "relations", "games", "tv", "puzzles", "challenges", "pairings", "messaging", "simuls", "fide", "analysis", "engine", "bot", "board", "openings", "tablebase"]

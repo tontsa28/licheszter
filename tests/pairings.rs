@@ -195,25 +195,25 @@ async fn bulk_pairings_export() {
         .literate(true);
 
     // Run some test cases
-    let mut result = LI
+    let mut stream = LI
         .bulk_pairings()
         .export(&bulk.id, Some(&options))
         .await
         .unwrap();
-    while let Some(event) = result.next().await {
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to export bulk pairing: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 
-    let mut result = LI.bulk_pairings().export(&bulk.id, None).await.unwrap();
-    while let Some(event) = result.next().await {
+    let mut stream = LI.bulk_pairings().export(&bulk.id, None).await.unwrap();
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to export bulk pairing: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 

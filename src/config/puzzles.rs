@@ -29,6 +29,6 @@ impl PuzzleSolution {
 }
 
 #[derive(Serialize)]
-pub(crate) struct PuzzleSolutions {
+pub(crate) struct PuzzleSolutionsBody {
     pub(crate) solutions: Vec<PuzzleSolution>,
 }

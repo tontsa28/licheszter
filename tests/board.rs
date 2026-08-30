@@ -37,27 +37,27 @@ async fn board_seek_create() {
         .clock(10, 5)
         .variant(VariantMode::Standard)
         .rating_range(0, 3000);
-    let options2 = options1.to_owned();
+    let options2 = options1.clone();
 
     // Run some test cases
     let thread1 = tokio::spawn(async move {
-        let mut result = LI.board().seek_create(Some(&options1)).await.unwrap();
-        while let Some(event) = result.next().await {
+        let mut stream = LI.board().seek_create(Some(&options1)).await.unwrap();
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to seek for a game: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });
 
     let thread2 = tokio::spawn(async move {
-        let mut result = ADRIANA.board().seek_create(Some(&options2)).await.unwrap();
-        while let Some(event) = result.next().await {
+        let mut stream = ADRIANA.board().seek_create(Some(&options2)).await.unwrap();
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to seek for a game: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });
@@ -89,13 +89,13 @@ async fn board_game_connect() {
     ADRIANA.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
-    let mut result = LI.board().game_connect(&challenge.id).await.unwrap();
+    let mut stream = LI.board().game_connect(&challenge.id).await.unwrap();
     let thread = tokio::spawn(async move {
-        while let Some(event) = result.next().await {
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });
@@ -438,8 +438,8 @@ async fn board_claim_victory() {
 
     // Run some test cases
     let mut stream = LI.board().game_connect(&challenge.id).await.unwrap();
-    while let Some(event) = stream.try_next().await.unwrap() {
-        if let BoardState::OpponentGone(gone) = event {
+    while let Some(result) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = result {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
                 let result = LI.board().claim_victory(&challenge.id).await;
                 assert!(
@@ -492,8 +492,8 @@ async fn board_claim_draw() {
 
     // Run some test cases
     let mut stream = LI.board().game_connect(&challenge.id).await.unwrap();
-    while let Some(event) = stream.try_next().await.unwrap() {
-        if let BoardState::OpponentGone(gone) = event {
+    while let Some(result) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = result {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
                 let result = LI.board().claim_draw(&challenge.id).await;
                 assert!(

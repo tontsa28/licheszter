@@ -78,7 +78,7 @@ Below is a list of supported API endpoints as of the last release:
 | Broadcasts        | ❌        | —             |
 | FIDE              | ✅        | `fide`        |
 | Analysis          | ✅        | `analysis`    |
-| External engine   | ❌        | —             |
+| External engine   | ✅        | `engine`      |
 | Opening explorer  | ✅        | `openings`    |
 | Tablebase         | ✅        | `tablebase`   |
 

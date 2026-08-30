@@ -193,38 +193,38 @@ async fn puzzle_batch_solve() {
 #[tokio::test]
 async fn puzzle_activity() {
     // Run some test cases
-    let mut result = LI.puzzles().activity(Some(10), None).await.unwrap();
-    while let Some(event) = result.next().await {
+    let mut stream = LI.puzzles().activity(Some(10), None).await.unwrap();
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to get puzzle activity: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 
-    let mut result = LI
+    let mut stream = LI
         .puzzles()
         .activity(None, Some(1704060000000))
         .await
         .unwrap();
-    while let Some(event) = result.next().await {
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to get puzzle activity: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 
-    let mut result = LI
+    let mut stream = LI
         .puzzles()
         .activity(Some(5), Some(1704060000000))
         .await
         .unwrap();
-    while let Some(event) = result.next().await {
+    while let Some(result) = stream.next().await {
         assert!(
-            event.is_ok(),
+            result.is_ok(),
             "Failed to get puzzle activity: {:?}",
-            event.unwrap_err().source().unwrap()
+            result.unwrap_err().source().unwrap()
         );
     }
 

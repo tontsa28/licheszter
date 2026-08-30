@@ -41,13 +41,13 @@ async fn bot_game_connect() {
     BOT1.challenges().accept(&challenge.id).await.unwrap();
 
     // Run a test case
-    let mut result = BOT0.bot().game_connect(&challenge.id).await.unwrap();
+    let mut stream = BOT0.bot().game_connect(&challenge.id).await.unwrap();
     let thread = tokio::spawn(async move {
-        while let Some(event) = result.next().await {
+        while let Some(result) = stream.next().await {
             assert!(
-                event.is_ok(),
+                result.is_ok(),
                 "Failed to parse an event: {:?}",
-                event.unwrap_err().source().unwrap()
+                result.unwrap_err().source().unwrap()
             );
         }
     });
@@ -385,8 +385,8 @@ async fn bot_claim_victory() {
 
     // Run some test cases
     let mut stream = BOT0.bot().game_connect(&challenge.id).await.unwrap();
-    while let Some(event) = stream.try_next().await.unwrap() {
-        if let BoardState::OpponentGone(gone) = event {
+    while let Some(result) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = result {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
                 let result = BOT0.bot().claim_draw(&challenge.id).await;
                 assert!(
@@ -438,8 +438,8 @@ async fn bot_claim_draw() {
 
     // Run some test cases
     let mut stream = BOT0.bot().game_connect(&challenge.id).await.unwrap();
-    while let Some(event) = stream.try_next().await.unwrap() {
-        if let BoardState::OpponentGone(gone) = event {
+    while let Some(result) = stream.try_next().await.unwrap() {
+        if let BoardState::OpponentGone(gone) = result {
             if gone.gone && gone.claim_win_in_seconds.is_some_and(|secs| secs == 0) {
                 let result = BOT0.bot().claim_draw(&challenge.id).await;
                 assert!(

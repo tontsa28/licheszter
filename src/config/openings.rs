@@ -128,7 +128,7 @@ impl LichessOpeningsOptions {
         self.ratings = Some(
             ratings
                 .iter()
-                .map(|r| r.to_owned() as u16)
+                .map(|r| r.clone() as u16)
                 .collect::<Vec<u16>>(),
         );
         self

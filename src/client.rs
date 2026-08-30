@@ -10,6 +10,8 @@ pub use crate::api::board::BoardApi;
 pub use crate::api::bot::BotApi;
 #[cfg(feature = "challenges")]
 pub use crate::api::challenges::ChallengesApi;
+#[cfg(feature = "engine")]
+pub use crate::api::engine::ExternalEngineApi;
 #[cfg(feature = "fide")]
 pub use crate::api::fide::FideApi;
 #[cfg(feature = "games")]
@@ -36,6 +38,9 @@ use crate::{
     error::{LichessError, Result},
     models::common::OkResponse,
 };
+
+#[cfg(feature = "engine")]
+use reqwest::StatusCode;
 
 #[cfg(feature = "streaming")]
 use futures_util::{stream, Stream, TryStreamExt};
@@ -65,6 +70,9 @@ const OPENINGS_URL: &str = "https://explorer.lichess.org";
 #[cfg(feature = "tablebase")]
 const TABLEBASE_URL: &str = "https://tablebase.lichess.org";
 
+#[cfg(feature = "engine")]
+const ENGINE_URL: &str = "https://engine.lichess.ovh";
+
 // Default user agent
 const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
@@ -85,6 +93,8 @@ pub(crate) struct LicheszterInner {
     pub(crate) openings_url: Url,
     #[cfg(feature = "tablebase")]
     pub(crate) tablebase_url: Url,
+    #[cfg(feature = "engine")]
+    pub(crate) engine_url: Url,
 }
 
 impl LicheszterInner {
@@ -93,7 +103,6 @@ impl LicheszterInner {
     where
         T: DeserializeOwned,
     {
-        // Send the request & get the response
         let response = builder.send().await?;
 
         // Return an error if the request failed
@@ -105,6 +114,27 @@ impl LicheszterInner {
         serde_json::from_slice::<T>(&response.bytes().await?).map_err(Into::into)
     }
 
+    // Convert the API response into a deserialized model, returning None on HTTP 204.
+    #[cfg(feature = "engine")]
+    pub(crate) async fn to_model_optional<T>(&self, builder: RequestBuilder) -> Result<Option<T>>
+    where
+        T: DeserializeOwned,
+    {
+        let response = builder.send().await?;
+
+        if response.status() == StatusCode::NO_CONTENT {
+            return Ok(None);
+        }
+
+        // Return an error if the request failed
+        if !response.status().is_success() {
+            return Err(LichessError::from_response(response).await?.into());
+        }
+
+        // Deserialize the response data into JSON
+        Ok(Some(serde_json::from_slice::<T>(&response.bytes().await?)?))
+    }
+
     // Convert API response into a deserialized stream model
     #[cfg(feature = "streaming")]
     pub(crate) async fn to_stream<T>(
@@ -114,7 +144,6 @@ impl LicheszterInner {
     where
         T: DeserializeOwned,
     {
-        // Send the request
         let response = builder.send().await?;
 
         // Return an error if the request failed
@@ -155,7 +184,6 @@ impl LicheszterInner {
     // Convert the API response into a string
     #[cfg(any(feature = "games", feature = "openings"))]
     pub(crate) async fn to_string(&self, builder: RequestBuilder) -> Result<String> {
-        // Send the request & get the response
         let response = builder.send().await?;
 
         // Return an error if the request failed
@@ -164,6 +192,19 @@ impl LicheszterInner {
         }
 
         Ok(response.text().await?)
+    }
+
+    // Convert the API response into a unit type
+    #[cfg(feature = "engine")]
+    pub(crate) async fn to_empty(&self, builder: RequestBuilder) -> Result<()> {
+        let response = builder.send().await?;
+
+        // Return an error if the request failed
+        if !response.status().is_success() {
+            return Err(LichessError::from_response(response).await?.into());
+        }
+
+        Ok(())
     }
 
     // Execute a request that returns an OkResponse and discard the response body
@@ -180,6 +221,8 @@ impl LicheszterInner {
             UrlBase::Openings => self.openings_url.clone(),
             #[cfg(feature = "tablebase")]
             UrlBase::Tablebase => self.tablebase_url.clone(),
+            #[cfg(feature = "engine")]
+            UrlBase::Engine => self.engine_url.clone(),
         };
         base.set_path(path);
         base
@@ -205,6 +248,8 @@ pub struct Licheszter {
     bot: BotApi,
     #[cfg(feature = "challenges")]
     challenges: ChallengesApi,
+    #[cfg(feature = "engine")]
+    engine: ExternalEngineApi,
     #[cfg(feature = "fide")]
     fide: FideApi,
     #[cfg(feature = "games")]
@@ -273,6 +318,13 @@ impl Licheszter {
     #[must_use]
     pub fn tablebase_url(&self) -> Url {
         self.inner.tablebase_url.clone()
+    }
+
+    /// Get the external engine server URL used in this [`Licheszter`] client.
+    #[cfg(feature = "engine")]
+    #[must_use]
+    pub fn engine_url(&self) -> Url {
+        self.inner.engine_url.clone()
     }
 
     /// Access the Account API endpoints.
@@ -373,6 +425,13 @@ impl Licheszter {
         &self.analysis
     }
 
+    /// Access the External engine API endpoints.
+    #[cfg(feature = "engine")]
+    #[must_use]
+    pub fn external_engine(&self) -> &ExternalEngineApi {
+        &self.engine
+    }
+
     /// Access the Openings API endpoints.
     #[cfg(feature = "openings")]
     #[must_use]
@@ -404,6 +463,8 @@ pub struct LicheszterBuilder {
     openings_url: Url,
     #[cfg(feature = "tablebase")]
     tablebase_url: Url,
+    #[cfg(feature = "engine")]
+    engine_url: Url,
 }
 
 impl LicheszterBuilder {
@@ -425,6 +486,8 @@ impl LicheszterBuilder {
             openings_url: self.openings_url,
             #[cfg(feature = "tablebase")]
             tablebase_url: self.tablebase_url,
+            #[cfg(feature = "engine")]
+            engine_url: self.engine_url,
         });
 
         Licheszter {
@@ -446,6 +509,10 @@ impl LicheszterBuilder {
             },
             #[cfg(feature = "challenges")]
             challenges: ChallengesApi {
+                inner: Arc::clone(&inner),
+            },
+            #[cfg(feature = "engine")]
+            engine: ExternalEngineApi {
                 inner: Arc::clone(&inner),
             },
             #[cfg(feature = "fide")]
@@ -557,6 +624,17 @@ impl LicheszterBuilder {
         self.tablebase_url = url.into_url()?;
         Ok(self)
     }
+
+    /// Insert a valid URL of a custom external engine server.
+    /// This can be useful, for example, when hosting your own server for debugging purposes.
+    ///
+    /// # Errors
+    /// Returns an error if the given URL cannot be converted into a [`reqwest::Url`].
+    #[cfg(feature = "engine")]
+    pub fn with_engine_url(mut self, url: impl IntoUrl) -> Result<LicheszterBuilder> {
+        self.engine_url = url.into_url()?;
+        Ok(self)
+    }
 }
 
 impl Default for LicheszterBuilder {
@@ -573,6 +651,8 @@ impl Default for LicheszterBuilder {
             openings_url: Url::parse(OPENINGS_URL).expect("OPENINGS_URL constant is not a valid URL"),
             #[cfg(feature = "tablebase")]
             tablebase_url: Url::parse(TABLEBASE_URL).expect("TABLEBASE_URL constant is not a valid URL"),
+            #[cfg(feature = "engine")]
+            engine_url: Url::parse(ENGINE_URL).expect("ENGINE_URL constant is not a valid URL"),
         }
     }
 }
@@ -584,4 +664,6 @@ pub(crate) enum UrlBase {
     Openings,
     #[cfg(feature = "tablebase")]
     Tablebase,
+    #[cfg(feature = "engine")]
+    Engine,
 }

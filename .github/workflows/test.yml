@@ -27,6 +27,12 @@ jobs:
       lila-bots:
         image: python:latest
         options: -t --name lila-bots --entrypoint "/bin/sh"
+      lila-engine:
+        image: ghcr.io/lichess-org/lila-engine:latest
+        options: --restart=always --name lila-engine
+        ports:
+          - 9666:9666
+        command: --bind 0.0.0.0:9666 --mongodb mongodb://lila:27017
 
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +44,9 @@ jobs:
             ~/.cargo/git
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Open MongoDB to all containers & restart Lila
+        run: docker exec lila sed -i 's/mongod --logpath/mongod --bind_ip_all --logpath/' /etc/supervisor/conf.d/supervisord.conf && docker restart lila
 
       - name: Connect to bot accounts
         run: docker cp ${{ github.workspace }}/.github/docker/entrypoint.sh lila-bots:/entrypoint.sh && docker exec -d lila-bots ./entrypoint.sh && sleep 5s

@@ -10,6 +10,9 @@ pub mod user;
 #[cfg(feature = "analysis")]
 pub mod analysis;
 
+#[cfg(feature = "engine")]
+pub mod engine;
+
 #[cfg(feature = "fide")]
 pub mod fide;
 

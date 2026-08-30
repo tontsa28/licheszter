@@ -4,7 +4,7 @@ use futures_util::Stream;
 
 use crate::{
     client::{LicheszterInner, UrlBase},
-    config::puzzles::{PuzzleDifficulty, PuzzleSolution, PuzzleSolutions},
+    config::puzzles::{PuzzleDifficulty, PuzzleSolution, PuzzleSolutionsBody},
     error::Result,
     models::{
         common::FinalColor,
@@ -109,14 +109,14 @@ impl PuzzlesApi {
             UrlBase::Lichess,
             &format!("api/puzzle/batch/{}", angle.unwrap_or("mix")),
         );
-        let builder = self
-            .inner
-            .client
-            .post(url)
-            .query(&[("nb", amount)])
-            .json(&PuzzleSolutions {
-                solutions: solutions.into(),
-            });
+        let builder =
+            self.inner
+                .client
+                .post(url)
+                .query(&[("nb", amount)])
+                .json(&PuzzleSolutionsBody {
+                    solutions: solutions.into(),
+                });
 
         self.inner.to_model::<PuzzleCollectionSolved>(builder).await
     }
