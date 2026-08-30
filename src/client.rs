@@ -39,12 +39,15 @@ use crate::{
     models::common::OkResponse,
 };
 
+#[cfg(feature = "engine")]
+use reqwest::StatusCode;
+
 #[cfg(feature = "streaming")]
 use futures_util::{stream, Stream, TryStreamExt};
 
 use reqwest::{
     header::{self, HeaderMap, HeaderValue},
-    Client, IntoUrl, RequestBuilder, StatusCode, Url,
+    Client, IntoUrl, RequestBuilder, Url,
 };
 use serde::de::DeserializeOwned;
 use std::{fmt::Display, sync::Arc};
@@ -112,6 +115,7 @@ impl LicheszterInner {
     }
 
     // Convert the API response into a deserialized model, returning None on HTTP 204.
+    #[cfg(feature = "engine")]
     pub(crate) async fn to_model_optional<T>(&self, builder: RequestBuilder) -> Result<Option<T>>
     where
         T: DeserializeOwned,
