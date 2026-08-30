@@ -162,6 +162,13 @@ pub struct Division {
     pub end: Option<u16>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
+pub struct ArenaTour {
+    pub id: String,
+    pub name: String,
+}
+
 #[serde_as]
 #[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -190,6 +197,7 @@ pub struct Game {
     pub analysis: Vec<MoveAnalysis>,
     pub tournament: Option<String>,
     pub swiss: Option<String>,
+    pub arena_tour: Option<ArenaTour>,
     pub clock: Option<Clock>,
     #[serde(default)]
     pub clocks: Vec<u32>,
