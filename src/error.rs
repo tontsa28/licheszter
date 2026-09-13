@@ -146,7 +146,8 @@ pub(crate) struct LichessError {
 impl LichessError {
     pub(crate) async fn from_response(response: Response) -> Result<Self> {
         let status = response.status();
-        let error = serde_json::from_slice::<Value>(&response.bytes().await?);
+        let body = response.bytes().await?;
+        let error = serde_json::from_slice::<Value>(&body);
 
         // Design decision: Return a simple "Not found" message for 404s with unparseable bodies.
         // Lichess often returns long HTML pages instead of JSON for 404 errors, even on API endpoints.
@@ -155,16 +156,20 @@ impl LichessError {
         let message = if status == StatusCode::NOT_FOUND && error.is_err() {
             String::from("Not found")
         } else {
-            let error_json = error?;
-            let error_msg = error_json
-                .get("error")
-                .and_then(|v| v.as_str())
-                .unwrap_or("Unexpected error format, failed to parse the actual error message");
+            match error {
+                Ok(error_json) => {
+                    let error_msg = error_json
+                        .get("error")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("Unexpected error format, failed to parse the actual error message");
 
-            let mut msg = error_msg.to_string();
-            let removable_chars = ['{', '}', '[', ']', '"'];
-            msg.retain(|c| !removable_chars.contains(&c));
-            msg.replace(':', ": ")
+                    let mut msg = error_msg.to_string();
+                    let removable_chars = ['{', '}', '[', ']', '"'];
+                    msg.retain(|c| !removable_chars.contains(&c));
+                    msg.replace(':', ": ")
+                }
+                Err(_) => String::from_utf8_lossy(&body).into_owned(),
+            }
         };
 
         Ok(LichessError { status, message })
