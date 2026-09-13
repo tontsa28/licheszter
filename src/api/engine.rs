@@ -160,8 +160,11 @@ impl ExternalEngineApi {
     ///     - `nodes`
     ///     - `time`
     ///     - `pv`
+    /// - Engine finally sends `bestmove`:
+    ///     - with a move or `(none)`
+    ///     - optionally, with `ponder` move
     ///
-    /// The server may close the connection at any time, indicating that the requester has gone away and analysis should be stopped.
+    /// The endpoint may close the connection at any time, indicating that the requester has gone away and analysis should be stopped.
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.

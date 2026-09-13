@@ -30,13 +30,27 @@ pub enum UciVariant {
     ThreeCheck,
 }
 
+#[skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "serde-strict", serde(deny_unknown_fields))]
 pub struct ExternalEngineAnalysis {
+    #[serde(default, deserialize_with = "deserialize_bestmove")]
+    pub bestmove: Option<String>,
+    pub ponder: Option<String>,
     pub depth: u8,
     pub nodes: u64,
     pub pvs: Vec<ExternalEnginePv>,
     pub time: u32,
+}
+
+// Custom deserializer for the bestmove field to convert `(none)` bestmoves into `None` variants
+fn deserialize_bestmove<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let bestmove = Option::<String>::deserialize(deserializer)?;
+
+    Ok(bestmove.filter(|bestmove| bestmove != "(none)"))
 }
 
 #[skip_serializing_none]

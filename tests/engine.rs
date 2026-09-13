@@ -285,7 +285,7 @@ async fn external_engine_analysis() {
             .analysis_request(&engine1.id, &engine1.client_secret, &options1)
             .await
             .unwrap();
-        if let Some(request_result) = request_stream.next().await {
+        while let Some(request_result) = request_stream.next().await {
             assert!(
                 request_result.is_ok(),
                 "Failed to analyse with external engine: {:?}",
@@ -308,7 +308,7 @@ async fn external_engine_analysis() {
         let submit_result = LI
             .external_engine()
             .analysis_submit(&acquire_result.unwrap().unwrap().id,
-                "info depth 1 seldepth 2 multipv 1 score cp -1 nodes 20 nps 20000 hashfull 0 tbhits 0 time 1 pv e2e4"
+                "info depth 1 seldepth 2 multipv 1 score cp -1 nodes 20 nps 20000 hashfull 0 tbhits 0 time 1 pv e2e4\nbestmove e2e4"
             )
             .await;
         assert!(
@@ -333,7 +333,7 @@ async fn external_engine_analysis() {
             .analysis_request(&engine2.id, &engine2.client_secret, &options2)
             .await
             .unwrap();
-        if let Some(request_result) = request_stream.next().await {
+        while let Some(request_result) = request_stream.next().await {
             assert!(
                 request_result.is_ok(),
                 "Failed to analyse with external engine: {:?}",
@@ -356,7 +356,7 @@ async fn external_engine_analysis() {
         let submit_result = BOT0
             .external_engine()
             .analysis_submit(&acquire_result.unwrap().unwrap().id,
-                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5\nbestmove e7e5"
             )
             .await;
         assert!(
@@ -381,7 +381,7 @@ async fn external_engine_analysis() {
             .analysis_request(&engine3.id, &engine3.client_secret, &options3)
             .await
             .unwrap();
-        if let Some(request_result) = request_stream.next().await {
+        while let Some(request_result) = request_stream.next().await {
             assert!(
                 request_result.is_ok(),
                 "Failed to analyse with external engine: {:?}",
@@ -404,7 +404,7 @@ async fn external_engine_analysis() {
         let submit_result = DEFAULT
             .external_engine()
             .analysis_submit(&acquire_result.unwrap().unwrap().id,
-                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5\nbestmove (none)"
             )
             .await;
         assert!(
