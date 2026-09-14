@@ -74,6 +74,7 @@ impl AccountApi {
     ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
+    #[deprecated(since = "0.5.2", note = "API endpoint removed by Lichess")]
     pub async fn timeline(&self, since: Option<u64>, amount: Option<u8>) -> Result<Timeline> {
         let url = self.inner.req_url(UrlBase::Lichess, "api/timeline");
         let builder = self

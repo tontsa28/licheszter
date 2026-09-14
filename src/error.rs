@@ -158,10 +158,9 @@ impl LichessError {
         } else {
             match error {
                 Ok(error_json) => {
-                    let error_msg = error_json
-                        .get("error")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("Unexpected error format, failed to parse the actual error message");
+                    let error_msg = error_json.get("error").and_then(|v| v.as_str()).unwrap_or(
+                        "Unexpected error format, failed to parse the actual error message",
+                    );
 
                     let mut msg = error_msg.to_string();
                     let removable_chars = ['{', '}', '[', ']', '"'];
