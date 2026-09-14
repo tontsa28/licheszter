@@ -1,7 +1,7 @@
-use std::{pin::Pin, sync::Arc};
+use std::{io::Error as StdError, pin::Pin, result::Result as StdResult, sync::Arc};
 
-use futures_util::Stream;
-use reqwest::header;
+use futures_util::{Stream, StreamExt};
+use reqwest::{header, Body};
 use serde_json::json;
 
 use crate::{
@@ -166,9 +166,24 @@ impl ExternalEngineApi {
     ///
     /// The endpoint may close the connection at any time, indicating that the requester has gone away and analysis should be stopped.
     ///
+    /// Each item is sent as one line. A trailing newline is added when
+    /// necessary. The stream must end after sending `bestmove`.
+    ///
     /// # Errors
     /// Returns an error if the API request fails or the response cannot be deserialized.
-    pub async fn analysis_submit(&self, analysis_id: &str, result: &str) -> Result<()> {
+    pub async fn analysis_submit<S>(&self, analysis_id: &str, lines: S) -> Result<()>
+    where
+        S: Stream<Item = StdResult<String, StdError>> + Send + 'static,
+    {
+        let body = Body::wrap_stream(lines.map(|line| {
+            line.map(|mut line| {
+                if !line.ends_with('\n') {
+                    line.push('\n');
+                }
+                line
+            })
+        }));
+
         let url = self.inner.req_url(
             UrlBase::Engine,
             &format!("api/external-engine/work/{analysis_id}"),
@@ -177,7 +192,7 @@ impl ExternalEngineApi {
             .inner
             .client
             .post(url)
-            .body(result.to_string())
+            .body(body)
             .header(header::CONTENT_TYPE, "text/plain");
 
         self.inner.to_empty(builder).await

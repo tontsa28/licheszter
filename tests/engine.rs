@@ -2,7 +2,7 @@
 
 use std::{error::Error, panic, sync::LazyLock};
 
-use futures_util::StreamExt;
+use futures_util::{stream, StreamExt};
 use licheszter::{
     client::Licheszter,
     config::engine::{ExternalEngineAnalysisOptions, ExternalEngineOptions},
@@ -307,8 +307,15 @@ async fn external_engine_analysis() {
 
         let submit_result = LI
             .external_engine()
-            .analysis_submit(&acquire_result.unwrap().unwrap().id,
-                "info depth 1 seldepth 2 multipv 1 score cp -1 nodes 20 nps 20000 hashfull 0 tbhits 0 time 1 pv e2e4\nbestmove e2e4"
+            .analysis_submit(
+                &acquire_result.unwrap().unwrap().id,
+                stream::iter([
+                    Ok::<_, std::io::Error>(
+                        "info depth 1 seldepth 2 multipv 1 score cp -1 nodes 20 nps 20000 hashfull 0 tbhits 0 time 1 pv e2e4"
+                            .to_owned(),
+                    ),
+                    Ok("bestmove e2e4".to_owned()),
+                ]),
             )
             .await;
         assert!(
@@ -355,8 +362,15 @@ async fn external_engine_analysis() {
 
         let submit_result = BOT0
             .external_engine()
-            .analysis_submit(&acquire_result.unwrap().unwrap().id,
-                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5\nbestmove e7e5"
+            .analysis_submit(
+                &acquire_result.unwrap().unwrap().id,
+                stream::iter([
+                    Ok::<_, std::io::Error>(
+                        "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+                            .to_owned(),
+                    ),
+                    Ok("bestmove e7e5".to_owned()),
+                ]),
             )
             .await;
         assert!(
@@ -403,8 +417,15 @@ async fn external_engine_analysis() {
 
         let submit_result = DEFAULT
             .external_engine()
-            .analysis_submit(&acquire_result.unwrap().unwrap().id,
-                "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5\nbestmove (none)"
+            .analysis_submit(
+                &acquire_result.unwrap().unwrap().id,
+                stream::iter([
+                    Ok::<_, std::io::Error>(
+                        "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+                            .to_owned(),
+                    ),
+                    Ok("bestmove (none)".to_owned()),
+                ]),
             )
             .await;
         assert!(
@@ -442,8 +463,15 @@ async fn external_engine_analysis() {
 
     let submit_result = LI
         .external_engine()
-        .analysis_submit("nosuchid",
-            "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+        .analysis_submit(
+            "nosuchid",
+            stream::iter([
+                Ok::<_, std::io::Error>(
+                    "info depth 1 seldepth 2 multipv 1 score cp -29 nodes 22 nps 22000 hashfull 0 tbhits 0 time 1 pv e7e5"
+                        .to_owned(),
+                ),
+                Ok("bestmove (none)".to_owned()),
+            ]),
         )
         .await;
     assert!(

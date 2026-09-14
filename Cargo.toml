@@ -58,7 +58,7 @@ messaging = []
 simuls = []
 fide = ["url-encoding"]
 analysis = []
-engine = []
+engine = ["streaming"]
 openings = ["streaming", "url-encoding"]
 tablebase = []
 
