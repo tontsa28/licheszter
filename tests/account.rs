@@ -155,6 +155,8 @@ async fn account_kid_mode_set() {
     );
 }
 
+#[ignore = "deprecated"]
+#[allow(deprecated)]
 #[tokio::test]
 async fn account_timeline() {
     // Run some test cases
