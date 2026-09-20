@@ -247,6 +247,8 @@ pub struct PuzzlePlayer {
     pub score: u16,
     pub flair: Option<String>,
     pub id: Option<String>,
+    #[serde(default)]
+    pub patron: bool,
     #[serde(rename = "patronColor")]
     pub patron_color: Option<u8>,
 }
