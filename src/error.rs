@@ -167,7 +167,13 @@ impl LichessError {
                     msg.retain(|c| !removable_chars.contains(&c));
                     msg.replace(':', ": ")
                 }
-                Err(_) => String::from_utf8_lossy(&body).into_owned(),
+                Err(_) => {
+                    let mut msg = String::from_utf8_lossy(&body).into_owned();
+                    if msg.contains("DOCTYPE html") {
+                        msg = String::from("Content of HTML error page omitted");
+                    }
+                    msg
+                }
             }
         };
 
